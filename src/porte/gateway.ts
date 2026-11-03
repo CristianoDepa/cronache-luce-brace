@@ -2,7 +2,13 @@ import type { Azione, ErroreGioco, EventoGioco, Registro, VistaPartita } from ".
 
 export type RispostaGateway =
   | { readonly ok: true; readonly vista: VistaPartita; readonly eventi: readonly EventoGioco[] }
-  | { readonly ok: false; readonly errore: ErroreGioco };
+  // Se prima dell'errore è scattato un nuovo giorno, la risposta porta anche la vista aggiornata e i suoi eventi.
+  | {
+      readonly ok: false;
+      readonly errore: ErroreGioco;
+      readonly vista?: VistaPartita;
+      readonly eventi?: readonly EventoGioco[];
+    };
 
 export type RispostaEsportazione =
   | { readonly ok: true; readonly testo: string }

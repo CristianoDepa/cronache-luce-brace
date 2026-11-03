@@ -74,4 +74,16 @@ describe("validazione dei menu", () => {
     const b = modulo([], { id: "b", testi: { it: { "b.t": "t" }, en: { "b.t": "t" } }, interfaccia: { titoliContesto: { v: "b.t" } } });
     expect(errori([a, b])).toContain("già definito");
   });
+
+  it("le voci INFO non possono usare un tasto già usato in un altro contesto", () => {
+    const info = voce({ id: "x.info", contesto: "info", tasto: "K" });
+    const altra = voce({ id: "x.altra", contesto: "altrove", tasto: "K" });
+    expect(errori([modulo([info, altra])])).toContain("usato anche nel contesto");
+    expect(costruisciRegistro([modulo([info, voce({ id: "x.altra", contesto: "altrove", tasto: "J" })])]).ok).toBe(true);
+  });
+
+  it("le voci INFO rispettano gli stessi controlli delle altre (tasti riservati, testi)", () => {
+    expect(errori([modulo([voce({ contesto: "info", tasto: "0" })])])).toContain("riservato");
+    expect(errori([modulo([voce({ contesto: "info", etichettaChiave: "x.manca" })])])).toContain("testo mancante");
+  });
 });

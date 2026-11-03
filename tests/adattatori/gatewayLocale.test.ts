@@ -104,4 +104,32 @@ describe("gateway locale", () => {
     expect(letto.stato.personaggio.nome).toBe("Aldo");
     expect(Object.keys(letto.stato.moduli).sort()).toEqual(["banca", "classi", "combattimento", "equipaggiamento", "foresta", "locanda", "mura"]);
   });
+
+  it("un'azione dopo la scadenza del giorno applica prima il nuovo giorno", async () => {
+    const { orologio, crea } = creaAmbiente();
+    const gw = crea();
+    await gw.nuovaPartita("Aldo");
+    await gw.invia({ tipo: "scegliClasse", dati: { classeId: "cavaliere" } });
+    orologio.avanza(DURATA_CICLO_MS);
+    const r = await gw.invia({ tipo: "esploraForesta", dati: { luogoId: "foresta" } });
+    expect(r.ok && r.eventi.map((e) => e.chiave)[0]).toBe("nucleo.nuovoGiorno");
+    expect(r.ok && r.eventi.map((e) => e.chiave)).toContain("foresta.turnoConsumato");
+  });
+
+  it("se l'azione fallisce dopo un nuovo giorno, la risposta porta comunque la vista aggiornata", async () => {
+    const { orologio, crea } = creaAmbiente();
+    const gw = crea();
+    await gw.nuovaPartita("Aldo");
+    orologio.avanza(DURATA_CICLO_MS);
+    const r = await gw.invia({ tipo: "attacca" }); // nessun combattimento in corso
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.errore.chiave).toBe("combattimento.errore.nessun_combattimento");
+      expect(r.eventi?.map((e) => e.chiave)).toEqual(["nucleo.nuovoGiorno"]);
+      expect(r.vista?.prossimoReset).toBeGreaterThan(LUGLIO + DURATA_CICLO_MS);
+    }
+    // e il nuovo giorno è stato salvato: una continua() non lo riapplica
+    const dopo = await gw.continua();
+    expect(dopo.ok && dopo.eventi).toEqual([]);
+  });
 });

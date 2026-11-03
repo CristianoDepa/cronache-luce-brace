@@ -14,7 +14,7 @@ import { limitaProbabilita } from "./calcolo";
 import { PARAMETRI_COMBATTIMENTO } from "./parametri";
 import { puntoFuga } from "./punti";
 import { caricaScontro, calcolaDannoGiocatore, iniziaScontro, risolviColpoGiocatore, turnoNemico } from "./scontro";
-import { statoCombattimento } from "./tipi";
+import { impostaScontro, registraStatistiche } from "./statistiche";
 
 function validaCreaturaId(dati: unknown): Risultato<{ readonly creaturaId: Id }> {
   const o = comeOggetto(dati);
@@ -43,8 +43,11 @@ export const azioneFuggi = definisciAzione("fuggi", nessunDato, (stato, _dati, c
   if (!corrente.creatura.fugaConsentita) return esitoErrore("combattimento.errore.fuga_non_consentita");
   const base = { stato, probabilita: PARAMETRI_COMBATTIMENTO.probabilitaFugaBase };
   const probabilita = limitaProbabilita(applicaRegole(ctx, puntoFuga, base).probabilita);
+  const { creaturaId } = corrente;
   if (ctx.rng.prossimo() < probabilita) {
-    return esitoOk(statoCombattimento.scrivi(stato, { scontro: null }), [{ chiave: "combattimento.fugaRiuscita" }]);
+    const salvo = registraStatistiche(impostaScontro(stato, null), creaturaId, { fugheRiuscite: 1 });
+    return esitoOk(salvo, [{ chiave: "combattimento.fugaRiuscita" }]);
   }
-  return turnoNemico(stato, corrente.creatura, ctx, [{ chiave: "combattimento.fugaFallita" }]);
+  const fallita = registraStatistiche(stato, creaturaId, { fugheFallite: 1 });
+  return turnoNemico(fallita, corrente.creatura, creaturaId, ctx, [{ chiave: "combattimento.fugaFallita" }]);
 });

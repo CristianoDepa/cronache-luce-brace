@@ -225,4 +225,27 @@ Nomi, testi ed effetti sono bozze da correggere: stanno tutti in `src/moduli/mur
 
 ## 18. Grafica
 
-Ogni schermata ha un disegno in ANSI 16 colori (blocchi e caratteri Unicode, massimo 80 colonne per 16 righe): titolo, opzioni, creazione, villaggio, foresta, armeria, sartoria, guaritore, banca, locanda, mura. Nel combattimento si vede la scena del luogo con la creatura che ci poggia sopra; sulle mura, l'NPC di oggi sopra le merlature. I disegni sono dati dei moduli: una nuova creatura o un nuovo luogo portano il proprio disegno.
+Ogni schermata ha un disegno **pixel-art a 16 colori ANSI**, mostrato con mezzi blocchi nella colonna di destra, sopra la scheda del personaggio. Le scene sono: titolo, opzioni, creazione, villaggio, foresta, armeria, sartoria, guaritore, banca, locanda e mura. Nel combattimento si vede la scena del luogo con la creatura che ci poggia sopra; sulle mura, l'NPC di oggi in piedi sulle merlature, accanto a una torre con gli alberi in cima (un omaggio alla Torre Guinigi). Creature e NPC hanno un proprio sprite con contorno nero. I disegni sono dati dei moduli: una nuova creatura o un nuovo luogo portano il proprio disegno.
+
+## 19. Interfaccia a due colonne
+
+A sinistra la parte di gioco (luogo, pannelli, eventi, menu con il separatore GIOCO / SETTAGGI), a destra il disegno e la scheda del personaggio: nome, livello, esperienza, barra degli HP, oro, forza, difesa e tempo al nuovo giorno. Il registro degli eventi si svuota quando cambi luogo.
+
+## 20. Schede INFO
+
+Due schermate di sola lettura, raggiungibili da ogni schermata (non in combattimento né alla creazione) nel gruppo **INFO**.
+
+### Il personaggio `[P]`
+
+| Sezione | Contenuto |
+|---|---|
+| Statistiche | HP massimi, forza e difesa con la scomposizione: totale, base e bonus |
+| Combattimento | Probabilità di fuga attuale (con classe ed equipaggiamento) |
+| Classe | Vantaggi e svantaggi della classe scelta |
+| Equipaggiamento | Arma e armatura equipaggiate con i loro bonus |
+| Effetti di oggi | Benedizioni e maledizioni delle Mura, se attive |
+| Risorse | Incontri rimasti oggi, oro in banca |
+
+### Statistiche incontri `[N]`
+
+Tabella per ogni nemico incontrato, più i totali: **incontri**, **sconfitti**, **morti** (volte in cui sei morto contro di lui), **fughe riuscite**, **fughe fallite**, **danni inflitti** e **danni subiti** (effettivi, senza eccedenze). Compaiono solo i nemici già affrontati. I conteggi partono dalla versione 0.3.2.

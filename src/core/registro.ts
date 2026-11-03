@@ -39,6 +39,8 @@ export const TASTI_RISERVATI: readonly string[] = ["0", "O"];
 // Tasti usati dalla schermata Opzioni: i settaggi dei moduli non possono usarli.
 export const TASTI_RISERVATI_IMPOSTAZIONI: readonly string[] = ["0", "L", "E", "I"];
 const FORMATO_TASTO = /^[A-Z0-9]$/;
+// Contesto speciale: le sue voci (es. "Il personaggio") compaiono come gruppo INFO in ogni schermata non imposta da un modulo.
+export const CONTESTO_INFO = "info";
 
 interface Parziale<T> {
   readonly valore: T;
@@ -300,6 +302,19 @@ function verificaImpostazione(
   return errori;
 }
 
+// Le voci INFO compaiono in tutte le schermate, quindi i loro tasti devono essere liberi ovunque.
+function verificaTastiInfo(menu: ReadonlyMap<string, readonly VoceMenu[]>): string[] {
+  const errori: string[] = [];
+  for (const voce of menu.get(CONTESTO_INFO) ?? []) {
+    for (const [contesto, voci] of menu) {
+      if (contesto !== CONTESTO_INFO && voci.some((v) => v.tasto === voce.tasto)) {
+        errori.push(`voce INFO "${voce.id}": il tasto "${voce.tasto}" è usato anche nel contesto "${contesto}"`);
+      }
+    }
+  }
+  return errori;
+}
+
 function raccogliInterfaccia(
   ordinati: readonly DefinizioneModulo[],
   azioni: ReadonlyMap<string, GestoreAzione>,
@@ -339,6 +354,7 @@ function raccogliInterfaccia(
       titoli.set(contesto, chiave);
     }
   }
+  errori.push(...verificaTastiInfo(menu));
   // Ordinamento stabile: a pari "ordine" vale l'ordine di caricamento.
   for (const lista of menu.values()) lista.sort((a, b) => (a.ordine ?? 100) - (b.ordine ?? 100));
   return { valore: { menu, titoli, illustrazioni, riferimenti }, errori };

@@ -51,7 +51,7 @@ const interfaccia: InterfacciaModulo = {
     return [
       {
         titoloChiave: "foresta.pannello.titolo",
-        contesti: ["villaggio", CONTESTO_LUOGO],
+        contesti: ["villaggio", CONTESTO_LUOGO, "info:personaggio"],
         righe: [
           {
             chiave: "foresta.pannello.turni",

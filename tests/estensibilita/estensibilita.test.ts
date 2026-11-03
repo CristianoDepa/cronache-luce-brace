@@ -115,8 +115,8 @@ describe("L1 con grafica e menu: un nuovo luogo giocabile solo con dati", () => 
     const arte = creaVistaPartita(incontro.stato, ctxTorre).illustrazioni["combattimento"];
     expect(arte).toBeDefined();
     const testo = testoRaster(arte!);
-    expect(testo).toContain("[]"); // la torre
-    expect(testo).toContain("{o,o}"); // il gufo
+    expect(testo).toContain("2222222222"); // il suolo della torre
+    expect(testo).toContain("6ee6"); // il gufo
     expect(traduci(registroTorre, "en", "torre-prova.luogo")).toBe("The Tower");
   });
 });

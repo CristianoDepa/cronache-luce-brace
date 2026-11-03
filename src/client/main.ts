@@ -57,6 +57,13 @@ function avvia(): void {
     testo: (t) => void app.inviaTesto(t),
   });
   void app.avvia();
+  // Ogni 30 secondi aggiorna il conto alla rovescia e applica il nuovo giorno quando scatta.
+  // Mentre si scrive in un campo di testo non ridisegna, per non perdere ciò che si sta digitando.
+  setInterval(() => {
+    void app.controllaNuovoGiorno().then(() => {
+      if (!app.schermata().input) disegna(app.schermata());
+    });
+  }, 30_000);
 }
 
 avvia();

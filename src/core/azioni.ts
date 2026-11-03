@@ -1,6 +1,7 @@
 import { esitoErrore } from "./esito";
 import type { GestoreAzione } from "./modulo";
 import type { Risultato } from "./risultato";
+import { riallineaHp } from "./statistiche";
 import type { Azione, Contesto, Esito, StatoGioco } from "./tipi";
 
 // Crea un gestore che valida i dati grezzi prima di eseguire: nessun cast, nessun dato non verificato.
@@ -26,5 +27,8 @@ export function eseguiAzione(stato: StatoGioco, azione: Azione, ctx: Contesto): 
   const gestore = ctx.registro.azioni.get(azione.tipo);
   if (!gestore) return esitoErrore("nucleo.errore.azione_sconosciuta", azione.tipo);
   if (stato.personaggio.morto && !gestore.consentitaDaMorto) return esitoErrore("nucleo.errore.personaggio_morto");
-  return gestore.esegui(stato, azione.dati, ctx);
+  const esito = gestore.esegui(stato, azione.dati, ctx);
+  if (!esito.ok) return esito;
+  const { stato: riallineato, evento } = riallineaHp(esito.stato, ctx);
+  return evento ? { ok: true, stato: riallineato, eventi: [...esito.eventi, evento] } : esito;
 }

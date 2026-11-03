@@ -8,8 +8,9 @@ import {
   esitoErrore,
   esitoOk,
   fallisci,
-  voceIllustrazione,
 } from "../../core/indice";
+
+import { ILLUSTRAZIONI_GUARITORE } from "./grafica";
 
 export const ID_GUARITORE = "guaritore";
 const CONTESTO_GUARITORE = "luogo:guaritore";
@@ -43,16 +44,6 @@ const azioneCura = definisciAzione("curaGuaritore", validaQuantita, (stato, dati
   const nuovo = { ...stato, personaggio: { ...p, hp: p.hp + curati, oro: p.oro - costo } };
   return esitoOk(nuovo, [{ chiave: "guaritore.cura", parametri: { hp: curati, prezzo: costo }, tono: "positivo" }]);
 });
-
-const SCENA_GUARITORE = String.raw`
-      _____
-     |  +  |         ____
-     | +++ |        |    |
-     |  +  |       _|____|_
-     |_____|      (  ~~~~  )
-                   \______/
- ============================
-`;
 
 const testi: DizionarioTesti = {
   it: {
@@ -131,7 +122,7 @@ export const moduloGuaritore: DefinizioneModulo = {
   id: ID_GUARITORE,
   versioneApi: VERSIONE_API,
   dipende: [],
-  contenuti: [voceIllustrazione("scena.guaritore", SCENA_GUARITORE, { "+": 12, _: 15, "|": 15, "~": 10, "(": 7, ")": 7, "\\": 7, "/": 7, "=": 6 })],
+  contenuti: ILLUSTRAZIONI_GUARITORE,
   azioni: [azioneCura],
   testi,
   interfaccia,

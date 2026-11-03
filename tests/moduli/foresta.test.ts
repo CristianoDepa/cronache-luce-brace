@@ -14,7 +14,7 @@ function giocatoreForte(): { ctx: ReturnType<typeof creaContestoDiProva>; stato:
   const ctx = creaContestoDiProva(registro, 31);
   const classe = eseguiOk(statoDiProva(registro), { tipo: "scegliClasse", dati: { classeId: "cavaliere" } }, ctx);
   const p = classe.stato.personaggio;
-  return { ctx, stato: { ...classe.stato, personaggio: { ...p, hp: 1000, hpMax: 1000 } } };
+  return { ctx, stato: { ...classe.stato, personaggio: { ...p, hp: 1000, hpMaxBase: 1000 } } };
 }
 
 describe("foresta", () => {

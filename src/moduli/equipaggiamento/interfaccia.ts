@@ -7,6 +7,19 @@ import { idOggetto, tipoOggetto } from "./tipi";
 
 export const CONTESTO_ARMERIA = "luogo:armeria";
 export const CONTESTO_SARTORIA = "luogo:sartoria";
+const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";
+
+// Nella scheda del personaggio: l'oggetto equipaggiato in ogni slot con i suoi bonus.
+function rigaSlot(stato: StatoGioco, ctx: Contesto, tipo: TipoOggetto): RigaVista {
+  const tipoChiave = `equipaggiamento.tipo.${tipo}`;
+  const slot = slotEquipaggiato(stato, tipo);
+  const oggetto = slot ? leggiContenuto(ctx.registro, tipoOggetto, idOggetto(slot.linea, slot.livello)) : undefined;
+  if (!slot || !oggetto) return { chiave: "equipaggiamento.scheda.nessuno", parametri: { tipoChiave } };
+  return {
+    chiave: "equipaggiamento.scheda.oggetto",
+    parametri: { tipoChiave, oggettoChiave: oggetto.nomeChiave, livello: oggetto.livello, ...descriviEffetti(oggetto.effetti) },
+  };
+}
 
 function voceCompra(contesto: string, tasto: string, linea: string, nomeChiave: string): VoceMenu {
   return {
@@ -97,6 +110,11 @@ export const interfacciaEquipaggiamento: InterfacciaModulo = {
     return [
       pannelloNegozio(stato, ctx, CONTESTO_ARMERIA, "arma"),
       pannelloNegozio(stato, ctx, CONTESTO_SARTORIA, "armatura"),
+      {
+        titoloChiave: "equipaggiamento.scheda.titolo",
+        contesti: [CONTESTO_INFO_PERSONAGGIO],
+        righe: [rigaSlot(stato, ctx, "arma"), rigaSlot(stato, ctx, "armatura")],
+      },
     ];
   },
 };

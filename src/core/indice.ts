@@ -5,6 +5,7 @@ export * from "./contenuti";
 export * from "./esito";
 export * from "./giorno";
 export * from "./grafica";
+export * from "./migrazioni";
 export * from "./modulo";
 export * from "./registro";
 export * from "./regole";

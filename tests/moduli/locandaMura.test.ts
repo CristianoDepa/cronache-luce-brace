@@ -54,7 +54,7 @@ describe("locanda: mangiare", () => {
   it("al massimo 3 pasti al giorno, poi tornano disponibili al nuovo giorno", () => {
     // HP massimi alti, così tre pasti da 10 HP non portano mai alla piena salute.
     const base = con({ hp: 1, oro: 100 });
-    let stato = { ...base, personaggio: { ...base.personaggio, hpMax: 100 } };
+    let stato = { ...base, personaggio: { ...base.personaggio, hpMaxBase: 100 } };
     for (let i = 0; i < PARAMETRI_LOCANDA.pastiMaxGiorno; i++) stato = eseguiOk(stato, { tipo: "mangia" }, ctx).stato;
     expect(statoLocanda.leggi(stato).pastiOggi).toBe(3);
     const quarto = eseguiAzione(stato, { tipo: "mangia" }, ctx);

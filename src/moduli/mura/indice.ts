@@ -26,8 +26,8 @@ import {
   regola,
   sovrapponi,
   tipoIllustrazione,
-  voceIllustrazione,
 } from "../../core/indice";
+import { ILLUSTRAZIONI_MURA } from "./grafica";
 import { DEFINIZIONI_NPC, generaContenutiNpc, generaTestiNpc } from "./npc";
 import type { EffettoIncontro, Incontro, Npc, StatoMura } from "./tipi";
 import { ID_MURA, statoMura, tipoNpc } from "./tipi";
@@ -117,25 +117,13 @@ const azioneParla = definisciAzione("parlaConNpc", nessunDato, (stato, _dati, ct
   return esitoOk(finale, [evento]);
 });
 
-const SCENA_MURA = String.raw`
-   *        .         *           .       *
-        .         *        .
-
-
- _   _   _   _   _   _   _   _   _   _   _   _
-| |_| |_| |_| |_| |_| |_| |_| |_| |_| |_| |_| |
-|################################################|
-|##|   |######################|   |#############|
-|##|___|######################|___|#############|
- ============================================
-`;
-
 const testiBase: DizionarioTesti = {
   it: {
     "mura.luogo": "Le Mura",
     "mura.menu.vai": "Sali sulle mura",
     "mura.menu.parla": "Parla con chi trovi oggi",
     "mura.pannello.titolo": "Sulle mura",
+    "mura.scheda.titolo": "Effetti di oggi",
     "mura.pannello.presente": "Oggi qui c'è {npcChiave}. {descrizioneChiave}",
     "mura.pannello.fatto": "Hai già parlato con {npcChiave} oggi. Torna domani.",
     "mura.pannello.bonus": "Effetti attivi fino al nuovo giorno: forza {forza}, difesa {difesa}.",
@@ -147,6 +135,7 @@ const testiBase: DizionarioTesti = {
     "mura.menu.vai": "Climb the walls",
     "mura.menu.parla": "Talk to whoever is here today",
     "mura.pannello.titolo": "On the walls",
+    "mura.scheda.titolo": "Today's effects",
     "mura.pannello.presente": "Today {npcChiave} is here. {descrizioneChiave}",
     "mura.pannello.fatto": "You have already talked to {npcChiave} today. Come back tomorrow.",
     "mura.pannello.bonus": "Effects active until the new day: strength {forza}, defense {difesa}.",
@@ -202,7 +191,15 @@ const interfaccia: InterfacciaModulo = {
     },
   ],
   pannelli(stato, ctx): readonly PannelloVista[] {
-    return [{ titoloChiave: "mura.pannello.titolo", contesti: [CONTESTO_MURA], righe: righeMura(stato, ctx) }];
+    const m = statoMura.leggi(stato);
+    const effetti: RigaVista[] =
+      m.bonusForza !== 0 || m.bonusDifesa !== 0
+        ? [{ chiave: "mura.pannello.bonus", parametri: { forza: segno(m.bonusForza), difesa: segno(m.bonusDifesa) } }]
+        : [];
+    return [
+      { titoloChiave: "mura.pannello.titolo", contesti: [CONTESTO_MURA], righe: righeMura(stato, ctx) },
+      ...(effetti.length > 0 ? [{ titoloChiave: "mura.scheda.titolo", contesti: ["info:personaggio"], righe: effetti }] : []),
+    ];
   },
 };
 
@@ -215,7 +212,7 @@ export const moduloMura: DefinizioneModulo = {
   tipiContenuto: [tipoNpc],
   contenuti: [
     ...generaContenutiNpc(DEFINIZIONI_NPC),
-    voceIllustrazione(ID_SCENA_MURA, SCENA_MURA, { "*": 14, ".": 8, _: 8, "|": 8, "#": 8, "=": 6 }, { x: 20, y: 3 }),
+    ...ILLUSTRAZIONI_MURA,
   ],
   azioni: [azioneParla],
   regole: [regolaRotazione, regolaBonusTemporanei],

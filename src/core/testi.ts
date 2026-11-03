@@ -11,9 +11,14 @@ export function traduci(
 ): string {
   const modello = registro.testi.get(lingua)?.get(chiave);
   if (modello === undefined) return `[${chiave}]`;
-  return modello.replace(/\{(\w+)\}/g, (parte, nome: string) => {
+  // {nome} inserisce il valore; {nome:12} lo allinea in una colonna di 12 caratteri
+  // (testo a sinistra, numeri a destra): serve a costruire tabelle in un testo a spaziatura fissa.
+  return modello.replace(/\{(\w+)(?::(\d+))?\}/g, (parte, nome: string, larghezza?: string) => {
     const valore = parametri[nome];
-    return valore === undefined ? parte : String(valore);
+    if (valore === undefined) return parte;
+    if (larghezza === undefined) return String(valore);
+    const colonna = Number(larghezza);
+    return typeof valore === "number" ? String(valore).padStart(colonna) : valore.padEnd(colonna);
   });
 }
 

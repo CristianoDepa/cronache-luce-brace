@@ -10,8 +10,9 @@ import {
   fallisci,
   numero,
   ok,
-  voceIllustrazione,
 } from "../../core/indice";
+
+import { ILLUSTRAZIONI_BANCA } from "./grafica";
 
 export const ID_BANCA = "banca";
 const CONTESTO_BANCA = "luogo:banca";
@@ -62,16 +63,6 @@ const azionePreleva = definisciAzione("preleva", validaImporto, (stato, dati) =>
   return esitoOk(nuovo, [{ chiave: "banca.prelievo", parametri: { importo: spostato, saldo } }]);
 });
 
-const SCENA_BANCA = String.raw`
-     _______________
-    /_______________\
-    |  __ __ __ __  |
-    |  || || || ||  |
-    |__||_||_||_||__|
-   $$ $ $$   $ $$ $
- ===========================
-`;
-
 const testi: DizionarioTesti = {
   it: {
     "banca.luogo": "La Banca",
@@ -81,6 +72,8 @@ const testi: DizionarioTesti = {
     "banca.menu.prelevaTutto": "Preleva tutto",
     "banca.menu.preleva100": "Preleva 100",
     "banca.pannello.titolo": "La banca",
+    "banca.scheda.titolo": "Banca",
+    "banca.scheda.saldo": "Oro in banca: {saldo}",
     "banca.pannello.saldo": "Oro in mano: {oro}. Saldo in banca: {saldo} (al sicuro dalla morte).",
     "banca.deposito": "Depositi {importo} monete. Saldo: {saldo}.",
     "banca.prelievo": "Prelevi {importo} monete. Saldo: {saldo}.",
@@ -95,6 +88,8 @@ const testi: DizionarioTesti = {
     "banca.menu.prelevaTutto": "Withdraw all",
     "banca.menu.preleva100": "Withdraw 100",
     "banca.pannello.titolo": "The bank",
+    "banca.scheda.titolo": "Bank",
+    "banca.scheda.saldo": "Gold in bank: {saldo}",
     "banca.pannello.saldo": "Gold in hand: {oro}. Bank balance: {saldo} (safe from death).",
     "banca.deposito": "You deposit {importo} coins. Balance: {saldo}.",
     "banca.prelievo": "You withdraw {importo} coins. Balance: {saldo}.",
@@ -134,6 +129,11 @@ const interfaccia: InterfacciaModulo = {
   pannelli(stato) {
     return [
       {
+        titoloChiave: "banca.scheda.titolo",
+        contesti: ["info:personaggio"],
+        righe: [{ chiave: "banca.scheda.saldo", parametri: { saldo: statoBanca.leggi(stato).saldo } }],
+      },
+      {
         titoloChiave: "banca.pannello.titolo",
         contesti: [CONTESTO_BANCA],
         righe: [{ chiave: "banca.pannello.saldo", parametri: { oro: stato.personaggio.oro, saldo: statoBanca.leggi(stato).saldo } }],
@@ -146,7 +146,7 @@ export const moduloBanca: DefinizioneModulo = {
   id: ID_BANCA,
   versioneApi: VERSIONE_API,
   dipende: [],
-  contenuti: [voceIllustrazione("scena.banca", SCENA_BANCA, { $: 14, _: 8, "/": 8, "\\": 8, "|": 7, "=": 6 })],
+  contenuti: ILLUSTRAZIONI_BANCA,
   azioni: [azioneDeposita, azionePreleva],
   testi,
   stato: statoBanca,

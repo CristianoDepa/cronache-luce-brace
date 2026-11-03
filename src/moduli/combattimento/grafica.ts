@@ -1,36 +1,78 @@
 import type { VoceContenuto } from "../../core/indice";
 import { voceIllustrazione } from "../../core/indice";
 
-// Sfondo di riserva, quando lo scontro non è iniziato in un luogo con la sua scena.
-const SCENA_COMBATTIMENTO = String.raw`
-   \         /
-    \       /
-     \     /
-      \   /
-       \ /
-        X
-       / \
-      /   \
-     /     \
-`;
-
-const SPRITE_RATTO = String.raw`
-   ,_,
-  (o.o)__
- (  v   __)~~
-  ""  ""
-`;
-
-const SPRITE_LUPO = String.raw`
-  /|   |\
- / |___| \
- \ (o o) /
-  \ \_^_/ \__
-   |  w  |  ~~>
-`;
+// Disegni a pixel (palette ANSI a 16 colori): ogni carattere è un pixel, "." è trasparente.
+// Per ritoccarli si cambiano le cifre esadecimali: 0 nero, 1 blu, 2 verde, 3 ciano, 4 rosso, 5 magenta,
+// 6 marrone, 7 grigio chiaro, 8 grigio scuro, 9 blu chiaro, a verde chiaro, b ciano chiaro, c rosso chiaro,
+// d magenta chiaro, e giallo, f bianco.
 
 export const ILLUSTRAZIONI_COMBATTIMENTO: readonly VoceContenuto[] = [
-  voceIllustrazione("scena.combattimento", SCENA_COMBATTIMENTO, { "\\": 15, "/": 15, X: 14 }),
-  voceIllustrazione("sprite.ratto", SPRITE_RATTO, { o: 12, "~": 6, ",": 8, _: 8, v: 5 }),
-  voceIllustrazione("sprite.lupo", SPRITE_LUPO, { o: 14, "~": 8, "^": 15, "/": 8, "\\": 8, "|": 8, _: 8 }),
+  voceIllustrazione("scena.combattimento", `
+c000c000c000c000c000c000c000c000c000c000c000c000
+000000000000000000000000000000000000000000000000
+004000400040004000400040004000400040004000400040
+0000000000f700000000000000000000000007ff00000000
+c040c040c0ff7040c040c040c040c040c0407fffc040c040
+04e004000e0ff70004000400040004000407fff004000400
+404040404040ff774040404040404040477fff4040404040
+0004000400040fff70040004000400047ffff00400040004
+c040c040c040c04ff740c040c040c047fff0c040c040c040
+0404040404040404ff7404040404047fff04040404040404
+404440444044c0444ff74044404447fff044404440444044
+04040404040404040eff740404047fff0404040404040404
+c444c444c444c444c44ff774e477fff4c444c444c444c444
+4404440444044404e404ffeeeeefff044404440444044404
+444c444444444444444444eefeef44444444444444444444
+044404440444044404440eefffee0444e444044404440444
+c444c444c444c444c444c4eefee4c444c444c444cc44c444
+4444444444444444444444eeeee44c444444444444444444
+4444444444444444444447ffeff744444444444444444444
+44444e44444444ce44e77fff44ff77444444444444444444
+c444c444c444c444c47ffff4c44fff74c444c444c444c444
+444444444444444447fff44444444ff7444444c444444444
+44444444444444447fff4444444444ff7444444444444444
+4444444444444447ffe444444444444ff744444444444444
+c444c444c444c47fff44c444c444c444ff74c444c444c444
+4c444444444477fff4444444444444444ff77444444444c4
+444444444447ffff444444444444444444fff74444444444
+44444444447fff444444444444c444444444ff7444444444
+c444c444c7fff444c444c444c44ec444c444cff7c444c444
+4444444444ff44444444444444444444444444ff44444444
+444444444444444c44444444444444444444444444444444
+444444444444444444444444444444444444444444444444
+`),
+  voceIllustrazione("sprite.ratto", `
+....................
+....................
+.............000....
+...0.....0..0c4c0...
+..0c0000070004440...
+.0c0077777777c4c00..
+0c00778777877777c70.
+0c0878787878777777c0
+.0c07777777777777770
+..08088878787807000.
+...0.08008000800....
+......0..0...0......
+`),
+  voceIllustrazione("sprite.lupo", `
+..................0..0..
+.................070070.
+.................070070.
+.0..............07c07c0.
+0f00............0777770.
+.0ff000...00..0.0777770.
+.0ffff800087008077774e70
+..0ff8787878787777777770
+...087778777877777777700
+..0878787878787877777770
+..077777777777777777f0f0
+..0f7f7f7f7f7f7f7f7f0.0.
+...00777777777777700....
+..0f077f777f7f77777f0...
+...00770770700770770....
+....07707700.0770770....
+....0880880..0880880....
+.....00.00....00.00.....
+`),
 ];

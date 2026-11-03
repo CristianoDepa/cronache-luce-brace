@@ -27,6 +27,25 @@ export function creaGatewayLocale(registro: Registro, archivio: Archivio, orolog
 
   const errore = (e: ErroreGioco): RispostaGateway => ({ ok: false, errore: e });
 
+  interface StatoCaricato {
+    readonly stato: StatoGioco;
+    // Eventi del nuovo giorno, se ne è scattato uno.
+    readonly eventi: readonly EventoGioco[];
+  }
+
+  // Carica lo stato e, se sono passate 24 ore, applica il nuovo giorno (come farebbe il server in B).
+  const caricaConReset = async (ctx: Contesto): Promise<StatoCaricato | ErroreGioco> => {
+    const lettura = await archivio.carica();
+    if (!lettura.ok) return ERRORE_CORROTTO;
+    if (lettura.valore === undefined) return ERRORE_ASSENTE;
+    if (!serveReset(lettura.valore, ctx.adesso)) return { stato: lettura.valore, eventi: [] };
+    const esito = applicaGiorno(lettura.valore, ctx);
+    if (!esito.ok) return esito.errore;
+    await archivio.salva(esito.stato);
+    return { stato: esito.stato, eventi: esito.eventi };
+  };
+  const eErrore = (r: StatoCaricato | ErroreGioco): r is ErroreGioco => "chiave" in r;
+
   return {
     registro,
 
@@ -43,25 +62,24 @@ export function creaGatewayLocale(registro: Registro, archivio: Archivio, orolog
     },
 
     async continua() {
-      const lettura = await archivio.carica();
-      if (!lettura.ok) return errore(ERRORE_CORROTTO);
-      if (lettura.valore === undefined) return errore(ERRORE_ASSENTE);
-      const ctx = contesto();
-      if (!serveReset(lettura.valore, ctx.adesso)) return risposta(lettura.valore, []);
-      const esito = applicaGiorno(lettura.valore, ctx);
-      if (!esito.ok) return errore(esito.errore);
-      await archivio.salva(esito.stato);
-      return risposta(esito.stato, esito.eventi);
+      const caricato = await caricaConReset(contesto());
+      return eErrore(caricato) ? errore(caricato) : risposta(caricato.stato, caricato.eventi);
     },
 
     async invia(azione: Azione) {
-      const lettura = await archivio.carica();
-      if (!lettura.ok) return errore(ERRORE_CORROTTO);
-      if (lettura.valore === undefined) return errore(ERRORE_ASSENTE);
-      const esito = eseguiAzione(lettura.valore, azione, contesto());
-      if (!esito.ok) return errore(esito.errore);
+      const ctx = contesto();
+      const caricato = await caricaConReset(ctx);
+      if (eErrore(caricato)) return errore(caricato);
+      const esito = eseguiAzione(caricato.stato, azione, ctx);
+      if (!esito.ok) {
+        // Se un nuovo giorno è scattato, il client riceve comunque la vista aggiornata.
+        const nuovoGiorno = caricato.eventi.length > 0;
+        return nuovoGiorno
+          ? { ok: false, errore: esito.errore, vista: creaVistaPartita(caricato.stato, ctx), eventi: caricato.eventi }
+          : errore(esito.errore);
+      }
       await archivio.salva(esito.stato);
-      return risposta(esito.stato, esito.eventi);
+      return risposta(esito.stato, [...caricato.eventi, ...esito.eventi]);
     },
 
     async esporta() {

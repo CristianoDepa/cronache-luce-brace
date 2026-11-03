@@ -323,13 +323,13 @@ Flusso di avvio: lingua (solo la prima volta) -> menu iniziale (Continua / Nuova
 
 | Elemento | Significato |
 |---|---|
-| Tipo di contenuto `illustrazione` | Registrato dal nucleo, quindi **utilizzabile da ogni modulo** senza dichiarare dipendenze. Un disegno è un dato: righe di testo, legenda "carattere → colore ANSI 0-15" e un'ancora opzionale. Limiti validati all'avvio: 80 colonne, 16 righe |
+| Tipo di contenuto `illustrazione` | Registrato dal nucleo, quindi **utilizzabile da ogni modulo** senza dichiarare dipendenze. Un disegno è un dato: righe di **pixel**, dove ogni carattere è una cifra esadecimale (0-f = colore ANSI a 16 colori) oppure `.` per trasparente, più un'ancora opzionale. Limiti validati all'avvio: 64 × 40 pixel, righe di uguale lunghezza, solo caratteri ammessi |
 | `ancora` | Dove **poggiano i piedi** di un disegno sovrapposto alla scena: creature di altezza diversa stanno tutte appoggiate al suolo. Gli spazi di uno sprite sono trasparenti |
 | `illustrazioniContesto` | Disegno fisso di un contesto (id di un'illustrazione), validato all'avvio |
 | `illustrazioni(stato, ctx)` | Disegni che dipendono dallo stato (scena più creatura, scena più NPC). Prevalgono su quelli fissi |
 | `impostazioni` | Settaggio numerico dichiarato da un modulo (id, testo, tasto, intervallo, azione da inviare, chiedere o meno alla creazione). Il client lo mostra tra i SETTAGGI senza conoscere il modulo |
 | `consentitaDaMorto` | Un'azione (es. cambiare un settaggio) ammessa anche a personaggio morto |
-| Raster | Disegno già pronto: un colore per carattere, serializzabile (passa dal `Gateway` come ogni altra vista) |
+| Raster | Disegno già pronto o composto (scena più creatura): stesse righe di pixel, serializzabile (passa dal `Gateway` come ogni altra vista) |
 
 La vista (`VistaPartita`) ora contiene anche `impostazioni` e `illustrazioni`.
 
@@ -355,3 +355,63 @@ La vista (`VistaPartita`) ora contiene anche `impostazioni` e `illustrazioni`.
 ### 15.4 Verifica
 
 Test automatici su: prezzi del catalogo, acquisti e rivendita, guaritore, banca, locanda, rotazione e incontri delle mura (tutti i 18), limiti dei disegni, posizionamento degli sprite, settaggi, compatibilità con i salvataggi della M2 e separatori. Un test di estensibilità dimostra che un nuovo luogo con scena, creatura illustrata e voci di menu si aggiunge **solo con dati**.
+
+## 16. Layout a due colonne e pixel-art (M3.1)
+
+### 16.1 Disegni a pixel
+
+Le scene misurano 48 × 32 pixel, gli sprite sono più piccoli e hanno un contorno nero. Il nucleo compone i disegni (`sovrapponi`) e li posiziona sul suolo (`ancora`); non sa nulla di come vengono mostrati.
+
+### 16.2 Rendering nel client
+
+| Aspetto | Scelta |
+|---|---|
+| Due pixel per cella | Ogni cella di testo mostra due pixel sovrapposti, come nell'ANSI art delle BBS (mezzi blocchi) |
+| Come si disegna | Nel DOM ogni cella è uno **sfondo a due colori** (`linear-gradient` con arresto netto al 50%), non un glifo: così il risultato non dipende dal font e non compaiono righe vuote tra i pixel. Il segmento conserva anche il glifo equivalente (▀ ▄ █) per i test |
+| Palette | CGA a 16 colori, in `src/client/ansi.ts` e negli stili |
+| Colonne | A sinistra il gioco (luogo, pannelli, eventi, menu), a destra il disegno e la scheda del personaggio (nome, livello, esperienza, barra HP, oro, forza e difesa, conto alla rovescia). La colonna di destra resta in vista scorrendo. Sotto i 1250 px di larghezza torna una colonna con il disegno in cima |
+| Aggiornamento | Ogni 30 secondi (non mentre si scrive): conto alla rovescia e nuovo giorno; cambiando schermata si riparte dall'alto; il registro degli eventi si svuota cambiando luogo |
+
+### 16.3 Strumenti
+
+`strumenti/arte/` contiene gli script Python che generano i disegni e riscrivono i file `grafica.ts`: servono a ritoccare le immagini o a crearne di nuove. Rilanciarli senza modifiche rigenera esattamente gli stessi file.
+
+### 16.4 Verifica
+
+Oltre ai test automatici, l'interfaccia è stata provata in un browser vero (Chromium) con screenshot di tutte le schermate. Il test del client in jsdom resta fuori dal progetto finché non viene approvata la dipendenza.
+
+## 17. M3.2: correzioni, schede INFO e aggiornamenti
+
+### 17.1 Valori base e migrazione dei salvataggi (schema 2)
+
+| Tema | Decisione |
+|---|---|
+| Nomi | Il personaggio salva `hpMaxBase`, `forzaBase`, `difesaBase`. I valori **effettivi** (con classe, equipaggiamento, effetti) si calcolano sempre in `calcolaStatistiche` e non si salvano |
+| Migrazioni | `src/core/migrazioni.ts`: ogni passo trasforma lo stato grezzo dalla versione N alla N+1, prima della convalida. Per aggiungerne una si incrementa `VERSIONE_SCHEMA` e si aggiunge il passo |
+| Backup | Leggendo dall'archivio un salvataggio di versione precedente, si conserva una copia in `clb.partita.backup-v<versione>` (mai sovrascritta) e poi si salva quello migrato. Vale anche per i file importati |
+| Versioni future | Un salvataggio più recente del programma viene rifiutato con un messaggio chiaro |
+
+### 17.2 Riallineamento degli HP
+
+Dopo ogni azione riuscita (e dopo il cambio giorno) il nucleo riporta gli HP al massimo effettivo, se lo superano, ed emette l'evento `nucleo.hpRiallineati`. Corregge il caso trovato: la Veste (+HP massimi) sostituita da un'altra armatura lasciava HP oltre il massimo. Nessun modulo deve ricordarsene.
+
+### 17.3 Gruppo INFO
+
+| Elemento | Note |
+|---|---|
+| Contesto speciale `info` | Le sue voci di menu (es. "Il personaggio", "Statistiche incontri") compaiono come terzo gruppo in ogni schermata **non imposta da un modulo** (quindi non in combattimento né alla creazione), anche da morti |
+| Registro | I tasti delle voci INFO non possono coincidere con quelli di nessun altro contesto |
+| Schermate | Contesti `info:personaggio` e `info:statistiche`: i moduli vi aggiungono i propri pannelli (`contesti: ["info:personaggio"]`). Nuovi moduli arricchiscono la scheda senza toccare il client |
+| Navigazione | Il client ricorda il luogo da cui si apre una schermata INFO; "Torna indietro" riporta lì, anche passando da una INFO all'altra |
+
+### 17.4 Statistiche incontri
+
+Nello stato del modulo combattimento, per ogni creatura incontrata: incontri, sconfitti, morti, fughe riuscite, fughe fallite, danni inflitti e danni subiti. I danni sono **effettivi** (non conta l'eccedenza dell'ultimo colpo). I salvataggi precedenti partono da zero. Chi infligge danno tramite l'API pubblica del combattimento (es. incantesimi) è contato automaticamente.
+
+### 17.5 Colonne nei testi
+
+Nei testi `{nome:12}` allinea il valore in una colonna di 12 caratteri (testo a sinistra, numeri a destra): serve a costruire tabelle a spaziatura fissa.
+
+### 17.6 Versione e aggiornamento
+
+`VERSIONE.txt`, `src/versione.ts` e `package.json` devono dire la stessa versione (lo controlla un test). Lo script `aggiorna.ps1` (fuori dallo ZIP) legge la versione nello ZIP, salva lo stato con Git se c'è un repository, sostituisce le cartelle del progetto e lancia `npm install`, typecheck e test. Vedi `docs/aggiornamento.md`.

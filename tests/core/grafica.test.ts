@@ -14,6 +14,7 @@ import {
   testoRaster,
   tipoIllustrazione,
 } from "../../src/core/indice";
+import { righeDaRaster } from "../../src/client/schermata";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
 import { creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from "../aiuti";
 
@@ -32,75 +33,110 @@ function errori(dati: unknown): string {
   return r.ok ? "" : r.errori.join(" | ");
 }
 
-describe("validazione dei disegni", () => {
+describe("validazione dei disegni a pixel", () => {
   it("accetta un disegno corretto, anche senza dipende (il tipo è del nucleo)", () => {
-    expect(costruisciRegistro([modulo({ righe: ["ab", "cd"], colori: { a: 10 } })]).ok).toBe(true);
+    expect(costruisciRegistro([modulo({ pixel: ["0f.a", "1234"] })]).ok).toBe(true);
   });
 
-  it("rifiuta righe troppo larghe o troppo numerose", () => {
-    expect(errori({ righe: ["x".repeat(LARGHEZZA_MAX + 1)], colori: {} })).toContain("troppo larga");
-    expect(errori({ righe: Array(ALTEZZA_MAX + 1).fill("x"), colori: {} })).toContain("troppo alto");
+  it("rifiuta disegni troppo larghi o troppo alti", () => {
+    expect(errori({ pixel: ["0".repeat(LARGHEZZA_MAX + 1)] })).toContain("troppo largo");
+    expect(errori({ pixel: Array(ALTEZZA_MAX + 1).fill("0") })).toContain("troppo alto");
   });
 
-  it("rifiuta colori fuori da 0-15 e chiavi di più caratteri", () => {
-    expect(errori({ righe: ["a"], colori: { a: 16 } })).toContain("da 0 a 15");
-    expect(errori({ righe: ["a"], colori: { ab: 3 } })).toContain("un solo carattere");
+  it("rifiuta righe di lunghezza diversa e caratteri che non sono colori", () => {
+    expect(errori({ pixel: ["000", "00"] })).toContain("lunghezza");
+    expect(errori({ pixel: ["0g0"] })).toContain("cifre esadecimali");
+    expect(errori({ pixel: ["0F0"] })).toContain("cifre esadecimali");
   });
 
-  it("rifiuta righe mancanti o ancora non valida", () => {
-    expect(errori({ colori: {} })).toContain("righe");
-    expect(errori({ righe: ["a"], colori: {}, ancora: { x: -1, y: 0 } })).toContain("ancora");
+  it("rifiuta pixel mancanti o ancora non valida", () => {
+    expect(errori({})).toContain("pixel");
+    expect(errori({ pixel: ["0"], ancora: { x: -1, y: 0 } })).toContain("ancora");
   });
 });
 
 describe("composizione dei disegni", () => {
-  const sfondo: Raster = rasterizza({ righe: ["#####", "#####", "#####"], colori: { "#": 2 } });
-  const sprite: Raster = rasterizza({ righe: ["A A", " B "], colori: { A: 12, B: 14 } });
+  const sfondo: Raster = { righe: ["22222", "22222", "22222"] };
+  const sprite: Raster = { righe: ["c.c", ".e."] };
 
-  it("gli spazi dello sprite sono trasparenti", () => {
-    expect(testoRaster(sovrapponi(sfondo, sprite, 1, 1))).toBe("#####\n#A#A#\n##B##");
-  });
-
-  it("i colori seguono i caratteri sovrapposti", () => {
-    const r = sovrapponi(sfondo, sprite, 1, 1);
-    expect(r.righe[1]?.colori).toEqual([2, 12, 2, 12, 2]);
+  it("i pixel trasparenti non coprono lo sfondo", () => {
+    expect(testoRaster(sovrapponi(sfondo, sprite, 1, 1))).toBe("22222\n2c2c2\n22e22");
   });
 
   it("uno sprite che esce dallo sfondo lo estende senza errori", () => {
     const r = sovrapponi(sfondo, sprite, 4, 2);
     expect(r.righe).toHaveLength(4);
-    expect(r.righe[2]?.testo).toBe("####A A");
+    expect(r.righe[2]).toBe("2222c.c");
+    expect(r.righe[3]).toBe(".....e.");
   });
 });
 
 describe("posizione degli sprite sulle scene", () => {
-  const scena = { righe: ["#####", "#####", "#####", "#####"], colori: {}, ancora: { x: 2, y: 3 } };
+  const scena = { pixel: ["00000", "00000", "00000", "00000"], ancora: { x: 2, y: 3 } };
 
   it("con l'ancora i piedi poggiano sulla riga del suolo, qualunque sia l'altezza", () => {
-    const basso = { righe: ["A"], colori: {} };
-    const alto = { righe: ["A", "A", "A"], colori: {} };
-    expect(posizioneSprite(scena, basso)).toEqual({ x: 2, y: 3 });
-    expect(posizioneSprite(scena, alto)).toEqual({ x: 2, y: 1 });
+    expect(posizioneSprite(scena, { pixel: ["f"] })).toEqual({ x: 2, y: 3 });
+    expect(posizioneSprite(scena, { pixel: ["f", "f", "f"] })).toEqual({ x: 2, y: 1 });
   });
 
   it("uno sprite più alto del suolo non esce sopra la scena", () => {
-    const altissimo = { righe: ["A", "A", "A", "A", "A", "A"], colori: {} };
-    expect(posizioneSprite(scena, altissimo).y).toBe(0);
+    expect(posizioneSprite(scena, { pixel: Array(6).fill("f") }).y).toBe(0);
   });
 
   it("senza ancora lo sprite va in alto a destra", () => {
-    const senza = { righe: ["#####"], colori: {} };
-    expect(posizioneSprite(senza, { righe: ["AA"], colori: {} })).toEqual({ x: 1, y: 1 });
+    expect(posizioneSprite({ pixel: ["00000"] }, { pixel: ["ff"] })).toEqual({ x: 1, y: 1 });
+  });
+});
+
+describe("dai pixel alle righe di testo (mezzi blocchi)", () => {
+  it("due pixel verticali diventano una cella", () => {
+    const righe = righeDaRaster({ righe: ["c.2f", "ccf2"] });
+    expect(righe).toHaveLength(1);
+    const celle = righe[0] ?? [];
+    expect(celle.map((s) => s.testo).join("")).toBe("█▄▀▀");
+    expect(celle.map((s) => s.blocco)).toEqual([
+      { alto: 12, basso: 12 },
+      { alto: null, basso: 12 },
+      { alto: 2, basso: 15 },
+      { alto: 15, basso: 2 },
+    ]);
+  });
+
+  it("celle identiche consecutive si fondono in un solo segmento", () => {
+    const celle = righeDaRaster({ righe: ["aaaa", "aaaa"] })[0] ?? [];
+    expect(celle).toHaveLength(1);
+    expect(celle[0]?.testo).toBe("████");
+  });
+
+  it("con un numero dispari di righe l'ultima ha il pixel di sotto trasparente", () => {
+    const righe = righeDaRaster({ righe: ["ff", "ff", "ee"] });
+    expect(righe).toHaveLength(2);
+    expect(righe[1]?.[0]?.blocco).toEqual({ alto: 14, basso: null });
+    expect(righe[1]?.[0]?.testo).toBe("▀▀");
+  });
+
+  it("i pixel completamente trasparenti diventano spazi", () => {
+    const celle = righeDaRaster({ righe: ["..", ".."] })[0] ?? [];
+    expect(celle[0]?.testo).toBe("  ");
   });
 });
 
 describe("ogni schermata ha il suo disegno", () => {
   it("tutti i disegni dei moduli rispettano i limiti", () => {
     const tutti = elencaContenuti(registro, tipoIllustrazione);
+    // 12 scene, 2 creature e 6 NPC
     expect(tutti.length).toBeGreaterThanOrEqual(20);
     for (const { id, dati } of tutti) {
-      expect(dati.righe.length, id).toBeLessThanOrEqual(ALTEZZA_MAX);
-      for (const r of dati.righe) expect(Array.from(r).length, id).toBeLessThanOrEqual(LARGHEZZA_MAX);
+      expect(dati.pixel.length, id).toBeLessThanOrEqual(ALTEZZA_MAX);
+      expect(dati.pixel[0]?.length ?? 0, id).toBeLessThanOrEqual(LARGHEZZA_MAX);
+    }
+  });
+
+  it("le scene sono tutte della stessa misura (48 x 32), così le colonne restano allineate", () => {
+    const scene = elencaContenuti(registro, tipoIllustrazione).filter((i) => i.id.startsWith("scena."));
+    expect(scene.length).toBeGreaterThanOrEqual(12);
+    for (const { id, dati } of scene) {
+      expect([dati.pixel[0]?.length, dati.pixel.length], id).toEqual([48, 32]);
     }
   });
 
@@ -111,7 +147,7 @@ describe("ogni schermata ha il suo disegno", () => {
     for (const c of contesti) {
       const arte = illustrazionePerContesto(registro, vista.illustrazioni, c);
       expect(arte, c).toBeDefined();
-      expect(arte?.righe.length, c).toBeGreaterThan(2);
+      expect(arte?.righe.length, c).toBeGreaterThan(8);
     }
   });
 
@@ -121,16 +157,21 @@ describe("ogni schermata ha il suo disegno", () => {
     expect(mura).toBeDefined();
     const scena = illustrazionePerContesto(registro, undefined, "luogo:mura");
     expect(testoRaster(mura!)).not.toBe(testoRaster(scena!));
+    expect(mura?.righe.length).toBe(scena?.righe.length);
   });
 
-  it("in combattimento si vede la scena del luogo con la creatura sopra", () => {
+  it("in combattimento si vede la scena del luogo con la creatura sopra, appoggiata al suolo", () => {
     const scelta = eseguiOk(statoDiProva(registro), { tipo: "scegliClasse", dati: { classeId: "cavaliere" } }, ctx);
     const inCorso = eseguiOk(scelta.stato, { tipo: "esploraForesta", dati: { luogoId: "foresta" } }, ctx);
     const vista = creaVistaPartita(inCorso.stato, ctx);
     const arte = vista.illustrazioni["combattimento"];
     expect(arte).toBeDefined();
-    const testo = testoRaster(arte!);
-    expect(testo).toContain("^^^"); // alberi della foresta
-    expect(testo).toMatch(/\(o\.o\)|\(o o\)/); // ratto o lupo
+    const foresta = illustrazionePerContesto(registro, undefined, "luogo:foresta");
+    expect(arte?.righe).toHaveLength(foresta?.righe.length ?? -1);
+    // lo sfondo è la scena della foresta, ma qualcosa è cambiato: c'è la creatura
+    expect(testoRaster(arte!)).not.toBe(testoRaster(foresta!));
+    // e i pixel della creatura (grigi) compaiono nella zona di destra, vicino al suolo
+    const destra = (arte?.righe ?? []).slice(10, 30).map((r) => r.slice(24)).join("");
+    expect(destra).toMatch(/[78]/);
   });
 });

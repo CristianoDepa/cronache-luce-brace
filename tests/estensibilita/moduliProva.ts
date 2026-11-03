@@ -177,18 +177,21 @@ export const moduloTorreProva: DefinizioneModulo = {
   versioneApi: VERSIONE_API,
   dipende: [ID_COMBATTIMENTO, ID_LUOGHI, "foresta"],
   contenuti: [
-    voceIllustrazione("scena.torre", String.raw`
-      /\
-     /  \
-    |[]  |
-    |    |
- ,.,|____|.,.,.,.,.,.,.,.,.,.,.
-`, { "/": 4, "\\": 4, "[": 11, "]": 11, "|": 8, ",": 2, ".": 2, _: 8 }, { x: 20, y: 4 }),
-    voceIllustrazione("sprite.gufo", String.raw`
- {o,o}
- /)_)
-  " "
-`, { o: 14, "{": 6, "}": 6 }),
+    voceIllustrazione("scena.torre", `
+..........
+....44....
+...4444...
+..444444..
+..44ee44..
+..44ee44..
+..444444..
+2222222222
+`, { x: 6, y: 6 }),
+    voceIllustrazione("sprite.gufo", `
+.66.
+6ee6
+.66.
+`),
     {
       tipo: "creatura",
       id: "gufo",

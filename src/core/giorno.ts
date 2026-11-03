@@ -1,6 +1,6 @@
 import { esitoOk } from "./esito";
 import { applicaRegole, definisciPuntoRegola } from "./regole";
-import { calcolaStatistiche } from "./statistiche";
+import { calcolaStatistiche, riallineaHp } from "./statistiche";
 import type { Contesto, Esito, Istante, StatoGioco } from "./tipi";
 
 export const DURATA_CICLO_MS = 24 * 60 * 60 * 1000;
@@ -24,6 +24,6 @@ export function applicaGiorno(stato: StatoGioco, ctx: Contesto): Esito {
     ...rigenerato,
     personaggio: { ...rigenerato.personaggio, hp: hpMax },
   };
-  const finale = applicaRegole(ctx, puntoInizioGiorno, curato);
+  const { stato: finale } = riallineaHp(applicaRegole(ctx, puntoInizioGiorno, curato), ctx);
   return esitoOk(finale, [{ chiave: "nucleo.nuovoGiorno" }]);
 }

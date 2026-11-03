@@ -20,3 +20,9 @@ export const ANSI = {
 
 // Indice di colore ANSI da 0 a 15.
 export type Colore = number;
+
+// Colori della palette ANSI a 16 colori (CGA) in esadecimale: servono a disegnare i pixel delle immagini.
+export const PALETTE: readonly string[] = [
+  "#000000", "#0000aa", "#00aa00", "#00aaaa", "#aa0000", "#aa00aa", "#aa5500", "#aaaaaa",
+  "#555555", "#5555ff", "#55ff55", "#55ffff", "#ff5555", "#ff55ff", "#ffff55", "#ffffff",
+];

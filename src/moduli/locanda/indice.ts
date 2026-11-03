@@ -13,9 +13,10 @@ import {
   ok,
   puntoInizioGiorno,
   regola,
-  voceIllustrazione,
 } from "../../core/indice";
 import { ID_FORESTA, consumaTurni, leggiTurniResidui } from "../foresta/indice";
+
+import { ILLUSTRAZIONI_LOCANDA } from "./grafica";
 
 export const ID_LOCANDA = "locanda";
 const CONTESTO_LOCANDA = "luogo:locanda";
@@ -80,14 +81,6 @@ const azioneMangia = definisciAzione("mangia", nessunDato, (stato, _dati, ctx) =
 
 // A ogni nuovo giorno i pasti tornano disponibili.
 const regolaPastiGiornalieri = regola(puntoInizioGiorno, 100, (stato) => statoLocanda.scrivi(stato, { pastiOggi: 0 }));
-
-const SCENA_LOCANDA = String.raw`
-   .-----------.
-   |  ) ( ) (  |        [_________]
-   | ((*)(*))  |         ||  U  ||
-   |__|=====|__|         ||_____||
- ================================
-`;
 
 const testi: DizionarioTesti = {
   it: {
@@ -173,7 +166,7 @@ export const moduloLocanda: DefinizioneModulo = {
   id: ID_LOCANDA,
   versioneApi: VERSIONE_API,
   dipende: [ID_FORESTA],
-  contenuti: [voceIllustrazione("scena.locanda", SCENA_LOCANDA, { "*": 12, ")": 14, "(": 14, ".": 8, "-": 8, "|": 8, "=": 6, _: 6, "[": 6, "]": 6, U: 15 })],
+  contenuti: ILLUSTRAZIONI_LOCANDA,
   azioni: [azioneDormi, azioneMangia],
   regole: [regolaPastiGiornalieri],
   testi,

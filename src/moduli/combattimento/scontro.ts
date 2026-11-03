@@ -4,6 +4,7 @@ import { calcolaDannoBase, calcolaOroPerso } from "./calcolo";
 import { PARAMETRI_COMBATTIMENTO } from "./parametri";
 import { puntoDanno, puntoOro } from "./punti";
 import type { Creatura, ScontroAttivo } from "./tipi";
+import { registraStatistiche, impostaScontro } from "./statistiche";
 import { statoCombattimento, tipoCreatura } from "./tipi";
 
 export interface ScontroCorrente {
@@ -26,7 +27,7 @@ export function iniziaScontro(stato: StatoGioco, creaturaId: Id, ctx: Contesto, 
     return esitoErrore("combattimento.errore.creatura_non_disponibile", creaturaId);
   }
   const scontro = { creaturaId, hpNemico: creatura.hp, round: 1, ...(scenaId !== undefined ? { scenaId } : {}) };
-  const nuovo = statoCombattimento.scrivi(stato, { scontro });
+  const nuovo = registraStatistiche(impostaScontro(stato, scontro), creaturaId, { incontri: 1 });
   return esitoOk(nuovo, [{ chiave: "combattimento.inizio", parametri: { creaturaChiave: creatura.nomeChiave } }]);
 }
 
@@ -50,19 +51,19 @@ export function calcolaDannoGiocatore(stato: StatoGioco, creatura: Creatura, ctx
 export function risolviColpoGiocatore(stato: StatoGioco, danno: number, ctx: Contesto): Esito {
   const corrente = caricaScontro(stato, ctx);
   if (!corrente) return esitoErrore("combattimento.errore.nessun_combattimento");
-  const { scontro, creatura } = corrente;
+  const { scontro, creatura, creaturaId } = corrente;
   const hpNemico = Math.max(0, scontro.hpNemico - danno);
+  const registrato = registraStatistiche(stato, creaturaId, { dannoInflitto: scontro.hpNemico - hpNemico });
   const eventi: EventoGioco[] = [{ chiave: "combattimento.colpoGiocatore", parametri: { danno } }];
-  if (hpNemico === 0) return concludiVittoria(stato, creatura, ctx, eventi);
-  const aggiornato = statoCombattimento.scrivi(stato, {
-    scontro: { ...scontro, hpNemico, round: scontro.round + 1 },
-  });
-  return turnoNemico(aggiornato, creatura, ctx, eventi);
+  if (hpNemico === 0) return concludiVittoria(registrato, creatura, creaturaId, ctx, eventi);
+  const aggiornato = impostaScontro(registrato, { ...scontro, hpNemico, round: scontro.round + 1 });
+  return turnoNemico(aggiornato, creatura, creaturaId, ctx, eventi);
 }
 
 export function turnoNemico(
   stato: StatoGioco,
   creatura: Creatura,
+  creaturaId: Id,
   ctx: Contesto,
   eventiPrecedenti: readonly EventoGioco[],
 ): Esito {
@@ -73,13 +74,15 @@ export function turnoNemico(
   const hp = Math.max(0, stato.personaggio.hp - danno);
   const colpo: EventoGioco = { chiave: "combattimento.colpoNemico", parametri: { danno }, tono: "negativo" };
   const eventi = [...eventiPrecedenti, colpo];
-  const colpito: StatoGioco = { ...stato, personaggio: { ...stato.personaggio, hp } };
-  return hp === 0 ? concludiSconfitta(colpito, eventi) : esitoOk(colpito, eventi);
+  const subito = stato.personaggio.hp - hp;
+  const colpito = registraStatistiche({ ...stato, personaggio: { ...stato.personaggio, hp } }, creaturaId, { dannoSubito: subito });
+  return hp === 0 ? concludiSconfitta(colpito, creaturaId, eventi) : esitoOk(colpito, eventi);
 }
 
 function concludiVittoria(
   stato: StatoGioco,
   creatura: Creatura,
+  creaturaId: Id,
   ctx: Contesto,
   eventi: readonly EventoGioco[],
 ): Esito {
@@ -89,7 +92,7 @@ function concludiVittoria(
     ...stato,
     personaggio: { ...p, oro: p.oro + oro, esperienza: p.esperienza + creatura.esperienza },
   };
-  const finale = statoCombattimento.scrivi(vinto, { scontro: null });
+  const finale = registraStatistiche(impostaScontro(vinto, null), creaturaId, { sconfitti: 1 });
   const evento: EventoGioco = {
     chiave: "combattimento.vittoria",
     parametri: { oro, esperienza: creatura.esperienza },
@@ -99,13 +102,13 @@ function concludiVittoria(
 }
 
 // La penalità di esperienza sarà aggiunta dal modulo di progressione tramite una regola (M4).
-function concludiSconfitta(stato: StatoGioco, eventi: readonly EventoGioco[]): Esito {
+function concludiSconfitta(stato: StatoGioco, creaturaId: Id, eventi: readonly EventoGioco[]): Esito {
   const p = stato.personaggio;
   const oroPerso = calcolaOroPerso(p.oro, PARAMETRI_COMBATTIMENTO.penalitaOroMorte);
   const morto: StatoGioco = {
     ...stato,
     personaggio: { ...p, hp: 0, morto: true, oro: p.oro - oroPerso },
   };
-  const finale = statoCombattimento.scrivi(morto, { scontro: null });
+  const finale = registraStatistiche(impostaScontro(morto, null), creaturaId, { morti: 1 });
   return esitoOk(finale, [...eventi, { chiave: "combattimento.sconfitta", parametri: { oroPerso }, tono: "negativo" }]);
 }

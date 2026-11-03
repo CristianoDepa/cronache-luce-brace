@@ -6,15 +6,16 @@ export type Istante = number;
 export type Lingua = "it" | "en";
 export const LINGUE: readonly Lingua[] = ["it", "en"];
 
-// Valori BASE del personaggio: i modificatori si applicano in calcolaStatistiche.
+// Valori BASE del personaggio (hpMaxBase, forzaBase, difesaBase): classe, equipaggiamento ed effetti si sommano
+// al volo in calcolaStatistiche, quindi i valori effettivi non vengono mai salvati.
 export interface Personaggio {
   readonly nome: string;
   readonly livello: number;
   readonly esperienza: number;
   readonly hp: number;
-  readonly hpMax: number;
-  readonly forza: number;
-  readonly difesa: number;
+  readonly hpMaxBase: number;
+  readonly forzaBase: number;
+  readonly difesaBase: number;
   readonly oro: number;
   readonly morto: boolean;
 }
@@ -32,7 +33,8 @@ export interface StatoGioco {
   readonly moduli: Readonly<Record<Id, StatoModuloSalvato>>;
 }
 
-export const VERSIONE_SCHEMA = 1;
+// Versione 2: i valori base del personaggio si chiamano hpMaxBase, forzaBase e difesaBase (migrazione in migrazioni.ts).
+export const VERSIONE_SCHEMA = 2;
 
 // Evento da mostrare al giocatore. I parametri il cui nome termina con "Chiave"
 // contengono una chiave di testo e vengono tradotti da traduciEvento.

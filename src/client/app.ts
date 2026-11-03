@@ -21,11 +21,20 @@ export interface App {
   stato(): StatoApp;
   schermata(): Schermata;
   avvia(): Promise<void>;
+  // Da chiamare ogni tanto: se è scattato il nuovo giorno lo applica e aggiorna la vista.
+  controllaNuovoGiorno(): Promise<void>;
   premiTasto(tasto: string): Promise<void>;
   inviaTesto(testo: string): Promise<void>;
 }
 
 const LUNGHEZZA_MAX_NOME = 20;
+
+// Da dove si torna chiudendo una schermata INFO: il luogo in cui si era prima di aprirla,
+// che resta lo stesso passando da una schermata INFO all'altra.
+function ritornoDopo(da: string, verso: string, ritornoAttuale: string | undefined): string | undefined {
+  if (!verso.startsWith("info:")) return undefined;
+  return da.startsWith("info:") ? ritornoAttuale : da;
+}
 const RIGHE_LOG_MAX = 50;
 const NOME_FILE_ESPORTAZIONE = "clb-salvataggio.json";
 
@@ -68,6 +77,10 @@ export function creaApp(
   // Applica la risposta del Gateway: vista aggiornata ed eventi nel registro, oppure l'errore nel registro.
   const applica = (risposta: RispostaGateway, passaAlGioco: boolean): void => {
     if (!risposta.ok) {
+      // Un nuovo giorno scattato prima dell'errore aggiorna comunque la vista.
+      if (risposta.vista) corrente = { ...corrente, vista: risposta.vista };
+      const nuovi = logDaEventi(registro, corrente.lingua, [...(risposta.eventi ?? [])]);
+      corrente = { ...corrente, log: [...corrente.log, ...nuovi].slice(-RIGHE_LOG_MAX) };
       aggiungiLog([logTesto(risposta.errore.chiave, "negativo")]);
       return;
     }
@@ -86,7 +99,13 @@ export function creaApp(
   const prossimaImpostazione = (coda: readonly string[], daCreazione: boolean): void => {
     const [id, ...resto] = coda;
     if (id === undefined) {
-      imposta({ fase: daCreazione ? "gioco" : "opzioni", codaImpostazioni: [], daCreazione: false });
+      // Finita la creazione si riparte da uno schermo pulito: via gli avvisi dei passaggi precedenti.
+      imposta({
+        fase: daCreazione ? "gioco" : "opzioni",
+        codaImpostazioni: [],
+        daCreazione: false,
+        ...(daCreazione ? { log: [] } : {}),
+      });
       return;
     }
     imposta({ fase: "impostazione", impostazioneId: id, codaImpostazioni: resto, daCreazione });
@@ -159,7 +178,9 @@ export function creaApp(
       case "importa":
         return importa();
       case "naviga":
-        return imposta({ navigazione: c.verso });
+        // Spostandosi in un altro luogo il registro riparte vuoto: restano solo gli eventi di quel luogo.
+        // Aprendo una schermata INFO si ricorda il luogo di partenza, a cui "Torna indietro" riporta.
+        return imposta({ navigazione: c.verso, log: [], ritorno: ritornoDopo(corrente.navigazione, c.verso, corrente.ritorno) });
       case "azione":
         return applica(await gateway.invia(c.azione), true);
       case "impostazione":
@@ -181,6 +202,18 @@ export function creaApp(
       }
       corrente = { ...corrente, lingua };
       await dopoLingua();
+    },
+
+    async controllaNuovoGiorno() {
+      const vista = corrente.vista;
+      const inGioco = corrente.fase === "gioco" || corrente.fase === "opzioni";
+      if (occupato || !vista || !inGioco || piattaforma.adesso() < vista.prossimoReset) return;
+      occupato = true;
+      try {
+        applica(await gateway.continua(), false);
+      } finally {
+        occupato = false;
+      }
     },
 
     async premiTasto(tasto) {

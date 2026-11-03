@@ -8,6 +8,7 @@ import type { Piattaforma, PreferenzeUi } from "../../src/client/app";
 import { creaPreferenzeStorage } from "../../src/client/preferenze";
 import type { Schermata } from "../../src/client/schermata";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
+import { VERSIONE_GIOCO } from "../../src/versione";
 import { serializzaPartita } from "../../src/porte/archivio";
 import { LUGLIO, contenitoreInMemoria, orologioModificabile, registroDa } from "../aiuti";
 
@@ -52,7 +53,10 @@ async function iniziaPartita(app: ReturnType<typeof creaApp>, nome: string, turn
   await app.inviaTesto(turni);
 }
 
-const testo = (s: Schermata): string => s.righe.map((r) => r.map((x) => x.testo).join("")).join("\n");
+// Testo di tutta la schermata: prima la colonna di sinistra (il gioco), poi quella di destra (disegno e scheda).
+const testo = (s: Schermata): string => [...s.sinistra, ...s.destra].map((r) => r.map((x) => x.testo).join("")).join("\n");
+// Vero se la colonna di destra contiene un disegno (celle a mezzo blocco).
+const haDisegno = (s: Schermata): boolean => s.destra.some((r) => r.some((x) => x.blocco !== undefined));
 const tasti = (s: Schermata): string[] => s.scelte.map((x) => x.tasto);
 
 describe("flusso di avvio", () => {
@@ -153,17 +157,18 @@ describe("una giornata nel villaggio e nella foresta", () => {
   it("il villaggio mostra il menu dei moduli e gli incontri rimasti", async () => {
     const app = await giocatore();
     const s = app.schermata();
-    expect(tasti(s)).toEqual(["F", "A", "S", "G", "B", "L", "M", "O"]);
+    expect(tasti(s)).toEqual(["F", "A", "S", "G", "B", "L", "M", "P", "N", "O"]);
     expect(testo(s)).toContain("Il Villaggio");
     expect(testo(s)).toContain("Incontri rimasti oggi: 30/30");
-    expect(testo(s)).toContain("HP 30/30");
+    expect(testo(s)).toContain("30/30");
+    expect(testo(s)).toContain("Zinzillino".replace("Zinzillino", "Aldo"));
   });
 
   it("si naviga nella foresta, si incontra un nemico e si torna indietro con 0", async () => {
     const app = await giocatore();
     await app.premiTasto("f"); // le minuscole funzionano
     expect(testo(app.schermata())).toContain("La Foresta");
-    expect(tasti(app.schermata())).toEqual(["E", "0", "O"]);
+    expect(tasti(app.schermata())).toEqual(["E", "0", "P", "N", "O"]);
     await app.premiTasto("0");
     expect(app.stato().navigazione).toBe("villaggio");
     await app.premiTasto("F");
@@ -261,7 +266,8 @@ describe("opzioni, esportazione e importazione", () => {
     const morto = { ...base, personaggio: { ...base.personaggio, hp: 0, morto: true } };
     amb.fileDaScegliere = serializzaPartita(morto);
     await app.premiTasto("I");
-    expect(tasti(app.schermata())).toEqual(["O"]);
+    // Da morti restano solo le schermate INFO e le opzioni
+    expect(tasti(app.schermata())).toEqual(["P", "N", "O"]);
     expect(testo(app.schermata())).toContain("You are dead");
   });
 });
@@ -323,24 +329,39 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     expect(testo(app.schermata())).not.toContain("── ");
   });
 
-  it("ogni schermata mostra un disegno prima del testo", async () => {
+  it("ogni schermata mostra il suo disegno nella colonna di destra", async () => {
     const app = await giocatore();
-    const primaRiga = (s: Schermata): string => s.righe[0]?.map((x) => x.testo).join("") ?? "";
-    expect(primaRiga(app.schermata()).trim().length).toBeGreaterThan(0);
-    expect(testo(app.schermata())).toContain("[]"); // finestre delle case del villaggio
-    await app.premiTasto("A");
-    expect(testo(app.schermata())).toContain("L'Armeria");
-    expect(testo(app.schermata())).toContain("\\/"); // spade incrociate
-    await app.premiTasto("0");
-    await app.premiTasto("L");
-    expect(testo(app.schermata())).toMatch(/\(\*\)|\(\(\*\)/);
+    expect(haDisegno(app.schermata())).toBe(true); // villaggio
+    for (const tasto of ["A", "S", "G", "B", "L", "M"]) {
+      await app.premiTasto(tasto);
+      expect(haDisegno(app.schermata()), tasto).toBe(true);
+      await app.premiTasto("0");
+    }
+    await app.premiTasto("O");
+    expect(haDisegno(app.schermata())).toBe(true); // opzioni
+  });
+
+  it("la scheda del personaggio sta a destra, il testo del gioco a sinistra", async () => {
+    const app = await giocatore();
+    const s = app.schermata();
+    const sinistra = s.sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n");
+    const destra = s.destra.map((r) => r.map((x) => x.testo).join("")).join("\n");
+    expect(sinistra).toContain("Il Villaggio");
+    expect(sinistra).toContain("[F]");
+    expect(sinistra).not.toContain("Livello 1");
+    expect(destra).toContain("Aldo");
+    expect(destra).toContain("Livello 1");
+    expect(destra).toContain("HP ");
+    expect(destra).toContain("Forza 5");
+    expect(destra).toMatch(/Nuovo giorno tra \d+h \d+m/);
+    expect(destra).toContain("█"); // barra HP e pixel del disegno
   });
 
   it("l'armeria elenca le armi con prezzi e si compra con i tasti numerici", async () => {
     const app = await giocatore();
     await app.premiTasto("A");
     const s = app.schermata();
-    expect(tasti(s)).toEqual(["1", "2", "3", "4", "5", "0", "O"]);
+    expect(tasti(s)).toEqual(["1", "2", "3", "4", "5", "0", "P", "N", "O"]);
     expect(testo(s)).toContain("[1] Spada liv. 1");
     expect(testo(s)).toContain("50 monete");
     await app.premiTasto("1");
@@ -367,5 +388,183 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     await app.inviaTesto("");
     expect(app.stato().fase).toBe("opzioni");
     expect(app.stato().vista?.impostazioni[0]?.valore).toBe(30);
+  });
+});
+
+describe("pulizia dello schermo e aggiornamento", () => {
+  async function giocatore(lingua: Lingua = "it") {
+    const amb = creaAmbiente(lingua);
+    const app = amb.nuovaApp();
+    await iniziaPartita(app, "Aldo");
+    await app.premiTasto("1");
+    return { amb, app };
+  }
+
+  it("spostandosi in un altro luogo il registro degli eventi si svuota", async () => {
+    const { app } = await giocatore();
+    expect(app.stato().log.length).toBeGreaterThan(0); // "Hai scelto la classe"
+    await app.premiTasto("F");
+    expect(app.stato().log).toHaveLength(0);
+    await app.premiTasto("E");
+    expect(app.stato().log.length).toBeGreaterThan(0); // eventi del nuovo incontro
+  });
+
+  it("finita la creazione lo schermo riparte pulito, senza avvisi dei passaggi precedenti", async () => {
+    const app = creaAmbiente("it").nuovaApp();
+    await app.avvia();
+    await app.premiTasto("2");
+    await app.inviaTesto("Aldo");
+    await app.inviaTesto("3"); // non valido
+    expect(testo(app.schermata())).toContain("Valore non valido");
+    await app.inviaTesto("100");
+    expect(app.stato().fase).toBe("gioco");
+    expect(app.stato().log).toHaveLength(0);
+    expect(testo(app.schermata())).not.toContain("Valore non valido");
+    expect(testo(app.schermata())).not.toContain("Incontri al giorno: 100");
+  });
+
+  it("dalle opzioni la conferma di un settaggio resta visibile", async () => {
+    const { app } = await giocatore();
+    await app.premiTasto("O");
+    await app.premiTasto("T");
+    await app.inviaTesto("50");
+    expect(testo(app.schermata())).toContain("Incontri al giorno: 50");
+  });
+
+  it("scaduto il giorno, controllaNuovoGiorno lo applica senza ricaricare la pagina", async () => {
+    const { amb, app } = await giocatore();
+    await app.premiTasto("F");
+    await app.premiTasto("E");
+    const prima = app.stato().vista?.prossimoReset ?? 0;
+    amb.orologio.avanza(DURATA_CICLO_MS - 60_000);
+    await app.controllaNuovoGiorno();
+    expect(app.stato().vista?.prossimoReset).toBe(prima); // manca ancora un minuto
+    amb.orologio.avanza(60_000);
+    await app.controllaNuovoGiorno();
+    expect(app.stato().vista?.prossimoReset).toBeGreaterThan(prima);
+    expect(testo(app.schermata())).toContain("Un nuovo giorno comincia.");
+  });
+
+  it("la chiave della schermata cambia con il contesto e non con le azioni dentro lo stesso", async () => {
+    const { app } = await giocatore();
+    const villaggio = app.schermata().chiave;
+    await app.premiTasto("F");
+    const foresta = app.schermata().chiave;
+    expect(foresta).not.toBe(villaggio);
+    await app.premiTasto("E");
+    const combattimento = app.schermata().chiave;
+    await app.premiTasto("A");
+    expect(app.schermata().chiave).toBe(combattimento);
+  });
+});
+
+describe("schermate INFO: il personaggio e le statistiche incontri", () => {
+  async function giocatore(lingua: Lingua = "it") {
+    const amb = creaAmbiente(lingua);
+    const app = amb.nuovaApp();
+    await iniziaPartita(app, "Aldo");
+    await app.premiTasto("1"); // Cavaliere
+    return { amb, app };
+  }
+  const sx = (s: Schermata): string => s.sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n");
+
+  it("il menu ha tre gruppi nell'ordine GIOCO, INFO, SETTAGGI", async () => {
+    const { app } = await giocatore();
+    const righe = sx(app.schermata()).split("\n");
+    const iGioco = righe.findIndex((r) => r.startsWith("── GIOCO"));
+    const iInfo = righe.findIndex((r) => r.startsWith("── INFO"));
+    const iSettaggi = righe.findIndex((r) => r.startsWith("── SETTAGGI"));
+    expect(iGioco).toBeGreaterThanOrEqual(0);
+    expect(iGioco).toBeLessThan(iInfo);
+    expect(iInfo).toBeLessThan(iSettaggi);
+    expect(righe[iInfo + 1]).toContain("[P] Il personaggio");
+    expect(righe[iInfo + 2]).toContain("[N] Statistiche incontri");
+  });
+
+  it("la scheda del personaggio mostra la scomposizione di base e bonus, la classe e l'equipaggiamento", async () => {
+    const { app } = await giocatore();
+    await app.premiTasto("P");
+    const s = sx(app.schermata());
+    expect(s).toContain("Il personaggio");
+    expect(s).toContain("HP massimi: 30 (base 20, bonus +10)");
+    expect(s).toContain("Forza: 5 (base 5, bonus 0)");
+    expect(s).toContain("Difesa: 4 (base 2, bonus +2)");
+    expect(s).toContain("Cavaliere: HP +10, forza 0, difesa +2, fuga -20%, oro x1");
+    expect(s).toContain("Arma: nessuna");
+    expect(s).toContain("Armatura: nessuna");
+    expect(s).toContain("Probabilità di fuga: 30%");
+    expect(s).toContain("Oro in banca: 0");
+    expect(haDisegno(app.schermata())).toBe(true);
+  });
+
+  it("con il pugnale la scheda mostra i bonus dell'arma e la fuga aumentata (salvataggio reale)", async () => {
+    const amb = creaAmbiente("it");
+    const app = amb.nuovaApp();
+    await app.avvia();
+    amb.fileDaScegliere =
+      '{"formato":1,"stato":{"versioneSchema":1,"ultimoReset":' + LUGLIO + ',"personaggio":{"nome":"Zinzillino","livello":1,"esperienza":51,"hp":27,"hpMax":20,"forza":5,"difesa":2,"oro":4,"morto":false},"moduli":{"classi":{"versione":1,"dati":{"classeId":"cavaliere"}},"equipaggiamento":{"versione":1,"dati":{"arma":{"linea":"pugnale","livello":1},"armatura":null}}}}}';
+    await app.premiTasto("I");
+    await app.premiTasto("P");
+    const s = sx(app.schermata());
+    expect(s).toContain("Arma: Pugnale liv. 1 - FOR +1 DIF 0 HP 0 FUGA +3%");
+    expect(s).toContain("Forza: 6 (base 5, bonus +1)");
+    expect(s).toContain("Probabilità di fuga: 33%");
+  });
+
+  it("le statistiche incontri sono vuote all'inizio e si riempiono dopo un combattimento", async () => {
+    const { app } = await giocatore();
+    await app.premiTasto("N");
+    expect(sx(app.schermata())).toContain("Nessun nemico incontrato finora.");
+    await app.premiTasto("0");
+    await app.premiTasto("F");
+    await app.premiTasto("E");
+    for (let i = 0; i < 40 && app.stato().vista?.contestoForzato === "combattimento"; i++) await app.premiTasto("A");
+    await app.premiTasto("N");
+    const s = sx(app.schermata());
+    expect(s).toContain("Nemico");
+    expect(s).toMatch(/(Ratto gigante|Lupo famelico)\s+1\s+/);
+    expect(s).toContain("Totale");
+    expect(s).toContain("Inc incontri");
+  });
+
+  it("Torna indietro riporta al luogo da cui si è aperta la schermata, anche passando da una INFO all'altra", async () => {
+    const { app } = await giocatore();
+    await app.premiTasto("L"); // locanda
+    expect(app.stato().navigazione).toBe("luogo:locanda");
+    await app.premiTasto("P");
+    expect(app.stato().navigazione).toBe("info:personaggio");
+    await app.premiTasto("N");
+    expect(app.stato().navigazione).toBe("info:statistiche");
+    await app.premiTasto("0");
+    expect(app.stato().navigazione).toBe("luogo:locanda");
+    await app.premiTasto("0");
+    expect(app.stato().navigazione).toBe("villaggio");
+  });
+
+  it("nella schermata INFO aperta non compare la voce che porta a se stessa", async () => {
+    const { app } = await giocatore();
+    await app.premiTasto("P");
+    expect(tasti(app.schermata())).toEqual(["0", "N", "O"]);
+    await app.premiTasto("N");
+    expect(tasti(app.schermata())).toEqual(["0", "P", "O"]);
+  });
+
+  it("durante il combattimento e la creazione le voci INFO non ci sono", async () => {
+    const amb = creaAmbiente("it");
+    const app = amb.nuovaApp();
+    await iniziaPartita(app, "Aldo");
+    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "O"]); // creazione
+    await app.premiTasto("1");
+    await app.premiTasto("F");
+    await app.premiTasto("E");
+    expect(tasti(app.schermata())).toEqual(["A", "F", "O"]); // combattimento
+  });
+
+  it("l'inglese ha i propri testi e la versione compare nelle opzioni", async () => {
+    const { app } = await giocatore("en");
+    await app.premiTasto("P");
+    expect(sx(app.schermata())).toContain("Max HP: 30 (base 20, bonus +10)");
+    await app.premiTasto("O");
+    expect(sx(app.schermata())).toContain(`Version ${VERSIONE_GIOCO}`);
   });
 });
