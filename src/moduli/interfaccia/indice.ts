@@ -1,0 +1,95 @@
+import type { DefinizioneModulo } from "../../core/indice";
+import { VERSIONE_API } from "../../core/indice";
+import { ILLUSTRAZIONI_INTERFACCIA } from "./grafica";
+
+export const ID_INTERFACCIA = "interfaccia";
+export const CONTESTO_VILLAGGIO = "villaggio";
+// Contesti delle schermate che non fanno parte del gioco vero e proprio.
+export const CONTESTO_AVVIO = "avvio";
+export const CONTESTO_OPZIONI = "opzioni";
+
+// Testi del client (intestazioni, opzioni, messaggi) e titolo del contesto di partenza.
+export const moduloInterfaccia: DefinizioneModulo = {
+  id: ID_INTERFACCIA,
+  versioneApi: VERSIONE_API,
+  dipende: [],
+  contenuti: ILLUSTRAZIONI_INTERFACCIA,
+  interfaccia: {
+    titoliContesto: { [CONTESTO_VILLAGGIO]: "interfaccia.contesto.villaggio" },
+    illustrazioniContesto: {
+      [CONTESTO_AVVIO]: "scena.avvio",
+      [CONTESTO_OPZIONI]: "scena.opzioni",
+      [CONTESTO_VILLAGGIO]: "scena.villaggio",
+    },
+  },
+  testi: {
+    it: {
+      "interfaccia.titolo": "CRONACHE DI LUCE E BRACE",
+      "interfaccia.contesto.villaggio": "Il Villaggio",
+      "interfaccia.sceltaLingua": "Scegli la lingua / Choose your language",
+      "interfaccia.menuIniziale.titolo": "Bentornato, avventuriero",
+      "interfaccia.menuIniziale.continua": "Continua la partita",
+      "interfaccia.menuIniziale.nuova": "Nuova partita (sovrascrive il salvataggio)",
+      "interfaccia.menuIniziale.nuovaSemplice": "Nuova partita",
+      "interfaccia.nome.domanda": "Come ti chiami, avventuriero?",
+      "interfaccia.nome.suggerimento": "Scrivi il nome e premi Invio (massimo 20 caratteri)",
+      "interfaccia.nome.nonValido": "Il nome deve avere da 1 a 20 caratteri.",
+      "interfaccia.intestazione": "{nome} - Livello {livello} - HP {hp}/{hpMax} - Oro {oro} - Esp {esperienza}",
+      "interfaccia.statistiche": "Forza {forza} - Difesa {difesa}",
+      "interfaccia.prossimoGiorno": "Nuovo giorno tra {ore}h {minuti}m",
+      "interfaccia.morto": "Sei morto. Tornerai in forze al prossimo giorno.",
+      "interfaccia.indietro": "Torna indietro",
+      "interfaccia.opzioni": "Opzioni",
+      "interfaccia.opzioni.titolo": "Opzioni",
+      "interfaccia.opzioni.lingua": "Cambia lingua (ora: Italiano)",
+      "interfaccia.opzioni.esporta": "Esporta il salvataggio in un file",
+      "interfaccia.opzioni.importa": "Importa un salvataggio da file",
+      "interfaccia.esportato": "Salvataggio esportato.",
+      "interfaccia.importato": "Salvataggio importato.",
+      "interfaccia.errore.salvataggio_corrotto": "Il salvataggio è danneggiato e non può essere letto.",
+      "interfaccia.errore.salvataggio_assente": "Non c'è nessun salvataggio.",
+      "interfaccia.errore.importazione": "File non valido: il salvataggio non è stato importato.",
+      "interfaccia.errore.registro": "Errore di configurazione dei moduli:",
+      "interfaccia.premiTasto": "Premi un tasto per scegliere.",
+      "interfaccia.gruppo.gioco": "GIOCO",
+      "interfaccia.gruppo.settaggi": "SETTAGGI",
+      "interfaccia.opzioni.tornaAlGioco": "Torna al gioco",
+      "interfaccia.impostazione.suggerimento": "Scrivi un numero intero da {min} a {max} e premi Invio. Invio da solo conferma {valore}.",
+      "interfaccia.impostazione.nonValido": "Valore non valido: scrivi un numero intero da {min} a {max}.",
+    },
+    en: {
+      "interfaccia.titolo": "CHRONICLES OF LIGHT AND EMBER",
+      "interfaccia.contesto.villaggio": "The Village",
+      "interfaccia.sceltaLingua": "Scegli la lingua / Choose your language",
+      "interfaccia.menuIniziale.titolo": "Welcome back, adventurer",
+      "interfaccia.menuIniziale.continua": "Continue your game",
+      "interfaccia.menuIniziale.nuova": "New game (overwrites the save)",
+      "interfaccia.menuIniziale.nuovaSemplice": "New game",
+      "interfaccia.nome.domanda": "What is your name, adventurer?",
+      "interfaccia.nome.suggerimento": "Type your name and press Enter (up to 20 characters)",
+      "interfaccia.nome.nonValido": "The name must be 1 to 20 characters long.",
+      "interfaccia.intestazione": "{nome} - Level {livello} - HP {hp}/{hpMax} - Gold {oro} - XP {esperienza}",
+      "interfaccia.statistiche": "Strength {forza} - Defense {difesa}",
+      "interfaccia.prossimoGiorno": "New day in {ore}h {minuti}m",
+      "interfaccia.morto": "You are dead. You will recover on the next day.",
+      "interfaccia.indietro": "Go back",
+      "interfaccia.opzioni": "Options",
+      "interfaccia.opzioni.titolo": "Options",
+      "interfaccia.opzioni.lingua": "Change language (now: English)",
+      "interfaccia.opzioni.esporta": "Export the save to a file",
+      "interfaccia.opzioni.importa": "Import a save from a file",
+      "interfaccia.esportato": "Save exported.",
+      "interfaccia.importato": "Save imported.",
+      "interfaccia.errore.salvataggio_corrotto": "The save is damaged and cannot be read.",
+      "interfaccia.errore.salvataggio_assente": "There is no save.",
+      "interfaccia.errore.importazione": "Invalid file: the save was not imported.",
+      "interfaccia.errore.registro": "Module configuration error:",
+      "interfaccia.premiTasto": "Press a key to choose.",
+      "interfaccia.gruppo.gioco": "GAME",
+      "interfaccia.gruppo.settaggi": "SETTINGS",
+      "interfaccia.opzioni.tornaAlGioco": "Back to the game",
+      "interfaccia.impostazione.suggerimento": "Type a whole number from {min} to {max} and press Enter. Enter alone confirms {valore}.",
+      "interfaccia.impostazione.nonValido": "Invalid value: type a whole number from {min} to {max}.",
+    },
+  },
+};
