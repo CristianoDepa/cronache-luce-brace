@@ -8,8 +8,10 @@ export interface ModificatoriClasse {
   readonly hpMax: number;
   readonly forza: number;
   readonly difesa: number;
-  // Si somma alla probabilità di fuga (es. 0.25 = +25 punti percentuali).
-  readonly probabilitaFuga: number;
+  // Si somma alla velocità (es. +5 = più veloce, -4 = più lento): decide chi colpisce per primo e la fuga.
+  readonly velocita: number;
+  // Si somma al mana massimo (0 per le classi che non usano il mana).
+  readonly mana: number;
   // Si moltiplica all'oro ottenuto dai mostri.
   readonly moltiplicatoreOro: number;
 }
@@ -26,7 +28,8 @@ function convalidaModificatori(dati: unknown, errori: string[]): ModificatoriCla
     hpMax: numero(o, "hpMax", errori, { predefinito: 0 }),
     forza: numero(o, "forza", errori, { predefinito: 0 }),
     difesa: numero(o, "difesa", errori, { predefinito: 0 }),
-    probabilitaFuga: numero(o, "probabilitaFuga", errori, { predefinito: 0 }),
+    velocita: numero(o, "velocita", errori, { predefinito: 0 }),
+    mana: numero(o, "mana", errori, { predefinito: 0 }),
     moltiplicatoreOro: numero(o, "moltiplicatoreOro", errori, { predefinito: 1, min: 0 }),
   };
 }

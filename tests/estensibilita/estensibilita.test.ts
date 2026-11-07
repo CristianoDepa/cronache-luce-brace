@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DURATA_CICLO_MS, applicaGiorno, creaVistaPartita, eseguiAzione, leggiContenuto, testoRaster, traduci, traduciEvento, vociMenu } from "../../src/core/indice";
+import { DURATA_CICLO_MS, applicaGiorno, coloreIn, creaVistaPartita, eseguiAzione, leggiContenuto, traduci, traduciEvento, vociMenu } from "../../src/core/indice";
 import { statoCombattimento } from "../../src/moduli/combattimento/indice";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
 import { tipoLuogo } from "../../src/moduli/luoghi/indice";
@@ -114,9 +114,10 @@ describe("L1 con grafica e menu: un nuovo luogo giocabile solo con dati", () => 
     const incontro = eseguiOk(classe.stato, { tipo: "esploraForesta", dati: { luogoId: "torre" } }, ctxTorre);
     const arte = creaVistaPartita(incontro.stato, ctxTorre).illustrazioni["combattimento"];
     expect(arte).toBeDefined();
-    const testo = testoRaster(arte!);
-    expect(testo).toContain("2222222222"); // il suolo della torre
-    expect(testo).toContain("6ee6"); // il gufo
+    // la scena della torre (suolo verde in fondo) con il gufo sopra (giallo)
+    expect(coloreIn(arte!, 0, 7)).toBe("#00aa00");
+    expect(arte?.pixel.some((i) => arte.palette[i] === "#ffff55")).toBe(true);
+    expect(arte?.larghezza).toBe(10);
     expect(traduci(registroTorre, "en", "torre-prova.luogo")).toBe("The Tower");
   });
 });

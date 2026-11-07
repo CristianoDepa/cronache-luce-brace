@@ -1,9 +1,8 @@
 import type { Contesto, DefinizioneModulo, PannelloVista, RigaVista, StatoGioco } from "../../core/indice";
-import { VERSIONE_API, calcolaStatistiche } from "../../core/indice";
+import { CONTESTO_INFO_INDICE, VERSIONE_API, calcolaStatistiche } from "../../core/indice";
 import { ILLUSTRAZIONI_INTERFACCIA } from "./grafica";
 
 export const ID_INTERFACCIA = "interfaccia";
-export const CONTESTO_VILLAGGIO = "villaggio";
 // Contesti delle schermate che non fanno parte del gioco vero e proprio.
 export const CONTESTO_AVVIO = "avvio";
 export const CONTESTO_OPZIONI = "opzioni";
@@ -40,24 +39,21 @@ export const moduloInterfaccia: DefinizioneModulo = {
   contenuti: ILLUSTRAZIONI_INTERFACCIA,
   interfaccia: {
     titoliContesto: {
-      [CONTESTO_VILLAGGIO]: "interfaccia.contesto.villaggio",
+      [CONTESTO_INFO_INDICE]: "interfaccia.info.titolo",
       [CONTESTO_INFO_PERSONAGGIO]: "interfaccia.scheda.titolo",
     },
     illustrazioniContesto: {
       [CONTESTO_AVVIO]: "scena.avvio",
       [CONTESTO_OPZIONI]: "scena.opzioni",
-      [CONTESTO_VILLAGGIO]: "scena.villaggio",
+      [CONTESTO_INFO_INDICE]: "scena.creazione",
       [CONTESTO_INFO_PERSONAGGIO]: "scena.creazione",
     },
+    // "Torna indietro" dalle schede INFO riporta all'elenco (e dall'elenco al luogo da cui si è venuti).
+    contestiPadre: { [CONTESTO_INFO_PERSONAGGIO]: CONTESTO_INFO_INDICE },
     menu: [
-      {
-        id: "interfaccia.info.personaggio",
-        contesto: "info",
-        etichettaChiave: "interfaccia.scheda.menu",
-        tasto: "P",
-        ordine: 10,
-        comando: { tipo: "naviga", verso: CONTESTO_INFO_PERSONAGGIO },
-      },
+      // Il gruppo INFO ha una sola voce, "I" Informazioni, che apre l'elenco numerato delle schede (le liberano le lettere P, N, C).
+      { id: "interfaccia.info", contesto: "info", etichettaChiave: "interfaccia.info.menu", tasto: "I", ordine: 10, comando: { tipo: "naviga", verso: CONTESTO_INFO_INDICE } },
+      { id: "interfaccia.info.personaggio", contesto: CONTESTO_INFO_INDICE, etichettaChiave: "interfaccia.scheda.menu", tasto: "1", ordine: 10, comando: { tipo: "naviga", verso: CONTESTO_INFO_PERSONAGGIO } },
     ],
     pannelli(stato, ctx): readonly PannelloVista[] {
       return [pannelloStatistiche(stato, ctx)];
@@ -66,7 +62,6 @@ export const moduloInterfaccia: DefinizioneModulo = {
   testi: {
     it: {
       "interfaccia.titolo": "CRONACHE DI LUCE E BRACE",
-      "interfaccia.contesto.villaggio": "Il Villaggio",
       "interfaccia.sceltaLingua": "Scegli la lingua / Choose your language",
       "interfaccia.menuIniziale.titolo": "Bentornato, avventuriero",
       "interfaccia.menuIniziale.continua": "Continua la partita",
@@ -76,6 +71,8 @@ export const moduloInterfaccia: DefinizioneModulo = {
       "interfaccia.nome.suggerimento": "Scrivi il nome e premi Invio (massimo 20 caratteri)",
       "interfaccia.nome.nonValido": "Il nome deve avere da 1 a 20 caratteri.",
       "interfaccia.scheda.livello": "Livello {livello} - Esperienza {esperienza}",
+      "interfaccia.scheda.livelloProssimo": "Livello {livello} - Esperienza {esperienza}/{necessaria}",
+      "interfaccia.scheda.livelloPronto": "Livello {livello} - Esperienza {esperienza}/{necessaria} ★",
       "interfaccia.scheda.oro": "Oro {oro}",
       "interfaccia.scheda.forzaDifesa": "Forza {forza} - Difesa {difesa}",
       "interfaccia.prossimoGiorno": "Nuovo giorno tra {ore}h {minuti}m",
@@ -84,6 +81,14 @@ export const moduloInterfaccia: DefinizioneModulo = {
       "interfaccia.opzioni": "Opzioni",
       "interfaccia.opzioni.titolo": "Opzioni",
       "interfaccia.opzioni.lingua": "Cambia lingua (ora: Italiano)",
+      "interfaccia.opzioni.sviluppo": "Comandi di prova",
+      "interfaccia.opzioni.effetti": "Effetti grafici (ora: {valore})",
+      "interfaccia.effetti.pieni": "Pieni",
+      "interfaccia.effetti.ridotti": "Ridotti",
+      "interfaccia.effetti.spenti": "Spenti",
+      "interfaccia.opzioni.crt": "Effetto CRT (ora: {valore})",
+      "interfaccia.crt.si": "Sì",
+      "interfaccia.crt.no": "No",
       "interfaccia.opzioni.esporta": "Esporta il salvataggio in un file",
       "interfaccia.opzioni.importa": "Importa un salvataggio da file",
       "interfaccia.esportato": "Salvataggio esportato.",
@@ -98,6 +103,8 @@ export const moduloInterfaccia: DefinizioneModulo = {
       "interfaccia.versione": "Versione {versione}",
       "interfaccia.scheda.titolo": "Il personaggio",
       "interfaccia.scheda.menu": "Il personaggio",
+      "interfaccia.info.menu": "Informazioni",
+      "interfaccia.info.titolo": "Informazioni",
       "interfaccia.scheda.statistiche": "Statistiche",
       "interfaccia.scheda.riga.hp": "HP massimi: {totale} (base {base}, bonus {bonus})",
       "interfaccia.scheda.riga.forza": "Forza: {totale} (base {base}, bonus {bonus})",
@@ -109,7 +116,6 @@ export const moduloInterfaccia: DefinizioneModulo = {
     },
     en: {
       "interfaccia.titolo": "CHRONICLES OF LIGHT AND EMBER",
-      "interfaccia.contesto.villaggio": "The Village",
       "interfaccia.sceltaLingua": "Scegli la lingua / Choose your language",
       "interfaccia.menuIniziale.titolo": "Welcome back, adventurer",
       "interfaccia.menuIniziale.continua": "Continue your game",
@@ -119,6 +125,8 @@ export const moduloInterfaccia: DefinizioneModulo = {
       "interfaccia.nome.suggerimento": "Type your name and press Enter (up to 20 characters)",
       "interfaccia.nome.nonValido": "The name must be 1 to 20 characters long.",
       "interfaccia.scheda.livello": "Level {livello} - Experience {esperienza}",
+      "interfaccia.scheda.livelloProssimo": "Level {livello} - Experience {esperienza}/{necessaria}",
+      "interfaccia.scheda.livelloPronto": "Level {livello} - Experience {esperienza}/{necessaria} ★",
       "interfaccia.scheda.oro": "Gold {oro}",
       "interfaccia.scheda.forzaDifesa": "Strength {forza} - Defense {difesa}",
       "interfaccia.prossimoGiorno": "New day in {ore}h {minuti}m",
@@ -127,6 +135,14 @@ export const moduloInterfaccia: DefinizioneModulo = {
       "interfaccia.opzioni": "Options",
       "interfaccia.opzioni.titolo": "Options",
       "interfaccia.opzioni.lingua": "Change language (now: English)",
+      "interfaccia.opzioni.sviluppo": "Test commands",
+      "interfaccia.opzioni.effetti": "Graphics effects (now: {valore})",
+      "interfaccia.effetti.pieni": "Full",
+      "interfaccia.effetti.ridotti": "Reduced",
+      "interfaccia.effetti.spenti": "Off",
+      "interfaccia.opzioni.crt": "CRT effect (now: {valore})",
+      "interfaccia.crt.si": "On",
+      "interfaccia.crt.no": "Off",
       "interfaccia.opzioni.esporta": "Export the save to a file",
       "interfaccia.opzioni.importa": "Import a save from a file",
       "interfaccia.esportato": "Save exported.",
@@ -141,6 +157,8 @@ export const moduloInterfaccia: DefinizioneModulo = {
       "interfaccia.versione": "Version {versione}",
       "interfaccia.scheda.titolo": "The character",
       "interfaccia.scheda.menu": "The character",
+      "interfaccia.info.menu": "Information",
+      "interfaccia.info.titolo": "Information",
       "interfaccia.scheda.statistiche": "Statistics",
       "interfaccia.scheda.riga.hp": "Max HP: {totale} (base {base}, bonus {bonus})",
       "interfaccia.scheda.riga.forza": "Strength: {totale} (base {base}, bonus {bonus})",

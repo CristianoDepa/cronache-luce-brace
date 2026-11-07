@@ -24,17 +24,17 @@ describe("classi", () => {
     expect(stato.personaggio.hp).toBe(30);
   });
 
-  it("il mistico ha forza maggiore ma è fragile", () => {
+  it("il mistico ha forza maggiore ma è più fragile del Cavaliere", () => {
     const { ctx, stato } = conClasse("mistico");
-    expect(calcolaStatistiche(stato, ctx)).toEqual({ hpMax: 15, forza: 7, difesa: 1 });
+    expect(calcolaStatistiche(stato, ctx)).toEqual({ hpMax: 18, forza: 8, difesa: 2 });
   });
 
   it("il ladro ottiene più oro dai mostri", () => {
     const { ctx, stato } = conClasse("ladro");
     const inizio = eseguiOk(stato, { tipo: "iniziaCombattimento", dati: { creaturaId: "ratto" } }, ctx);
     const fine = combattiFinoAllaFine(inizio.stato, ctx);
-    // 5 monete x 1,25 = 6,25 arrotondato a 6
-    expect(fine.stato.personaggio.oro).toBe(6);
+    // 50 monete iniziali, più 5 monete x 1,25 = 6,25 arrotondato a 6
+    expect(fine.stato.personaggio.oro).toBe(50 + 6);
   });
 
   it("la classe si sceglie una sola volta", () => {

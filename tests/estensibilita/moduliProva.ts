@@ -179,19 +179,19 @@ export const moduloTorreProva: DefinizioneModulo = {
   contenuti: [
     voceIllustrazione("scena.torre", `
 ..........
-....44....
-...4444...
-..444444..
-..44ee44..
-..44ee44..
-..444444..
+....11....
+...1111...
+..111111..
+..11ee11..
+..11ee11..
+..111111..
 2222222222
-`, { x: 6, y: 6 }),
+`, { palette: ["#000000", "#aa0000", "#00aa00", "#ffff55", "#555555", "#aaaaaa", "#aa5500", "#ffffff", "#0000aa", "#ff5555", "#55ff55", "#55ffff", "#ff55ff", "#aa00aa", "#ffff55"], ancora: { x: 6, y: 6 } }),
     voceIllustrazione("sprite.gufo", `
 .66.
 6ee6
 .66.
-`),
+`, { palette: ["#000000", "#aa0000", "#00aa00", "#ffff55", "#555555", "#aaaaaa", "#aa5500", "#ffffff", "#0000aa", "#ff5555", "#55ff55", "#55ffff", "#ff55ff", "#aa00aa", "#ffff55"] }),
     {
       tipo: "creatura",
       id: "gufo",

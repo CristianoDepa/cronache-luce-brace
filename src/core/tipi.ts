@@ -42,7 +42,8 @@ export interface EventoGioco {
   readonly chiave: string;
   readonly parametri?: Readonly<Record<string, string | number>>;
   // Suggerimento per l'interfaccia (es. colore): non cambia la logica di gioco.
-  readonly tono?: "positivo" | "negativo";
+  // "speciale" evidenzia i messaggi delle abilità (colore e ★ nel client).
+  readonly tono?: "positivo" | "negativo" | "speciale" | "avviso";
 }
 
 // La chiave è anche la chiave del testo localizzato.
@@ -73,4 +74,6 @@ export interface Contesto {
   readonly rng: Rng;
   readonly adesso: Istante;
   readonly offsetFusoMinuti: number;
+  // Per provare giorno e notte (?ora=N): se presente, è l'ora locale da usare al posto di quella vera.
+  readonly oraForzata?: number;
 }

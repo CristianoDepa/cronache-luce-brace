@@ -32,15 +32,23 @@ export interface Registro {
   readonly titoliContesto: ReadonlyMap<string, string>;
   // Id dell'illustrazione fissa di ciascun contesto.
   readonly illustrazioniContesto: ReadonlyMap<string, string>;
+  // Per ogni contesto, il contesto a cui riporta "Torna indietro".
+  readonly contestiPadre: ReadonlyMap<string, string>;
+  // Contesti usabili da morti, apribili durante un contesto imposto, con la scheda compatta (dichiarati dai moduli).
+  readonly contestiDaMorto: ReadonlySet<string>;
+  readonly contestiLiberiDaForzato: ReadonlySet<string>;
+  readonly contestiSchedaCompatta: ReadonlySet<string>;
 }
 
 // Tasti usati dal client per navigazione e opzioni: i moduli non possono usarli.
 export const TASTI_RISERVATI: readonly string[] = ["0", "O"];
 // Tasti usati dalla schermata Opzioni: i settaggi dei moduli non possono usarli.
-export const TASTI_RISERVATI_IMPOSTAZIONI: readonly string[] = ["0", "L", "E", "I"];
+export const TASTI_RISERVATI_IMPOSTAZIONI: readonly string[] = ["0", "L", "E", "I", "G", "C", "V"];
 const FORMATO_TASTO = /^[A-Z0-9]$/;
 // Contesto speciale: le sue voci (es. "Il personaggio") compaiono come gruppo INFO in ogni schermata non imposta da un modulo.
 export const CONTESTO_INFO = "info";
+// L'elenco numerato delle schede INFO (personaggio, statistiche, classi...), aperto dall'unica voce "I" del gruppo INFO.
+export const CONTESTO_INFO_INDICE = "info:indice";
 
 interface Parziale<T> {
   readonly valore: T;
@@ -93,6 +101,10 @@ export function costruisciRegistro(moduliGioco: readonly DefinizioneModulo[]): R
     menu: interfaccia.valore.menu,
     titoliContesto: interfaccia.valore.titoli,
     illustrazioniContesto: interfaccia.valore.illustrazioni,
+    contestiPadre: interfaccia.valore.padri,
+    contestiDaMorto: insiemeDiContesti(moduli, "contestiDaMorto"),
+    contestiLiberiDaForzato: insiemeDiContesti(moduli, "contestiLiberiDaForzato"),
+    contestiSchedaCompatta: insiemeDiContesti(moduli, "contestiSchedaCompatta"),
   };
   const riferimenti = [...contenuti.valore.riferimenti, ...interfaccia.valore.riferimenti];
   const erroriRiferimenti = verificaRiferimenti(registro, riferimenti);
@@ -253,6 +265,7 @@ interface InterfacciaRaccolta {
   readonly menu: Map<string, VoceMenu[]>;
   readonly titoli: Map<string, string>;
   readonly illustrazioni: Map<string, string>;
+  readonly padri: Map<string, string>;
   readonly riferimenti: readonly RiferimentoDa[];
 }
 
@@ -272,7 +285,7 @@ function verificaVoceMenu(
   const etichetta = `${moduloId}: voce di menu "${voce.id}"`;
   if (!FORMATO_TASTO.test(voce.tasto)) errori.push(`${etichetta}: tasto "${voce.tasto}" non valido (lettera maiuscola o cifra)`);
   if (TASTI_RISERVATI.includes(voce.tasto)) errori.push(`${etichetta}: tasto "${voce.tasto}" riservato al client`);
-  if (esistenti.some((v) => v.tasto === voce.tasto)) {
+  if (esistenti.some((v) => v.tasto === voce.tasto && !(voce.alternativa !== undefined && v.alternativa === voce.alternativa))) {
     errori.push(`${etichetta}: tasto "${voce.tasto}" già usato nel contesto "${voce.contesto}"`);
   }
   if (!testoEsiste(testi, voce.etichettaChiave)) errori.push(`${etichetta}: testo mancante "${voce.etichettaChiave}"`);
@@ -323,6 +336,7 @@ function raccogliInterfaccia(
   const menu = new Map<string, VoceMenu[]>();
   const titoli = new Map<string, string>();
   const illustrazioni = new Map<string, string>();
+  const padri = new Map<string, string>();
   const impostazioni: DefinizioneImpostazione[] = [];
   const riferimenti: RiferimentoDa[] = [];
   const idVisti = new Set<Id>();
@@ -348,6 +362,10 @@ function raccogliInterfaccia(
       lista.push(voce);
       menu.set(voce.contesto, lista);
     }
+    for (const [contesto, padre] of Object.entries(m.interfaccia?.contestiPadre ?? {})) {
+      if (padri.has(contesto)) errori.push(`${m.id}: contesto padre di "${contesto}" già definito`);
+      padri.set(contesto, padre);
+    }
     for (const [contesto, chiave] of Object.entries(m.interfaccia?.titoliContesto ?? {})) {
       if (titoli.has(contesto)) errori.push(`${m.id}: titolo del contesto "${contesto}" già definito`);
       if (!testoEsiste(testi, chiave)) errori.push(`${m.id}: testo mancante "${chiave}" (titolo di "${contesto}")`);
@@ -357,7 +375,7 @@ function raccogliInterfaccia(
   errori.push(...verificaTastiInfo(menu));
   // Ordinamento stabile: a pari "ordine" vale l'ordine di caricamento.
   for (const lista of menu.values()) lista.sort((a, b) => (a.ordine ?? 100) - (b.ordine ?? 100));
-  return { valore: { menu, titoli, illustrazioni, riferimenti }, errori };
+  return { valore: { menu, titoli, illustrazioni, padri, riferimenti }, errori };
 }
 
 function raccogliContenuti(
@@ -426,4 +444,9 @@ function esisteRiferimento(registro: Registro, rif: Riferimento): boolean {
     case "testo":
       return LINGUE.every((l) => registro.testi.get(l)?.has(rif.id) ?? false);
   }
+}
+
+// Unione dei contesti che i moduli dichiarano in un campo dell'interfaccia.
+function insiemeDiContesti(moduli: readonly DefinizioneModulo[], campo: "contestiDaMorto" | "contestiLiberiDaForzato" | "contestiSchedaCompatta"): ReadonlySet<string> {
+  return new Set(moduli.flatMap((m) => m.interfaccia?.[campo] ?? []));
 }

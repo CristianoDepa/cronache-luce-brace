@@ -1,49 +1,42 @@
-import sys, os, re
+import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
-from scene import *
+from quadro import *
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f
 
-SRC = os.path.join(AQUI, "..", "..", "src", "moduli")
+SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
+INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
+import { voceIllustrazione } from "../../core/indice";
 
-def blocco(t):
-    return "\n".join(t.righe())
-
-def voce(id_, t, ancora=None):
-    a = f", {{ x: {ancora[0]}, y: {ancora[1]} }}" if ancora else ""
-    return f'  voceIllustrazione("{id_}", `\n{blocco(t)}\n`{a}),'
+// Disegni a pixel generati da strumenti/arte (vedi LEGGIMI.md). Ogni disegno ha la propria palette di colori
+// (#rrggbb, fino a 62), l'eventuale versione di giorno (paletteGiorno), i cicli di palette per le animazioni
+// (fuoco, stelle) e righe di pixel: ogni carattere e' l'indice del colore ("." = trasparente).
+'''
 
 def scrivi(percorso, testo):
     os.makedirs(os.path.dirname(percorso), exist_ok=True)
     open(percorso, "w", encoding="utf-8").write(testo)
 
-INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
-import { voceIllustrazione } from "../../core/indice";
-
-// Disegni a pixel (palette ANSI a 16 colori): ogni carattere è un pixel, "." è trasparente.
-// Per ritoccarli si cambiano le cifre esadecimali: 0 nero, 1 blu, 2 verde, 3 ciano, 4 rosso, 5 magenta,
-// 6 marrone, 7 grigio chiaro, 8 grigio scuro, 9 blu chiaro, a verde chiaro, b ciano chiaro, c rosso chiaro,
-// d magenta chiaro, e giallo, f bianco.
-'''
-
 def modulo(nome, costante, voci):
-    corpo = "\n".join(voci)
-    scrivi(f"{SRC}/{nome}/grafica.ts", f"{INTESTAZIONE}\nexport const {costante}: readonly VoceContenuto[] = [\n{corpo}\n];\n")
+    scrivi(f"{SRC}/{nome}/grafica.ts", f"{INTESTAZIONE}\nexport const {costante}: readonly VoceContenuto[] = [\n" + "\n".join(voci) + "\n];\n")
 
-modulo("interfaccia", "ILLUSTRAZIONI_INTERFACCIA", [voce("scena.avvio", avvio()), voce("scena.opzioni", opzioni()), voce("scena.villaggio", villaggio())])
-modulo("classi", "ILLUSTRAZIONI_CLASSI", [voce("scena.creazione", creazione())])
-modulo("foresta", "ILLUSTRAZIONI_FORESTA", [voce("scena.foresta", foresta(), (24, 28))])
-modulo("combattimento", "ILLUSTRAZIONI_COMBATTIMENTO", [voce("scena.combattimento", combattimento()), voce("sprite.ratto", ratto()), voce("sprite.lupo", lupo())])
-modulo("equipaggiamento", "ILLUSTRAZIONI_EQUIPAGGIAMENTO", [voce("scena.armeria", armeria()), voce("scena.sartoria", sartoria())])
-modulo("guaritore", "ILLUSTRAZIONI_GUARITORE", [voce("scena.guaritore", guaritore())])
-modulo("banca", "ILLUSTRAZIONI_BANCA", [voce("scena.banca", banca())])
-modulo("locanda", "ILLUSTRAZIONI_LOCANDA", [voce("scena.locanda", locanda())])
-modulo("mura", "ILLUSTRAZIONI_MURA", [voce("scena.mura", mura(), (26, 19))])
-
-# sprite degli NPC: un blocco di testo per ognuno
-npc = sprite_npc()
-righe = ['// Disegni a pixel degli NPC delle mura (stesso formato delle scene: vedi le altre grafica.ts).', 'export const SPRITE_NPC: Readonly<Record<string, string>> = {']
-for nome in ["beatrice", "anselmo", "ginevra", "tobia", "lorenzo", "zita"]:
-    righe.append(f"  {nome}: `\n{blocco(npc[nome])}\n`,")
-righe.append("};")
-scrivi(f"{SRC}/mura/sprite.ts", "\n".join(righe) + "\n")
-print("esportato")
+foresta = scene_a.foresta(); villaggio = scene_a.villaggio(); mura = scene_a.mura(); avvio = scene_a.avvio(); opzioni = scene_a.opzioni()
+modulo("interfaccia", "ILLUSTRAZIONI_INTERFACCIA", [avvio.esporta("scena.avvio"), opzioni.esporta("scena.opzioni"), villaggio.esporta("scena.villaggio")])
+modulo("classi", "ILLUSTRAZIONI_CLASSI", [scene_b.creazione().esporta("scena.creazione")])
+modulo("foresta", "ILLUSTRAZIONI_FORESTA", [foresta.esporta("scena.foresta")])
+lp = scene_c.lupo(); rt = scene_c.ratto()
+modulo("combattimento", "ILLUSTRAZIONI_COMBATTIMENTO", [scene_c.combattimento().esporta("scena.combattimento"), scene_c.tomo().esporta("scena.tomo"), scene_c.icona_taglio().esporta("icona.taglio"), scene_c.icona_contundente().esporta("icona.contundente"), scene_c.icona_perforante().esporta("icona.perforante"), scene_c.icona_magico().esporta("icona.magico"), scene_c.segno_piu().esporta("segno.piu"), scene_c.segno_meno().esporta("segno.meno"), rt.esporta("sprite.ratto"), lp.esporta("sprite.lupo"), scene_c.orco().esporta("sprite.orco"), scene_c.goblin().esporta("sprite.goblin")])
+modulo("equipaggiamento", "ILLUSTRAZIONI_EQUIPAGGIAMENTO", [scene_b.armeria().esporta("scena.armeria"), scene_b.sartoria().esporta("scena.sartoria")])
+modulo("guaritore", "ILLUSTRAZIONI_GUARITORE", [scene_c.guaritore().esporta("scena.guaritore")])
+modulo("pozioni", "ILLUSTRAZIONI_POZIONI", [scene_c.speziale().esporta("scena.speziale")])
+modulo("banca", "ILLUSTRAZIONI_BANCA", [scene_c.banca().esporta("scena.banca")])
+modulo("locanda", "ILLUSTRAZIONI_LOCANDA", [scene_c.locanda().esporta("scena.locanda")])
+npc = scene_c.npc()
+modulo("mura", "ILLUSTRAZIONI_MURA", [mura.esporta("scena.mura")] + [npc[n].esporta(f"sprite.npc.{n}") for n in ["beatrice", "anselmo", "ginevra", "tobia", "lorenzo", "zita"]])
+modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")])
+cg = scene_e.capogilda()
+modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")])
+modulo("palude", "ILLUSTRAZIONI_PALUDE", [scene_f.palude().esporta("scena.palude"), scene_f.cimitero().esporta("scena.cimitero")] + [f().esporta(f"sprite.{n}") for n, f in scene_f.MOSTRI.items()])
+righe = "\n".join('  "%s": { x: %d, y: %d },' % (k, x, y) for k, (x, y) in scene_d.coordinate().items())
+scrivi(f"{SRC}/citta/coordinate.ts", "// Coordinate (in pixel) dei luoghi sulla mappa 96 x 64: generate da strumenti/arte (scene_d.py), non modificare a mano.\nexport const COORDINATE: Readonly<Record<string, { readonly x: number; readonly y: number }>> = {\n" + righe + "\n};\n")
+print("esportato; sprite: ratto", rt.w, "x", rt.h, "| lupo", lp.w, "x", lp.h, "| npc", npc["beatrice"].w, "x", npc["beatrice"].h)

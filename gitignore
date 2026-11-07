@@ -1,0 +1,7 @@
+node_modules/
+dist/
+__pycache__/
+strumenti/arte/anteprime/
+*.log
+.DS_Store
+Thumbs.db

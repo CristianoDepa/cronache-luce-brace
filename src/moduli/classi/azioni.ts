@@ -10,6 +10,8 @@ import {
   leggiContenuto,
   stringa,
 } from "../../core/indice";
+import { ripristinaMana } from "../mana/indice";
+import { PARAMETRI_CLASSI } from "./parametri";
 import { statoClassi, tipoClasse } from "./tipi";
 
 function validaClasseId(dati: unknown): Risultato<{ readonly classeId: Id }> {
@@ -27,6 +29,9 @@ export const azioneScegliClasse = definisciAzione("scegliClasse", validaClasseId
   if (!classe) return esitoErrore("classi.errore.classe_sconosciuta", dati.classeId);
   const conClasse = statoClassi.scrivi(stato, { classeId: dati.classeId });
   const { hpMax } = calcolaStatistiche(conClasse, ctx);
-  const curato = { ...conClasse, personaggio: { ...conClasse.personaggio, hp: hpMax } };
-  return esitoOk(curato, [{ chiave: "classi.classeScelta", parametri: { classeChiave: classe.nomeChiave } }]);
+  const oro = PARAMETRI_CLASSI.oroIniziale;
+  const curato = { ...conClasse, personaggio: { ...conClasse.personaggio, hp: hpMax, oro: conClasse.personaggio.oro + oro } };
+  const eventi = [{ chiave: "classi.classeScelta", parametri: { classeChiave: classe.nomeChiave } }];
+  const conOro = oro > 0 ? [...eventi, { chiave: "classi.oroIniziale", parametri: { oro }, tono: "positivo" as const }] : eventi;
+  return esitoOk(ripristinaMana(curato, ctx), conOro);
 });

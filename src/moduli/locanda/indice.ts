@@ -1,4 +1,5 @@
 import type { DefinizioneModulo, DizionarioTesti, InterfacciaModulo, PannelloVista, Risultato, RigaVista } from "../../core/indice";
+import { ID_MANA, manaAttuale, manaMassimo, ripristinaMana } from "../mana/indice";
 import {
   VERSIONE_API,
   calcolaStatistiche,
@@ -14,7 +15,7 @@ import {
   puntoInizioGiorno,
   regola,
 } from "../../core/indice";
-import { ID_FORESTA, consumaTurni, leggiTurniResidui } from "../foresta/indice";
+import { ID_AZIONI, consumaAzioni, leggiAzioniResidue } from "../azioni/indice";
 
 import { ILLUSTRAZIONI_LOCANDA } from "./grafica";
 
@@ -50,15 +51,17 @@ export function incontriPerDormire(hpMancanti: number): number {
 
 const nessunDato = (_dati: unknown): Risultato<null> => ok(null);
 
-// Dormire cura tutto e consuma incontri; se non ce ne sono abbastanza non si dorme.
+// Dormire cura tutto e consuma azioni; se non ce ne sono abbastanza non si dorme.
 const azioneDormi = definisciAzione("dormi", nessunDato, (stato, _dati, ctx) => {
   const { hpMax } = calcolaStatistiche(stato, ctx);
   const mancanti = Math.max(0, hpMax - stato.personaggio.hp);
-  if (mancanti === 0) return esitoErrore("locanda.errore.in_salute");
-  const incontri = incontriPerDormire(mancanti);
-  const dopoIncontri = consumaTurni(stato, incontri);
+  const manaMancante = manaMassimo(stato, ctx) - manaAttuale(stato, ctx);
+  if (mancanti === 0 && manaMancante === 0) return esitoErrore("locanda.errore.in_salute");
+  // Anche solo per recuperare il mana si consuma almeno un incontro.
+  const incontri = Math.max(incontriPerDormire(mancanti), manaMancante > 0 ? 1 : 0);
+  const dopoIncontri = consumaAzioni(stato, incontri);
   if (!dopoIncontri) return esitoErrore("locanda.errore.incontri_insufficienti", String(incontri));
-  const curato = { ...dopoIncontri, personaggio: { ...dopoIncontri.personaggio, hp: hpMax } };
+  const curato = ripristinaMana({ ...dopoIncontri, personaggio: { ...dopoIncontri.personaggio, hp: hpMax } }, ctx);
   return esitoOk(curato, [{ chiave: "locanda.dormito", parametri: { hp: mancanti, incontri }, tono: "positivo" }]);
 });
 
@@ -86,30 +89,30 @@ const testi: DizionarioTesti = {
   it: {
     "locanda.luogo": "La Locanda",
     "locanda.menu.vai": "Vai alla locanda",
-    "locanda.menu.dormi": "Dormi (cura tutto, consuma incontri)",
+    "locanda.menu.dormi": "Dormi (cura tutto, consuma azioni)",
     "locanda.menu.mangia": "Mangia (10 monete, +10 HP)",
     "locanda.pannello.titolo": "La locanda",
-    "locanda.pannello.stato": "Pasti oggi: {pasti}/{pastiMax}. Incontri rimasti: {turni}.",
-    "locanda.pannello.dormire": "Dormire ti costerebbe {incontri} incontri.",
-    "locanda.dormito": "Dormi un sonno ristoratore: recuperi {hp} HP e consumi {incontri} incontri.",
-    "locanda.mangiato": "Mangi un pasto caldo: recuperi {hp} HP per {prezzo} monete (pasti oggi: {pasti}/{pastiMax}).",
+    "locanda.pannello.stato": "Pasti oggi: {pasti}/{pastiMax}.",
+    "locanda.pannello.dormire": "Dormire ti costerebbe {incontri} {incontri#azione|azioni}.",
+    "locanda.dormito": "Dormi un sonno ristoratore: recuperi {hp} HP e consumi {incontri} {incontri#azione|azioni}.",
+    "locanda.mangiato": "Mangi un pasto caldo: recuperi {hp} HP per {prezzo} {prezzo#moneta|monete} (pasti oggi: {pasti}/{pastiMax}).",
     "locanda.errore.in_salute": "Sei già in piena salute.",
-    "locanda.errore.incontri_insufficienti": "Non hai abbastanza incontri rimasti per dormire.",
+    "locanda.errore.incontri_insufficienti": "Non hai abbastanza azioni rimaste per dormire.",
     "locanda.errore.pasti_esauriti": "Hai già fatto tutti i pasti di oggi.",
     "locanda.errore.oro_insufficiente": "Non hai abbastanza monete.",
   },
   en: {
     "locanda.luogo": "The Inn",
     "locanda.menu.vai": "Go to the inn",
-    "locanda.menu.dormi": "Sleep (heals fully, uses encounters)",
+    "locanda.menu.dormi": "Sleep (heals fully, uses actions)",
     "locanda.menu.mangia": "Eat (10 coins, +10 HP)",
     "locanda.pannello.titolo": "The inn",
-    "locanda.pannello.stato": "Meals today: {pasti}/{pastiMax}. Encounters left: {turni}.",
-    "locanda.pannello.dormire": "Sleeping would cost you {incontri} encounters.",
-    "locanda.dormito": "You sleep soundly: you recover {hp} HP and use {incontri} encounters.",
-    "locanda.mangiato": "You eat a hot meal: you recover {hp} HP for {prezzo} coins (meals today: {pasti}/{pastiMax}).",
+    "locanda.pannello.stato": "Meals today: {pasti}/{pastiMax}.",
+    "locanda.pannello.dormire": "Sleeping would cost you {incontri} {incontri#action|actions}.",
+    "locanda.dormito": "You sleep soundly: you recover {hp} HP and use {incontri} {incontri#action|actions}.",
+    "locanda.mangiato": "You eat a hot meal: you recover {hp} HP for {prezzo} {prezzo#coin|coins} (meals today: {pasti}/{pastiMax}).",
     "locanda.errore.in_salute": "You are already in perfect health.",
-    "locanda.errore.incontri_insufficienti": "You do not have enough encounters left to sleep.",
+    "locanda.errore.incontri_insufficienti": "You do not have enough actions left to sleep.",
     "locanda.errore.pasti_esauriti": "You have already had all of today's meals.",
     "locanda.errore.oro_insufficiente": "You do not have enough coins.",
   },
@@ -119,14 +122,6 @@ const interfaccia: InterfacciaModulo = {
   titoliContesto: { [CONTESTO_LOCANDA]: "locanda.luogo" },
   illustrazioniContesto: { [CONTESTO_LOCANDA]: "scena.locanda" },
   menu: [
-    {
-      id: "locanda.vai",
-      contesto: "villaggio",
-      etichettaChiave: "locanda.menu.vai",
-      tasto: "L",
-      ordine: 60,
-      comando: { tipo: "naviga", verso: CONTESTO_LOCANDA },
-    },
     {
       id: "locanda.dormi",
       contesto: CONTESTO_LOCANDA,
@@ -153,19 +148,18 @@ const interfaccia: InterfacciaModulo = {
         parametri: {
           pasti: statoLocanda.leggi(stato).pastiOggi,
           pastiMax: PARAMETRI_LOCANDA.pastiMaxGiorno,
-          turni: leggiTurniResidui(stato),
         },
       },
       ...(mancanti > 0 ? [{ chiave: "locanda.pannello.dormire", parametri: { incontri: incontriPerDormire(mancanti) } }] : []),
     ];
-    return [{ titoloChiave: "locanda.pannello.titolo", contesti: [CONTESTO_LOCANDA], righe }];
+    return [{ contesti: [CONTESTO_LOCANDA], righe }];
   },
 };
 
 export const moduloLocanda: DefinizioneModulo = {
   id: ID_LOCANDA,
   versioneApi: VERSIONE_API,
-  dipende: [ID_FORESTA],
+  dipende: [ID_AZIONI, ID_MANA],
   contenuti: ILLUSTRAZIONI_LOCANDA,
   azioni: [azioneDormi, azioneMangia],
   regole: [regolaPastiGiornalieri],

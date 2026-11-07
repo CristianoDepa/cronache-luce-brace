@@ -323,13 +323,13 @@ Flusso di avvio: lingua (solo la prima volta) -> menu iniziale (Continua / Nuova
 
 | Elemento | Significato |
 |---|---|
-| Tipo di contenuto `illustrazione` | Registrato dal nucleo, quindi **utilizzabile da ogni modulo** senza dichiarare dipendenze. Un disegno è un dato: righe di **pixel**, dove ogni carattere è una cifra esadecimale (0-f = colore ANSI a 16 colori) oppure `.` per trasparente, più un'ancora opzionale. Limiti validati all'avvio: 64 × 40 pixel, righe di uguale lunghezza, solo caratteri ammessi |
+| Tipo di contenuto `illustrazione` | Registrato dal nucleo, quindi **utilizzabile da ogni modulo** senza dichiarare dipendenze. Un disegno è un dato: una **palette** di colori `#rrggbb` (fino a 62), righe di **pixel** (ogni carattere dell'alfabeto `0-9a-zA-Z` è l'indice del colore, `.` è trasparente), una `paletteGiorno` opzionale, `cicli` di palette opzionali e un'ancora opzionale. Limiti validati all'avvio: 128 × 96 pixel, righe di uguale lunghezza, indici dentro la palette, cicli ben formati (vedi §18) |
 | `ancora` | Dove **poggiano i piedi** di un disegno sovrapposto alla scena: creature di altezza diversa stanno tutte appoggiate al suolo. Gli spazi di uno sprite sono trasparenti |
 | `illustrazioniContesto` | Disegno fisso di un contesto (id di un'illustrazione), validato all'avvio |
 | `illustrazioni(stato, ctx)` | Disegni che dipendono dallo stato (scena più creatura, scena più NPC). Prevalgono su quelli fissi |
 | `impostazioni` | Settaggio numerico dichiarato da un modulo (id, testo, tasto, intervallo, azione da inviare, chiedere o meno alla creazione). Il client lo mostra tra i SETTAGGI senza conoscere il modulo |
 | `consentitaDaMorto` | Un'azione (es. cambiare un settaggio) ammessa anche a personaggio morto |
-| Raster | Disegno già pronto o composto (scena più creatura): stesse righe di pixel, serializzabile (passa dal `Gateway` come ogni altra vista) |
+| Raster | Disegno già pronto o composto (scena più creatura): indici di colore in un elenco piatto, con palette, palette di giorno e cicli; serializzabile (passa dal `Gateway` come ogni altra vista) |
 
 La vista (`VistaPartita`) ora contiene anche `impostazioni` e `illustrazioni`.
 
@@ -356,13 +356,13 @@ La vista (`VistaPartita`) ora contiene anche `impostazioni` e `illustrazioni`.
 
 Test automatici su: prezzi del catalogo, acquisti e rivendita, guaritore, banca, locanda, rotazione e incontri delle mura (tutti i 18), limiti dei disegni, posizionamento degli sprite, settaggi, compatibilità con i salvataggi della M2 e separatori. Un test di estensibilità dimostra che un nuovo luogo con scena, creatura illustrata e voci di menu si aggiunge **solo con dati**.
 
-## 16. Layout a due colonne e pixel-art (M3.1)
+## 16. Layout a due colonne e pixel-art (M3.1; il disegno è stato rifatto in 0.4.0, vedi §18)
 
-### 16.1 Disegni a pixel
+### 16.1 Disegni a pixel (superato da §18)
 
-Le scene misurano 48 × 32 pixel, gli sprite sono più piccoli e hanno un contorno nero. Il nucleo compone i disegni (`sovrapponi`) e li posiziona sul suolo (`ancora`); non sa nulla di come vengono mostrati.
+In 0.3.x le scene misuravano 48 × 32 pixel a 16 colori, gli sprite sono più piccoli e hanno un contorno nero. Il nucleo compone i disegni (`sovrapponi`) e li posiziona sul suolo (`ancora`); non sa nulla di come vengono mostrati.
 
-### 16.2 Rendering nel client
+### 16.2 Rendering nel client (0.3.x; superato da §18, resta il layout)
 
 | Aspetto | Scelta |
 |---|---|
@@ -415,3 +415,289 @@ Nei testi `{nome:12}` allinea il valore in una colonna di 12 caratteri (testo a 
 ### 17.6 Versione e aggiornamento
 
 `VERSIONE.txt`, `src/versione.ts` e `package.json` devono dire la stessa versione (lo controlla un test). Lo script `aggiorna.ps1` (fuori dallo ZIP) legge la versione nello ZIP, salva lo stato con Git se c'è un repository, sostituisce le cartelle del progetto e lancia `npm install`, typecheck e test. Vedi `docs/aggiornamento.md`.
+
+## 18. Grafica ricca ed effetti (0.4.0)
+
+### 18.1 Decisione
+
+Fra ANSI a 16 colori, pixel-art ricca, vettoriale e immagini esterne si è scelta la **pixel-art ricca con effetti**: mantiene l'atmosfera retro e dà il salto di qualità maggiore per il lavoro richiesto. Le creature della M4 nascono già in questo stile.
+
+### 18.2 Formato e composizione (nucleo)
+
+| Aspetto | Scelta |
+|---|---|
+| Palette per immagine | Fino a 62 colori `#rrggbb` per disegno (era: 16 colori fissi). Una scena e uno sprite possono avere colori diversi |
+| Dimensioni | Scene 96 × 64, creature circa 46 × 32, NPC 22 × 36 (con contorno). Massimo 128 × 96 |
+| Raster | `{ larghezza, altezza, palette, paletteGiorno?, pixel: number[] (-1 = trasparente), cicli }` |
+| Composizione | `sovrapponi` unisce le palette (i colori uguali si riusano, notte e giorno insieme) e rimappa gli indici dei cicli dello sprite. Nessuno strato separato: non servono movimenti indipendenti delle creature |
+| Ancora | Come prima: i piedi della creatura poggiano sulla riga del suolo della scena |
+| Validazione | Palette, indici, cicli (almeno 2 indici validi, 50-10000 ms), `paletteGiorno` della stessa lunghezza; test: le scene non hanno pixel trasparenti |
+
+### 18.3 Effetti (client)
+
+| Effetto | Come funziona |
+|---|---|
+| Ciclo di palette | Il trucco dei giochi VGA: ogni `ritardoMs` i colori degli indici di un ciclo scorrono di uno. Con 2 indici il colore lampeggia (**stelle**, lucciole), con 3 o più tremola (**fuoco**: camino, torce, braciere, candele, lanterne). Nessun fotogramma da disegnare: cambia solo la palette |
+| Giorno e notte | Le scene all'aperto (foresta, villaggio, mura, finestra della sartoria) hanno una `paletteGiorno`: il client sfuma fra le due palette secondo l'ora locale (alba 6-8, tramonto 17:30-19:30, in `src/client/luce.ts`). Di giorno le stelle spariscono, le finestre si spengono, il cielo si fa azzurro. Per provarla: `?ora=12` nell'indirizzo. Titolo, interni e creature non cambiano |
+| Effetti grafici | Impostazione dell'interfaccia (tasto G nelle Opzioni): **pieni** (animazioni e tinta), **ridotti** (solo tinta, nessun movimento), **spenti** (immagini ferme, sempre di notte). Predefinito: pieni, oppure ridotti se il sistema chiede meno movimento. Salvata fuori dal salvataggio di gioco, come la lingua |
+| Effetto CRT | Opzionale (tasto C): linee di scansione, vignettatura, bagliore del testo e delle immagini, solo con CSS. Predefinito: spento |
+
+### 18.4 Rendering
+
+Un `<canvas>` per immagine: un pixel dell'immagine è un pixel del canvas, ingrandito a **numeri interi** (`image-rendering: pixelated`) secondo la larghezza della colonna, così resta nitido. La funzione pura `paletteAlTempo` (`src/client/palette.ts`) calcola i colori di ogni fotogramma; la animazione gira a circa 16 fotogrammi al secondo solo se l'immagine ha cicli e gli effetti sono pieni, e si ferma quando la scheda del browser è nascosta. Il testo resta nel DOM, quindi selezionabile.
+
+### 18.5 Correzioni nella stessa versione
+
+- Singolare e plurale nei testi: `{n#moneta|monete}` sceglie la forma dal numero (1 moneta, 2 monete; 1 coin, 2 coins).
+- I messaggi uguali di fila si raccolgono in una riga con il contatore (`×6`).
+
+### 18.6 Verifica
+
+Test automatici su validazione, composizione, cicli, tinta, luce, plurali, messaggi raccolti, impostazioni. Prova nel browser vero (Chromium): notte, giorno, tramonto, animazioni (fotogrammi diversi con effetti pieni, uno solo con effetti spenti), effetto CRT.
+
+## 19. Equipaggiamento v2: velocità, pesi, orco (0.5.0)
+
+### 19.1 Combattimento
+| Aspetto | Scelta |
+|---|---|
+| Velocità | Nuovo punto di regola `puntoVelocita` (come `puntoFuga`): parte da `velocitaBase` (10) e le regole dei moduli la modificano (classi priorità 100, oggetti 60). Il nucleo non cambia |
+| Creature | Campo `velocita` (predefinito 10: le creature dei test esistenti restano valide) |
+| Round | `risolviRound` (scontro.ts) stabilisce chi colpisce per primo (`iniziativaContro`, in velocita.ts) e applica i colpi nell'ordine. `risolviColpoGiocatore` resta l'ingresso per i moduli che infliggono danno (giocatore, poi risposta del nemico) |
+| Sorteggio | `chiAttaccaPerPrimo` consuma il generatore casuale **solo a parità di velocità**, quindi i test con seme fisso restano stabili negli altri casi |
+| Fuga | `calcolaProbabilitaFuga` (pura): base 50% + 5% × differenza di velocità, tra 5% e 95%. `puntoFuga` resta come punto di estensione, ma classi e oggetti non lo usano più |
+
+### 19.2 Equipaggiamento
+- Le linee dichiarano `peso` (leggera, media, pesante) e, se serve, `classi` riservate. Prezzo base, punti per livello e velocità vengono dalla classe di peso (`PARAMETRI_EQUIPAGGIAMENTO.classiDiPeso`): si ritara una volta sola.
+- Gli oggetti hanno `velocita` (fissa), `peso` e `classi` (validati; le classi sono riferimenti a contenuti, quindi un errore di battitura si vede all'avvio). Il modulo dipende ora anche da `classi`.
+- Armi di classe: `calcolaOfferta` rifiuta la linea se non è per la classe del giocatore. Il menu ha una voce unica, `@classe`, che si risolve nella linea giusta (`risolviLinea`): nessuna modifica al nucleo né al menu.
+- `calcolaOfferta` restituisce anche la **differenza** di effetti rispetto all'oggetto indossato (mostrata nel negozio).
+
+### 19.3 Luoghi e incontri
+`Luogo.pesi` (facoltativo) assegna un peso a ogni creatura; `scegliConPesi` (pura) sceglie in proporzione. Validazione: solo creature del luogo, pesi positivi. Un'estensione futura (M4) potrà modificare i pesi con una regola, senza toccare la foresta.
+
+### 19.4 Verifica
+Test su calcoli puri, velocità di classi ed equipaggiamenti, fuga (anche statistica su 300 semi), ordine dei colpi, regole di progetto dei pesi, armi di classe, differenze nel negozio, pesi di incontro (anche statistici) e orco; prova nel browser (armeria, scheda, combattimento con l'orco). Rimosso il test con il salvataggio del Pugnale (obsoleto: le partite si ricominciano).
+
+## 20. Colpi, mana e abilità (0.6.0)
+
+### 20.1 Combattimento
+| Aspetto | Scelta |
+|---|---|
+| Probabilità di colpire | Nuovo punto di regola `puntoPrecisione` (giocatore o nemico). Base `precisioneBase` 0,7 (per i nemici anche per creatura, campo `precisione`). Si tira prima del danno: un attacco mancato non consuma i dadi |
+| Effetti temporanei | `EffettoScontro` { bersaglio, moltiplicatoreDanno, moltiplicatorePrecisione, deltaPrecisione, colpi } dentro `ScontroAttivo.effetti`. Probabilità = base × prodotto dei moltiplicatori + somma dei delta (tra 0 e 1). Dopo ogni attacco dell'attaccante (anche mancato) un effetto perde un colpo e a zero scade. Funzioni pure in `effetti.ts` |
+| Usi per scontro | `ScontroAttivo.usi` (contatori per chiave): sparisce con lo scontro. Serve alle abilità "una volta per scontro" |
+| Round | `risolviRound(stato, ctx, { salta?, prima?, dopo? })`: gli effetti `prima` si aggiungono prima dell'iniziativa, i `dopo` subito dopo l'azione del giocatore (attacco o attesa). Così "poi il nemico ti colpisce con probabilità doppia" vale anche se il nemico è più veloce |
+| Compatibilità | I salvataggi con uno scontro senza `effetti` né `usi` si rileggono con elenchi vuoti. `risolviColpoGiocatore` resta l'ingresso per il danno sempre a segno (incantesimi) |
+
+### 20.2 Moduli nuovi
+- **`mana`**: stato `{ attuale }`, punto di regola `puntoManaMassimo` (parte da 0, le classi aggiungono), ripristino al nuovo giorno (`puntoInizioGiorno`) e in locanda. Nessuna dipendenza.
+- **`abilita`**: tipo di contenuto `abilita` (classi, costo mana, usi per scontro, azione `attacco` o `attesa`, effetti `prima` e `dopo`), azione `usaAbilita { posizione }`, tasto S in combattimento, pannelli. Aggiungere un'abilità = una voce in `dati.ts` più i testi. Dipende da combattimento, classi, mana.
+- Dipendenze: `classi` → `mana`; `locanda` → `mana`; `abilita` → combattimento, classi, mana.
+
+### 20.3 Luoghi e potenza
+`Luogo.pesi` può avere, per ogni creatura, `{ peso, potenzaMin?, potenzaPiena? }`: il peso sale linearmente dalla potenza minima a quella piena (`pesoEffettivo`, pura). La foresta calcola la potenza del personaggio (forza + difesa + HP/3) a ogni incontro.
+
+### 20.4 Classi
+Nuovo modificatore `mana`; monete iniziali (`PARAMETRI_CLASSI.oroIniziale`) alla scelta della classe.
+
+### 20.5 Verifica
+Test sulle funzioni pure, sulla frequenza dei colpi (1.000 attacchi), sulle tre abilità (danno, probabilità, costo, limite d'uso, effetti sul nemico), sul mana (massimo, giorno, locanda), su un'abilità aggiunta solo con dati, sulla validazione dei contenuti e sui pesi con potenza. `moduloColpiSicuri` (tests/aiuti.ts) porta a 1 la probabilità di colpire per i test che vogliono combattimenti deterministici. Prova nel browser con Mistico e Cavaliere.
+
+## 21. Colonna di destra e abilità non riattivabili (0.6.1)
+- **Voci della colonna di destra:** `InterfacciaModulo.laterale(stato, ctx)` restituisce voci `VoceLaterale`: una **statistica** (etichetta e valore, che il client accoda a "Forza - Difesa") oppure una **barra** (etichetta, attuale, massimo, stile). `creaVistaPartita` le raccoglie in `VistaPartita.laterale`, ordinate. Il combattimento dichiara la velocità, il modulo mana la sua barra; il client conosce gli stili (per il mana: blu oltre il 50%, viola tra il 25% e il 50%, rosso sotto il 25%) e allinea le etichette delle barre. Il nucleo non conosce né il mana né la velocità.
+- **Origine degli effetti:** `EffettoScontro.origine` (opzionale) è l'id di chi lo ha creato. `usaAbilita` rifiuta un'abilità se esiste un effetto attivo con la sua origine ("già attiva"), prima di spendere mana. Funziona per qualunque abilità, anche con effetti di più colpi.
+- **Scelta della classe:** il pannello di `classi` mostra anche i valori di partenza (base del personaggio più modificatori); `abilita` aggiunge nel contesto di creazione il riquadro con le abilità di ciascuna classe, letto dai dati.
+- **Versione:** `VERSIONE_GIOCO` compare alla scelta della lingua, nel menu iniziale e nelle Opzioni.
+- **Verifica:** test sulle voci dichiarate, sui tre colori della barra, sulle righe a destra per Mistico e Cavaliere, sulla scelta della classe, sull'abilità non riattivabile (anche con un effetto da 3 colpi) e sulla versione; prova nel browser.
+
+## 22. La città, le azioni e i comandi di prova (0.7.0)
+
+### 22.1 Nucleo (piccole estensioni generiche)
+| Aspetto | Scelta |
+|---|---|
+| Contesto di casa | `InterfacciaModulo.contestoBase(stato, ctx)`: il primo modulo che lo dichiara decide la schermata "di casa" (il luogo in cui si è); la vista lo porta in `contestoBase`. Il client usa il segnaposto `"base"` come navigazione di partenza e lo risolve con la vista: dopo un'azione che sposta il giocatore (cambia il contesto di casa) si riparte da lì, con nel registro solo gli eventi dell'arrivo |
+| Contesto padre | `InterfacciaModulo.contestiPadre`: "Torna indietro" riporta al padre (la lista delle porte alla mappa) o, in mancanza, al luogo di casa |
+| Colonna di destra | Nuova voce `riga` (testo con chiave e parametri) accanto a `statistica` e `barra` |
+| Rinascita | Punto di regola `puntoRinascita`, applicato dal cambio giorno solo se il personaggio era morto (la città riporta a Porta San Pietro) |
+| Tono | Nuovo tono di evento `speciale` (ciano nel client) |
+
+### 22.2 Moduli
+- **`azioni`**: stato `{ giorno, residue }`, impostazione `T`, rinnovo giornaliero, `consumaAzioni`/`ripristinaAzioni`, riga "Azioni x/y" a destra. Sostituisce i turni del modulo foresta (che ora non ha più stato).
+- **`citta`**: contenuto `sito` (categoria porta, mura, piazza, edificio o area; contesto del menu; collegamenti con distanze; coordinate sulla mappa; per le porte uscita e area oppure messaggio di porta chiusa). I dati stanno in `dati.ts` con i testi nelle due lingue (identificativi neutri per posizione, nomi in un punto solo). Stato `{ sito, movimenti }`. Percorsi più brevi con Dijkstra (`percorsi.ts`, puro); costo di un viaggio = `floor((resto + distanza) / movimentiPerAzione)` azioni, con il resto conservato fino al nuovo giorno. Azioni `viaggia`, `esci`, `rientra`. Menu e pannelli generati dai dati; mappa a due livelli (categoria, luogo). La mappa 96 × 64 e il marcatore lampeggiante sono generati da `strumenti/arte` (`scene_d.py`), con le coordinate in `coordinate.ts`.
+- **`mura`**: l'NPC ha un tratto di mura (`sito`), scelto a caso a ogni giorno; parlargli richiede di essere lì e costa 1 azione; la scena con l'NPC compare solo nel suo tratto. (Dalla 0.7.1 la mappa non lo indica più e gli NPC sono tre: vedi §23.)
+- **`sviluppo`**: azioni `devGiornoDopo`, `devOro`, `devRipristina`, `devTeletrasporta` e schermate di prova. L'interfaccia le mostra solo se il gioco è aperto con `?dev=1` (`Piattaforma.sviluppo`).
+- Foresta, locanda, banca, guaritore ed equipaggiamento non hanno più le voci che portavano dal Villaggio; il contesto Villaggio non esiste più.
+
+### 22.3 Verifica
+Test su: calcoli puri di percorsi e costi; dati (sei porte con nomi originali, mura ad anello, raggiungibilità e simmetria); viaggio (costi, resto, azioni insufficienti, zero azioni, morte e rinascita); porte e foresta; menu e contesti; mappa con marcatore; NPC sulle mura (sito, costo, giorni diversi); comandi di prova (anche nel client); abilità evidenziate; forza minima dell'orco. Prova nel browser di una giornata (partenza, mappa, viaggi, mura, foresta, comandi di prova).
+
+## 23. Edifici nelle piazze, tre NPC e chiacchiere (0.7.1)
+
+Nessuna modifica al nucleo: tutto sta nei moduli `citta`, `mura`, `sviluppo`, `combattimento` e `foresta`.
+
+### 23.1 Modulo `citta`
+| Aspetto | Scelta |
+|---|---|
+| Campi nuovi del `sito` | `ospite` e `ingressoChiave` (solo edifici: il luogo da cui si entra e l'etichetta del comando), `direzione` (porte e mura: n, ne, e, s, so, no) e `ospitaNpc` (vero per porte, mura e tre piazze; falso per Torre e negozi). Validati all'avvio; i riferimenti a luoghi e testi si controllano come gli altri |
+| Ingresso e uscita | Azioni `entra { sito }` (solo dal luogo ospite; costa i movimenti del collegamento, con il resto che si conserva, e le azioni corrispondenti) e `esciEdificio` (gratis, torna all'ospite). Gli edifici non sono mete di `viaggia`. Da dentro un edificio i percorsi partono dall'ospite (`origineViaggio`): uscire non costa |
+| Menu | Ogni luogo ospite genera le voci d'ingresso (tasti dal 2: il 1 è di chi si incontra lì); ogni edificio ha `[U] Esci`. Il client non cambia: "Torna indietro" non compare nei contesti di casa, quindi serve una voce vera |
+| Mappa | Tre categorie (porte, mura, piazze e torre). Etichette con direzione (`citta.sito.<id>.mappa`). Le cifre sono sprite 5 x 7 (`cifre.ts`, font 3 x 5 scritto nel codice, bianco `#fdfdf5` diverso da quello del segno "sei qui" perché la composizione fonde i colori uguali e le cifre lampeggerebbero) sovrapposti accanto a ogni luogo della categoria aperta; la mappa di partenza non ne ha |
+| Dev | `citta.cat.edifici` resta solo per il menu di teletrasporto dei comandi di prova |
+
+### 23.2 Modulo `mura` (ora: tutti gli NPC della città)
+- Il nome del modulo resta `mura` (rinominarlo avrebbe toccato testi, stato e test senza vantaggi). Stato: `presenze: [{ npcId, sito, fatto }]` (vuoto finché non c'è un cambio di giorno: valgono `PARAMETRI_MURA.primoGiorno`), `chiacchiere` (tentativi di oggi), bonus temporanei.
+- Rotazione al nuovo giorno (`presenze.ts`, pura): 3 NPC a caso senza ripetizioni in 3 luoghi diversi tra quelli con `ospitaNpc`. Nessun vincolo "non due giorni di fila": con tre su sei obbligherebbe a un'alternanza fissa.
+- Scena: sulle mura la scena delle mura, in porte e piazze quella del villaggio con un'ancora propria (`ANCORA_VILLAGGIO`); il pannello e il comando `[1] Parla` stanno in ogni luogo che può ospitare NPC.
+- Chiacchiere (`chiacchiere.ts`, pure; l'azione in `indice.ts`): curva di silenzio, scelta dell'indizio con tiri già estratti (esclusi gli NPC già incontrati; senza candidati tace), eventi con testi in `mura.chiacchiere.*`. Tutti i numeri in `parametri.ts`. Il comando `[3]` sta nel contesto della Locanda, dichiarato dal modulo `mura` (nessuna dipendenza da `locanda`).
+
+### 23.3 Goblin
+Dati in `combattimento/dati.ts`, testi e sprite (`strumenti/arte/scene_c.py`, esportato con `esporta.py`), pesi in `foresta/dati.ts`. `pesoEffettivo` non cambia: il peso del Goblin sale con la potenza e poi resta pieno.
+
+### 23.4 Verifica
+Test su: ingressi e uscite (costi, resto, ospite sbagliato, da dentro si parte dall'ospite); menu e pannelli delle piazze; direzioni e cifre sul disegno (conteggio dei pixel acceso per ogni cifra); tre NPC (luoghi diversi, tutti i 15 luoghi e i 6 NPC nel tempo, una volta al giorno per NPC); assenza del pannello sulla mappa; chiacchiere (curva, costi, esclusi, 30%, frasi esatte it/en); Goblin (statistiche, pesi, testi); testo di Beatrice. Prova nel browser (Chromium) con `?dev=1&ora=21`: mappa con cifre, piazza con NPC, ingresso e uscita dall'Armeria, sei chiacchiere di fila.
+
+## 24. Rifiniture della 0.7.2
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo | `PannelloVista.titoloChiave` è facoltativo: senza titolo le righe seguono il nome del luogo. Compatibile con tutti i moduli esistenti |
+| Client | `righePannelli`: i pannelli senza titolo consecutivi formano un blocco unico; una linea sottile (`rigaLinea`) precede il registro degli eventi; senza eventi resta lo spazio di prima |
+| Città | `StatoCitta.visitati` (letto dai salvataggi senza il campo: vale il luogo attuale); `spostaIn` è l'unico punto che sposta il giocatore e segna il luogo (e l'ospite se è un edificio). La lista della mappa usa `citta.pannello.costoNoto`/`quiSeiNoto` per i luoghi visitati con edifici |
+| Testi generati dai dati | `citta.sito.<id>.dove` (con preposizione, da `dove` oppure dalla categoria), `.esci` (in piazza / alla porta, dall'ospite) e `.contiene` (nomi degli edifici). Nessun nome scritto due volte |
+| Goblin | Solo dati in `foresta/dati.ts`: `potenzaMin 18`, `potenzaPiena 22` |
+| Verifica | Test sulla mappa che impara, sulle preposizioni, sulle etichette di uscita, sull'uscita via piazza ospite, sul layout della Locanda e sul Goblin; prova nel browser |
+
+## 25. Livelli e gilde (0.8.0)
+
+Nessuna modifica al nucleo: due moduli nuovi e piccole estensioni additive in `combattimento` e `abilita`.
+
+| Aspetto | Scelta |
+|---|---|
+| Modulo `livelli` | Parametri (`parametri.ts`: esperienza, tetto, livelli chiave), calcoli puri (`calcolo.ts`: soglie cumulate, guadagni per livello e totali), dati di crescita per classe (`dati.ts`), stato `{ maestroPerso }` (si azzera col giorno). I guadagni **non si salvano**: regole su `puntoStatistiche`, `puntoVelocita` e `puntoManaMassimo` li ricalcolano da livello e classe. `salitaDiLivello` è l'unico punto che sale (aggiunge anche HP e mana attuali). Avviso e scheda dichiarati via `laterale` e `pannelli` |
+| Modulo `gilde` | Le tre gilde sono luoghi (edifici) nei dati della città: nessun cambiamento al client. Il modulo porta scene e sprite (`grafica.ts`, generata da `strumenti/arte/scene_e.py`), i capigilda come **creature**, l'azione `saliDiLivello`, il menu `[1]` di ogni gilda e il pannello. Dipende da citta, classi, combattimento, azioni, livelli |
+| Combattimento | `Creatura.nonLetale` (la sconfitta lascia a 1 HP senza penalità) e il punto di regola `puntoFineScontro` (`{ stato, creaturaId, esito, eventi }`): le regole possono cambiare lo stato e aggiungere eventi. Il modulo gilde lo usa per far salire di livello a fine duello e per segnare "riprova domani". `fugaConsentita: false` e il pannello "Fuga: impossibile" |
+| Abilità | `livelloMin` (default 1); `abilitaDellaClasse` resta in ordine di definizione; seconda abilità con `[D]` (posizione 2); stato "si sblocca al livello N" |
+| Città | Tre edifici nuovi con ospite la rispettiva piazza (ingresso 2 movimenti); coordinate sulla mappa generate da `scene_d.py` |
+| Comandi di prova | `devEsperienza` e `devLivello` nel modulo `sviluppo` |
+| Simulatore | `tests/moduli/bilanciamentoLivelli.test.ts`: test con report e soglie sulle vittorie contro i capigilda |
+| Rimandato | Penalità di esperienza alla morte; capigilda e abilità dell'8° e del 12°; tetto oltre il 4° |
+
+## 26. Mappa 128 x 96 e layout fluido (0.8.1)
+
+| Aspetto | Scelta |
+|---|---|
+| Formato | Nessun cambio: il formato accetta già fino a 128 x 96. La mappa è l'unica immagine di quella dimensione (le scene restano 96 x 64) |
+| Client | `src/client/scala.ts`: `calcolaScala(larghezzaColonna, altezzaDisponibile, larghezza, altezza)` pura, scala intera tra 1 e `SCALA_MAX` (7). `adattaScala` (render.ts) misura la colonna e l'altezza libera (altezza dello schermo meno la scheda meno i margini; con una colonna sola il 60% dello schermo). La griglia è `62ch + 1fr`, larghezza massima 200ch |
+| Arte | `strumenti/arte/scene_d.py`: mappa, coordinate e marcatore; ruoli di colore nuovi `acq_a` / `acq_b` per il scintillio dell'acqua (ciclo di palette a due gruppi sfasati); finestre con i ruoli `fin` / `fin_c` (accese di notte, spente di giorno). 48 colori, sotto il limite di 62 anche dopo la composizione con il segno e le cifre |
+| Cifre | `posizioneCifra` ora usa il centro 64; `POSIZIONI_SPECIALI` dà una posizione propria dove la standard cadrebbe su altri disegni (Piazza dell'Anfiteatro). Il bianco delle cifre è diverso da quello del segno "sei qui", perché la composizione fonde i colori uguali |
+| Verifica | Test su `calcolaScala`, dimensioni (mappa 128 x 96, scene 96 x 64), coordinate dentro l'immagine e cifre al loro posto; prova nel browser a 1920 x 950, 1366 x 768 e 1100 x 800 |
+
+## 27. Voci nascoste, avvisi e classi (0.8.2)
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo (additivo) | `InterfacciaModulo.menuNascosto(stato, ctx)` (id delle proprie voci di menu da non mostrare ora), `avvisi(stato, ctx)` (righe d'avviso in cima alle schermate), voce laterale `{ tipo: "esperienza", necessaria }` e tono `avviso`. `VistaPartita` porta `menuNascosto` e `avvisi`. Compatibile con tutti i moduli esistenti |
+| Client | Il menu filtra le voci nascoste (la tastiera usa lo stesso elenco: premere il tasto non fa nulla); gli avvisi sono in giallo con il segmento `lampeggia` (classe CSS attiva solo con `effetti-pieni`); le righe laterali con tono usano il colore del tono; l'esperienza a destra diventa "x/y" e gialla con ★ quando basta; il registro riparte quando comincia un contesto imposto e in combattimento mostra 5 righe |
+| Livelli | Tabella `esperienzaTotale` e `rette` in `parametri.ts`; `rettaPerLivello`, `rettaAttuale`, `pagaRetta`; stato `{ maestroPerso, tentativi }`; avviso e voce esperienza via `laterale`; pannello della crescita in ogni pagina di classe |
+| Gilde | Azioni `saliDiLivello` (livelli senza duello) e `sfidaCapogilda` (dopo la conferma); contesto `gilda:sfida` con i suoi pannelli; `menuNascosto` per mostrare `[1]` o `[2]`; `avvisi` con il luogo dove andare; stella nell'elenco delle piazze |
+| Classi | Contesti `info:classi` e `info:classe:<id>` (pagine dichiarate dai dati delle classi, con `contestiPadre` all'elenco); comando `[C]` nel gruppo INFO; i moduli abilità, livelli ed equipaggiamento aggiungono i propri pannelli alle pagine |
+| Abilità | Pannello in combattimento a una riga per abilità sbloccata; tasto dalla posizione (S prima, D seconda); `menuNascosto` per le bloccate |
+| Combattimento | Velocità e iniziativa in una riga; `menuNascosto` per "Fuggi" contro chi non permette la fuga; statistica `perse` (duelli non letali persi) |
+| Verifica | Test su tabella, retta e tentativi, conferma, avviso, menu nascosti, pagine delle classi, statistiche e simulatore; prova nel browser (avviso, mappa, gilda, salita con retta, conferma, duello compatto) |
+
+## 28. Contesti dichiarati dai moduli e rifiniture (0.8.3)
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo (additivo) | `InterfacciaModulo.contestiDaMorto`, `contestiLiberiDaForzato`, `contestiSchedaCompatta` (insiemi di contesti, raccolti nel `Registro`); la voce laterale `riga` può avere `soloCompleta` |
+| Client | `contestoAttuale(app, registro)`: durante un contesto imposto la navigazione è bloccata tranne verso i contesti liberi; "Torna indietro" c'è nelle schermate libere; da morti le voci dei contesti dichiarati restano; la scheda compatta (`schedaPersonaggio(..., compatta)`) ha nome, barre, oro e le righe non `soloCompleta`; `adattaScala` usa un margine di 24 px; finito il contesto imposto la navigazione torna alla casa |
+| Classi | Voce `[D]` nella creazione (la `C` è riservata al gruppo INFO), voci `[S]` nelle pagine, `menuNascosto` per non mostrare "Scegli questa classe" dopo la scelta; `contestiLiberiDaForzato` con l'elenco e le pagine. Il pannello della creazione ha solo le descrizioni brevi |
+| Mura (NPC) | `menuNascosto` per "Parla" dove non c'è un NPC da incontrare; pannello solo per gli NPC non ancora incontrati; evento `mura.parli` prima dell'esito |
+| Livelli | `penalitaEsperienza` (pura) e regola su `puntoFineScontro` per la morte contro creature non "non letali" |
+| Sviluppo | `contestiDaMorto` con i suoi contesti |
+| Verifica | Test su penalità (casi limite e morte vera), comandi di prova da morti, scheda compatta, NPC, pagine alla creazione e scelta dal client; prova nel browser (creazione, mappa, NPC) con viewport equivalente al tuo schermo a 137% |
+
+## 29. Scala stabile e mana per vittoria (0.8.4)
+
+| Aspetto | Scelta |
+|---|---|
+| Scala dell'immagine | `adattaScala(canvas, colonna, schedaCompatta)` usa lo spazio **riservato** alla scheda (`RIGHE_SCHEDA_COMPLETA = 11`, `RIGHE_SCHEDA_COMPATTA = 5` righe di altezza misurata, più il margine dell'immagine) e non le righe presenti: la scala dipende solo dalla finestra. Senza righe di scheda non si riserva nulla. `Schermata.schedaCompatta` porta il flag dal rendering. Il calcolo puro resta in `calcolaScala` |
+| Avviso | Niente riga laterale: `livelli.laterale` dichiara solo l'esperienza; l'avviso passa da `avvisi` (cima) e dal colore della riga del livello |
+| Mana | `mana` dipende ora da `combattimento` e ha una regola su `puntoFineScontro` (+`recuperoPerVittoria` per scontro vinto, fino al massimo). La crescita è un dato (`[2]`); la pagina di classe distingue "mana fisso" da "mana alterno" |
+| Client | Aprendo le Opzioni il registro si svuota |
+| Verifica | Test sul recupero del mana (vittoria, massimo, nessun mana senza classe, morte), sulla crescita 10-12-14-16, sui testi non ripetuti, sull'avviso senza riga; prova nel browser (scene e mappa a 600 e 632 px di altezza, per Mistico e Cavaliere, in tutte le schermate della sessione) |
+
+## 30. La palude e il cimitero (0.9.0)
+
+| Aspetto | Scelta |
+|---|---|
+| Modulo `palude` | `dati.ts` (sei creature, due luoghi con i pesi di incontro, soglie del pericolo), `pericolo.ts` (puro: basso / medio / alto), `testi.ts` (it/en), `interfaccia.ts` (menu `[1]` e `[2]` che richiamano l'azione `esploraForesta` con `luogoId`, pannelli di descrizione e pericolo), `grafica.ts` (generata da `strumenti/arte/scene_f.py`). Nessuna azione nuova: la foresta era già generica. Dipende da azioni, città, combattimento, foresta e luoghi |
+| Città | Il sito `paludi` (area, contesto `luogo:paludi`); Porta Sant'Anna ha `areaId` **e** `chiusaChiave` insieme con `livelloMin: 4`: `esci` la tiene chiusa (mostrando il messaggio) finché il livello non basta. La validazione ammette entrambi i campi solo con `livelloMin` |
+| Livelli | `livelloMax` 7 e rette 5-7 nei parametri; soglie e crescita già nei dati |
+| Sviluppo | I mostri nuovi nei comandi di prova (tasti 1-9 e `A`); dipende da `palude` per i testi |
+| Arte | `scene_f.py`: scene `scena.palude` e `scena.cimitero` con ancora per i mostri, sei sprite con contorno, `macchia_su` (texture solo sui pixel disegnati); la mappa disegna croci e lapidi nelle paludi |
+| Verifica | Test sul modulo (mix, potenza minima, pericolo, premi, mortalità per classe), sulla porta (area, livello minimo, messaggio), sui comandi di prova e sul tetto a 7; prova nel browser (porta chiusa al livello 1, aperta al 4, schermata delle paludi, primo scontro) |
+
+## 31. Regola dei tasti (0.9.1)
+
+| Aspetto | Scelta |
+|---|---|
+| Dati | `Sito.tasto` (solo edifici, una lettera maiuscola, obbligatoria e validata) e `tasto` fisso nei moduli: `E` esci (porte ed edifici), `P` Parla (mura), `P`/`C` esplorazioni delle paludi, `1` conferma del duello e scelta della classe |
+| INFO | `CONTESTO_INFO` ha la sola voce `I` (`interfaccia.info`) verso `CONTESTO_INFO_INDICE`; i moduli (interfaccia, combattimento, classi) dichiarano le loro voci in `info:indice` con numeri `1`-`3`; le schede hanno come `contestiPadre` l'elenco (`info:classi` e `info:statistiche` anche), l'elenco torna al luogo di prima |
+| Client | Il gruppo INFO non si mostra dentro i contesti che iniziano con `info:`; il resto invariato |
+| Verifica | Test di coerenza sull'intero registro (`F` solo Fuggi, uscite `E`, lettere d'ingresso = iniziale o seconda del nome, nessun doppione per luogo, elenchi di luoghi numerati, INFO solo `I`); test del client e dei moduli aggiornati ai nuovi tasti; prova nel browser (porta, informazioni, classi, piazza, armeria, uscita, gilda, foresta, combattimento) |
+
+## 32. Danno, tipi, riserva e voci alternative (0.9.3)
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo (additivo) | `VoceMenu.alternativa`: due voci con lo stesso tasto sono ammesse solo se dichiarate alternative (mutuamente esclusive); il modulo ne nasconde sempre una con `menuNascosto`, e un test controlla la coerenza |
+| Combattimento | `quotaDannoMinimo` e `dannoMinimo` (puro); `TIPI_DANNO`, `Creatura.natura` (validata), punto di regola `puntoTipoDanno` (parte da contundente: l'arma lo sostituisce), `EffettoScontro.tipoDanno` (la magia); `tipoDannoGiocatore`; statistica `ultimoInflitto`; riga della natura generata da `natura.ts` (testi per ogni sottoinsieme di tipi, in it/en) |
+| Equipaggiamento | Prezzo per punti (`prezzoPerPunti`), `livelloMassimo` per peso, `tipoDanno` per linea, stato `riserva` (facoltativo nel tipo), `Equipaggiato.proprieta` (facoltativo, senza effetto), `calcolaOfferta(..., slot)`, azioni `compraOggetto` con `slot` e `scambiaArma` (in combattimento chiama `risolviRound({ salta: true })`), regola `regolaTipoDannoArma`; contesto `luogo:armeria:riserva` con padre l'Armeria; Sartoria con tasti condivisi per classe |
+| Gilde | Le voci "Sali di livello" e "Sfida il capogilda" condividono il tasto `1` (alternative); riga `ultimoTentativo` |
+| Città | `conPorteAperte` ridisegna in oro le porte con `livelloMin` raggiunto (sprite `sprite.porta_aperta`) |
+| Palude | Natura dei mostri, nuove forze, potenze minime e soglie del pericolo (dati) |
+| Verifica | Test su danno minimo, tipi, natura, armature, riserva (acquisto, scambio, combattimento), tasti alternativi, prezzi e livelli per peso, porta dorata; simulatori a gradini di punti (capigilda e Paludi); prova nel browser |
+
+## 33. Combattimento automatico, giorno e notte (0.10.0)
+
+| Aspetto | Scelta |
+|---|---|
+| Ora | `Contesto.oraForzata` (facoltativo) per le prove; `Orologio.oraForzata()` facoltativo; il gateway locale lo passa al motore; `?ora=N` lo imposta. `oraLocale` e `faseDelGiorno` (pure, in `luoghi/fase.ts`) |
+| Luoghi | Campi facoltativi `pesiNotte`, `soloNotte`, `premioNotte`; l'esplorazione sceglie i pesi e le creature della fase e passa il premio a `iniziaScontro` |
+| Scontro | `ScontroAttivo.moltiplicatorePremio` (monete ed esperienza della vittoria) |
+| Automatico | `combattiFinoAllaFine` (`combattimento/automatico.ts`): ripete `risolviRound` finché lo scontro finisce, controlla la soglia prima di ogni attacco, riassume con `statistiche` prima e dopo, guardia di 300 round. Stato `automatico` e `soglia` (facoltativi nel tipo, con default). `esploraForesta` lo chiama se `automatico` è acceso |
+| Interfaccia | Voce `[T]` in combattimento; due settaggi numerici (`A`, `S`) dichiarati dal combattimento |
+| Verifica | Test su riassunto, freno (già sotto soglia e a metà scontro), duelli, settaggi, fasi e ore (anche il fuso e la mezzanotte), spettro solo di notte, premio +25%, quote di incontro per fase, righe di fase e pericolo; prova nel browser (T, fasi di giorno e di notte) |
+
+## 34. Inventario, pozioni, fine round e bestiario (0.11.0)
+
+| Aspetto | Scelta |
+|---|---|
+| Inventario | Modulo `inventario`: stato `{ slot: (id|null)[] }` (6 slot, completati se il salvataggio ne ha meno), tipo di contenuto `oggettoInventario` (nome e descrizione), API `aggiungiOggetto`, `rimuoviOggetto`, `oggettoInSlot`, `slotLiberi`; schermata INFO `info:inventario` e voce `[4]`. Non sa cosa contiene: lo decidono i moduli che dichiarano oggetti |
+| Pozioni | Modulo `pozioni` (dipende da combattimento, inventario, mana): sei pozioni come dati, stato `{ effetto, venduti }`, scorta del giorno **deterministica** da `ultimoReset` (nessuna casualità salvata: `scortaDelGiorno`), azioni `compraPozione` e `usaOggetto` (in combattimento chiama `risolviRound({ salta: true })`), regole sulle statistiche, sulla velocità, sul fine round, sul nuovo giorno e sul bottino |
+| Nucleo (additivo) | `puntoFineRound` nel combattimento (dopo ogni round e dopo la fuga), esposto con `conteggioRound`; `traduciEvento` accetta parametri "...Chiavi" (elenchi di chiavi tradotte e unite con la virgola); `aggiungiMana`; il client riporta al combattimento dopo un'azione fatta da una pagina libera durante uno scontro |
+| Città | Nuovo sito `speziale` (edificio, `[S]`, in Piazza Napoleone), scena e icona sulla mappa generate da `strumenti/arte` |
+| Combattimento | Bestiario (`bestiario.ts`, contesto `info:bestiario`); il campo `ultimoInflitto` resta |
+| Equipaggiamento | `livelloOfferto` e `puntiEquipaggiati` (cambio per punti); riga di aiuto nell'Armeria |
+| Verifica | Test su inventario (slot, pieno, salvataggi vecchi), scorta (determinismo, 50%, 1-2 pezzi, azzeramento al nuovo giorno), prezzi, acquisti, uso e durata in turni (anche tra scontri), non cumulabilità, bottino (2%, zaino pieno, mai dai duelli), bestiario, cambio di linea, curve dei duelli; prova nel browser (Speziale, acquisti, zaino, Bevi in combattimento, bestiario) |
+
+## 35. Bestiario a livelli e menu dinamici (0.11.1)
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo (additivo) | `ComandoMenu` con `poi`: dopo un'azione riuscita il client apre una schermata. `InterfacciaModulo.etichette`: etichette dei menu che dipendono dallo stato (id della voce → riga di testo), raccolte in `VistaPartita.etichette` e usate dal client al posto del testo fisso. Servono per elenchi dinamici senza buchi nei numeri |
+| Combattimento | Campo `famiglia` nelle creature (validato su `FAMIGLIE`), `ordine` di scoperta nelle statistiche, `bestiario` (famiglia, pagina, mostro) nello stato; contesti `info:bestiario`, `info:bestiario:famiglia`, `info:bestiario:scheda` con padri a catena; azioni `bestiarioFamiglia`, `bestiarioMostro`, `bestiarioPagina` (valide anche da morti); `bestiario.ts` con elenchi, pannelli, etichette, voci nascoste e collage (`sovrapponi` di sprite sullo sfondo `scena.bestiario`) |
+| Client | Etichetta dinamica se c'è, altrimenti il testo fisso; `poi` dopo l'azione; le schermate `info:` sono consultabili da morti |
+| Pozioni | Etichette dinamiche nello zaino ("Usa: ...") |
+| Verifica | Test su elenco senza buchi, scheda, righe vuote, errori di posizione, capigilda esclusi, immagini e ordine di scoperta, pagine da 9 (con un modulo di prova da 12 mostri), flusso del client (numeri avanti, 0 indietro), consultazione da morti; prova nel browser con il salvataggio del Ladro |
+
+## 36. Il libro del bestiario (0.11.2)
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo | `incidi(raster, toni, soglie)` (pura): riduce un disegno a pochi toni in base alla luminosità; i pixel trasparenti restano; elimina i cicli. Test dedicati |
+| Combattimento | `libro()` in `bestiario.ts`: sulla scena `scena.tomo` sovrappone i mostri incisi (al centro di ciascuna pagina, con i piedi su una riga) e, nella scheda, le icone `icona.*` con il segno `segno.piu`, `segno.meno` o `segno.neutro` secondo la natura. Sparisce il collage |
+| Arte | `scene_c.tomo`, quattro icone e tre segni in `strumenti/arte`, esportati nel modulo combattimento |
+| Verifica | Test sull'incisione e sul libro (dimensioni, palette dei toni, immagine diversa per natura diversa); prova nel browser con il salvataggio del Ladro |
+

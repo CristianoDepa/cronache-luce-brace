@@ -54,7 +54,8 @@ export interface RegolaCalendario {
 
 // Cosa succede quando il giocatore sceglie una voce di menu.
 export type ComandoMenu =
-  | { readonly tipo: "azione"; readonly azione: Azione }
+  // "poi": dopo che l'azione è riuscita il client apre questa schermata (es. scegliere un mostro nel bestiario e vederne la scheda).
+  | { readonly tipo: "azione"; readonly azione: Azione; readonly poi?: string }
   | { readonly tipo: "naviga"; readonly verso: string };
 
 // Voce di menu dichiarata da un modulo. Il contesto è una stringa libera:
@@ -65,6 +66,9 @@ export interface VoceMenu {
   readonly etichettaChiave: string;
   readonly tasto: string;
   readonly ordine?: number;
+  // Voci con lo stesso tasto e lo stesso gruppo "alternativa" sono mutuamente esclusive: il modulo ne nasconde sempre almeno una
+  // con menuNascosto (es. "Sali di livello" e "Sfida il capogilda"), così un luogo mostra un solo comando con quel tasto.
+  readonly alternativa?: string;
   readonly comando: ComandoMenu;
 }
 
@@ -72,7 +76,8 @@ export interface VoceMenu {
 export type RigaVista = EventoGioco;
 
 export interface PannelloVista {
-  readonly titoloChiave: string;
+  // Senza titolo le righe si mostrano di seguito al nome del luogo (descrizione e stato): usato per non ripetere ciò che già si legge.
+  readonly titoloChiave?: string;
   readonly righe: readonly RigaVista[];
   // Se presente, il pannello si mostra solo in questi contesti.
   readonly contesti?: readonly string[];
@@ -94,6 +99,25 @@ export interface DefinizioneImpostazione {
 }
 
 // Parte "visibile" di un modulo: menu, pannelli informativi e contesto imposto (es. combattimento in corso).
+// Voce della colonna di destra (sotto il nome del personaggio), dichiarata da un modulo:
+// una statistica che si aggiunge alla riga delle statistiche, oppure una barra (es. il mana).
+export type VoceLaterale =
+  | { readonly tipo: "statistica"; readonly etichettaChiave: string; readonly valore: number; readonly ordine: number }
+  // Una riga di testo (es. "Luogo: Porta San Pietro", "Azioni 42/50"), sotto la riga delle statistiche.
+  // Con "soloCompleta" la riga non compare nella scheda compatta (es. il luogo, che la mappa già dice).
+  | { readonly tipo: "riga"; readonly riga: RigaVista; readonly ordine: number; readonly soloCompleta?: boolean }
+  // Esperienza necessaria per il livello successivo: il client mostra "Esperienza 258/300".
+  | { readonly tipo: "esperienza"; readonly necessaria: number; readonly ordine: number }
+  | {
+      readonly tipo: "barra";
+      readonly etichettaChiave: string;
+      readonly attuale: number;
+      readonly massimo: number;
+      // Come colorare la barra in base a quanto resta (il client conosce gli stili).
+      readonly stile: "mana";
+      readonly ordine: number;
+    };
+
 export interface InterfacciaModulo {
   readonly menu?: readonly VoceMenu[];
   // Chiave di testo del titolo di ciascun contesto.
@@ -104,6 +128,26 @@ export interface InterfacciaModulo {
   // Disegni che dipendono dallo stato (es. scena più creatura), per contesto. Hanno la precedenza su quelli fissi.
   illustrazioni?(stato: StatoGioco, ctx: Contesto): Readonly<Record<string, Raster>>;
   pannelli?(stato: StatoGioco, ctx: Contesto): readonly PannelloVista[];
+  // Contesti che restano utilizzabili da morti (es. i comandi di prova: servono proprio per rialzarsi).
+  readonly contestiDaMorto?: readonly string[];
+  // Contesti che si possono aprire anche mentre un modulo impone il proprio (es. le pagine delle classi durante la creazione).
+  readonly contestiLiberiDaForzato?: readonly string[];
+  // Contesti in cui la scheda del personaggio è compatta (nome, barre, oro, luogo e azioni), per lasciare più spazio all'immagine.
+  readonly contestiSchedaCompatta?: readonly string[];
+  // Id delle proprie voci di menu da non mostrare in questo momento (es. abilità non ancora sbloccate): il client le ignora, tasto compreso.
+  menuNascosto?(stato: StatoGioco, ctx: Contesto): readonly Id[];
+  // Etichette dipendenti dallo stato per voci di menu (id della voce -> riga di testo con parametri): al posto dell'etichetta fissa
+  // (es. "Usa: Pozione di cura leggera" o il nome di un mostro nell'elenco del bestiario).
+  etichette?(stato: StatoGioco, ctx: Contesto): Readonly<Record<Id, RigaVista>>;
+  // Avvisi da mostrare in cima a ogni schermata di gioco (non in combattimento né alla creazione), in evidenza.
+  avvisi?(stato: StatoGioco, ctx: Contesto): readonly RigaVista[];
+  // Voci per la colonna di destra (statistiche, barre e righe).
+  laterale?(stato: StatoGioco, ctx: Contesto): readonly VoceLaterale[];
+  // Contesto "di casa" del giocatore (per esempio il luogo in cui si trova): è la schermata a cui si torna dopo
+  // un'azione, una schermata INFO o la mappa. Il primo modulo che lo restituisce vince.
+  contestoBase?(stato: StatoGioco, ctx: Contesto): string | undefined;
+  // Per ogni contesto, il contesto a cui riporta "Torna indietro" (se manca, il contesto di casa).
+  readonly contestiPadre?: Readonly<Record<string, string>>;
   // Se restituisce un contesto, il giocatore non può navigare altrove finché dura.
   contestoForzato?(stato: StatoGioco, ctx: Contesto): string | undefined;
 }

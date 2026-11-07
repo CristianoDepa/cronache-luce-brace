@@ -1,5 +1,6 @@
-import type { Contesto, Id, Risultato } from "../../core/indice";
+import type { Contesto, Id, Risultato, StatoGioco } from "../../core/indice";
 import {
+  calcolaStatistiche,
   chiudi,
   comeOggetto,
   definisciAzione,
@@ -10,11 +11,10 @@ import {
   numero,
   stringa,
 } from "../../core/indice";
-import { creaturaDisponibile, iniziaScontro, tipoCreatura } from "../combattimento/indice";
-import type { Luogo } from "../luoghi/indice";
-import { tipoLuogo } from "../luoghi/indice";
-import { PARAMETRI_FORESTA } from "./parametri";
-import { consumaTurni, leggiTurniResidui, statoForesta } from "./tipi";
+import { combattiFinoAllaFine, creaturaDisponibile, impostazioniAutomatico, iniziaScontro, tipoCreatura } from "../combattimento/indice";
+import type { FaseGiorno, Luogo } from "../luoghi/indice";
+import { calcolaPotenza, faseDelGiorno, pesiEffettivi, scegliConPesi, tipoLuogo } from "../luoghi/indice";
+import { consumaAzioni, leggiAzioniResidue } from "../azioni/indice";
 
 function validaLuogoId(dati: unknown): Risultato<{ readonly luogoId: Id }> {
   const o = comeOggetto(dati);
@@ -24,50 +24,35 @@ function validaLuogoId(dati: unknown): Risultato<{ readonly luogoId: Id }> {
   return chiudi(errori, { luogoId });
 }
 
-// Sceglie a caso una creatura tra quelle del luogo disponibili in questo momento.
-function scegliCreatura(luogo: Luogo, ctx: Contesto): Id | undefined {
+// Sceglie una creatura tra quelle del luogo disponibili in questo momento, in proporzione ai loro pesi.
+function scegliCreatura(luogo: Luogo, stato: StatoGioco, ctx: Contesto, fase: FaseGiorno): Id | undefined {
+  // Di giorno non compaiono le creature "solo di notte"; di notte, se il luogo li ha, valgono i pesi notturni.
   const candidate = luogo.creature.filter((id) => {
     const creatura = leggiContenuto(ctx.registro, tipoCreatura, id);
-    return creatura !== undefined && creaturaDisponibile(creatura, ctx);
+    return creatura !== undefined && creaturaDisponibile(creatura, ctx) && !(fase === "giorno" && luogo.soloNotte?.includes(id));
   });
   if (candidate.length === 0) return undefined;
-  return candidate[ctx.rng.intero(0, candidate.length - 1)];
+  // Alcune creature compaiono solo a personaggi abbastanza potenti: i pesi dipendono dalla potenza attuale.
+  const statistiche = calcolaStatistiche(stato, ctx);
+  const pesiBase = fase === "notte" && luogo.pesiNotte ? luogo.pesiNotte : luogo.pesi;
+  const pesi = pesiEffettivi(pesiBase, candidate, calcolaPotenza(statistiche), statistiche.forza);
+  return scegliConPesi(candidate, pesi, ctx.rng.prossimo());
 }
 
 // Esplora un luogo: consuma un turno all'inizio dell'incontro. La fuga non lo restituisce.
 export const azioneEsploraForesta = definisciAzione("esploraForesta", validaLuogoId, (stato, dati, ctx) => {
   const luogo = leggiContenuto(ctx.registro, tipoLuogo, dati.luogoId);
   if (!luogo) return esitoErrore("foresta.errore.luogo_sconosciuto", dati.luogoId);
-  const turni = leggiTurniResidui(stato);
-  if (turni <= 0) return esitoErrore("foresta.errore.turni_esauriti");
-  const creaturaId = scegliCreatura(luogo, ctx);
+  const azioni = leggiAzioniResidue(stato);
+  if (azioni <= 0) return esitoErrore("azioni.errore.esaurite");
+  const fase = faseDelGiorno(ctx);
+  const creaturaId = scegliCreatura(luogo, stato, ctx, fase);
   if (creaturaId === undefined) return esitoErrore("foresta.errore.nessuna_creatura");
-  const esito = iniziaScontro(stato, creaturaId, ctx, luogo.scenaId);
+  const premio = fase === "notte" ? (luogo.premioNotte ?? 1) : 1;
+  const esito = iniziaScontro(stato, creaturaId, ctx, luogo.scenaId, premio);
   if (!esito.ok) return esito;
-  const consumato = consumaTurni(esito.stato, 1) ?? esito.stato;
-  return esitoOk(consumato, [...esito.eventi, { chiave: "foresta.turnoConsumato", parametri: { turni: turni - 1 } }]);
+  const consumato = consumaAzioni(esito.stato, 1) ?? esito.stato;
+  // Con il combattimento automatico acceso lo scontro si combatte da solo fino alla fine (o finché scatta il freno di sicurezza).
+  if (impostazioniAutomatico(consumato).automatico) return combattiFinoAllaFine(consumato, ctx, esito.eventi);
+  return esitoOk(consumato, esito.eventi);
 });
-
-function validaValore(dati: unknown): Risultato<{ readonly valore: number }> {
-  const o = comeOggetto(dati);
-  if (!o) return fallisci("oggetto atteso");
-  const errori: string[] = [];
-  const valore = numero(o, "valore", errori);
-  return chiudi(errori, { valore });
-}
-
-// Cambia gli incontri al giorno. L'effetto è immediato: gli incontri rimasti oggi variano della differenza.
-export const azioneImpostaTurni = definisciAzione(
-  "impostaTurni",
-  validaValore,
-  (stato, dati) => {
-    const { valore } = dati;
-    const ammesso = Number.isInteger(valore) && valore >= PARAMETRI_FORESTA.turniMin && valore <= PARAMETRI_FORESTA.turniMax;
-    if (!ammesso) return esitoErrore("foresta.errore.turni_fuori_intervallo");
-    const corrente = statoForesta.leggi(stato);
-    const residui = Math.min(valore, Math.max(0, corrente.turniResidui + (valore - corrente.turniGiorno)));
-    const nuovo = statoForesta.scrivi(stato, { turniGiorno: valore, turniResidui: residui });
-    return esitoOk(nuovo, [{ chiave: "foresta.turniImpostati", parametri: { valore, turni: residui } }]);
-  },
-  { consentitaDaMorto: true },
-);

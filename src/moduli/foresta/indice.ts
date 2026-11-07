@@ -1,44 +1,32 @@
-import type { DefinizioneModulo, InterfacciaModulo } from "../../core/indice";
-import { VERSIONE_API, puntoInizioGiorno, regola } from "../../core/indice";
+import type { Contesto, DefinizioneModulo, InterfacciaModulo, RigaVista, StatoGioco } from "../../core/indice";
+import { VERSIONE_API, calcolaStatistiche } from "../../core/indice";
+import { ID_AZIONI } from "../azioni/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
-import { ID_LUOGHI } from "../luoghi/indice";
-import { azioneEsploraForesta, azioneImpostaTurni } from "./azioni";
+import { ID_LUOGHI, faseDelGiorno } from "../luoghi/indice";
+import { azioneEsploraForesta } from "./azioni";
 import { LUOGHI_FORESTA } from "./dati";
 import { ILLUSTRAZIONI_FORESTA } from "./grafica";
-import { PARAMETRI_FORESTA } from "./parametri";
 import { TESTI_FORESTA } from "./testi";
-import { ID_FORESTA, statoForesta } from "./tipi";
+import { ID_FORESTA } from "./tipi";
 
-export { ID_FORESTA, consumaTurni, leggiTurniResidui, statoForesta } from "./tipi";
-export type { StatoForesta } from "./tipi";
-export { PARAMETRI_FORESTA } from "./parametri";
+export { ID_FORESTA } from "./tipi";
 
 const CONTESTO_LUOGO = "luogo:foresta";
 
+// Una riga rossa sotto la metà degli HP: entrare in una zona da feriti è la causa più comune delle morti.
+export function avvisoFerito(stato: StatoGioco, ctx: Contesto): readonly RigaVista[] {
+  const { hpMax } = calcolaStatistiche(stato, ctx);
+  return stato.personaggio.hp * 2 < hpMax ? [{ chiave: "foresta.ferito", parametri: { hp: stato.personaggio.hp, hpMax }, tono: "negativo" as const }] : [];
+}
+
+// La foresta è l'area fuori dalla Porta San Pietro: ci si arriva dal modulo città (il comando di uscita) e vi si esplora.
+// Le azioni (incontri) che costa sono quelle del modulo azioni; il ritorno alla porta lo dichiara la città.
 const interfaccia: InterfacciaModulo = {
+  // Una riga dice se è giorno o notte e cosa cambia nella foresta.
+  pannelli: (stato, ctx) => [{ contesti: [CONTESTO_LUOGO], righe: [{ chiave: `foresta.fase.${faseDelGiorno(ctx)}` }, ...avvisoFerito(stato, ctx)] }],
   titoliContesto: { [CONTESTO_LUOGO]: "foresta.luogo.foresta" },
   illustrazioniContesto: { [CONTESTO_LUOGO]: "scena.foresta" },
-  impostazioni: [
-    {
-      id: "foresta.turni",
-      etichettaChiave: "foresta.impostazione.turni",
-      tasto: "T",
-      min: PARAMETRI_FORESTA.turniMin,
-      max: PARAMETRI_FORESTA.turniMax,
-      azioneTipo: "impostaTurni",
-      allaCreazione: true,
-      leggi: (stato) => statoForesta.leggi(stato).turniGiorno,
-    },
-  ],
   menu: [
-    {
-      id: "foresta.vai",
-      contesto: "villaggio",
-      etichettaChiave: "foresta.menu.vai",
-      tasto: "F",
-      ordine: 10,
-      comando: { tipo: "naviga", verso: CONTESTO_LUOGO },
-    },
     {
       id: "foresta.esplora",
       contesto: CONTESTO_LUOGO,
@@ -47,36 +35,14 @@ const interfaccia: InterfacciaModulo = {
       comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "foresta" } } },
     },
   ],
-  pannelli(stato) {
-    return [
-      {
-        titoloChiave: "foresta.pannello.titolo",
-        contesti: ["villaggio", CONTESTO_LUOGO, "info:personaggio"],
-        righe: [
-          {
-            chiave: "foresta.pannello.turni",
-            parametri: { turni: statoForesta.leggi(stato).turniResidui, turniMax: statoForesta.leggi(stato).turniGiorno },
-          },
-        ],
-      },
-    ];
-  },
 };
-
-// A ogni nuovo giorno gli incontri tornano al massimo.
-const regolaTurniGiornalieri = regola(puntoInizioGiorno, 100, (stato) => {
-  const { turniGiorno } = statoForesta.leggi(stato);
-  return statoForesta.scrivi(stato, { turniGiorno, turniResidui: turniGiorno });
-});
 
 export const moduloForesta: DefinizioneModulo = {
   id: ID_FORESTA,
   versioneApi: VERSIONE_API,
-  dipende: [ID_COMBATTIMENTO, ID_LUOGHI],
+  dipende: [ID_COMBATTIMENTO, ID_LUOGHI, ID_AZIONI],
   contenuti: [...LUOGHI_FORESTA, ...ILLUSTRAZIONI_FORESTA],
-  azioni: [azioneEsploraForesta, azioneImpostaTurni],
-  regole: [regolaTurniGiornalieri],
+  azioni: [azioneEsploraForesta],
   testi: TESTI_FORESTA,
-  stato: statoForesta,
   interfaccia,
 };

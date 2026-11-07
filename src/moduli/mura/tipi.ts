@@ -80,24 +80,41 @@ export const tipoNpc: TipoContenuto<Npc> = {
   },
 };
 
+// Un NPC presente oggi in un luogo; "fatto" è vero se il giocatore ci ha già parlato (una volta al giorno per NPC).
+export interface Presenza {
+  readonly npcId: Id;
+  readonly sito: Id;
+  readonly fatto: boolean;
+}
+
 export interface StatoMura {
-  // NPC di oggi; null finché non è avvenuto il primo cambio di giorno (vale il primo dell'elenco).
-  readonly npcId: Id | null;
-  readonly incontroFatto: boolean;
+  // Gli NPC di oggi (uno per luogo); vuoto finché non c'è stato un cambio di giorno (vale il primo giorno, vedi presenzeOggi).
+  readonly presenze: readonly Presenza[];
+  // Tentativi di ascolto delle chiacchiere in locanda fatti oggi (si azzera col giorno).
+  readonly chiacchiere: number;
   // Effetti temporanei degli incontri, validi fino al nuovo giorno.
   readonly bonusForza: number;
   readonly bonusDifesa: number;
+}
+
+function convalidaPresenza(dati: unknown, errori: string[]): Presenza[] {
+  const o = comeOggetto(dati);
+  if (!o) {
+    errori.push("presenza: oggetto atteso");
+    return [];
+  }
+  return [{ npcId: stringa(o, "npcId", errori), sito: stringa(o, "sito", errori), fatto: booleano(o, "fatto", errori) }];
 }
 
 function convalidaStato(dati: unknown): Risultato<StatoMura> {
   const o = comeOggetto(dati);
   if (!o) return fallisci("oggetto atteso");
   const errori: string[] = [];
-  const npcId = o["npcId"];
-  if (npcId !== null && typeof npcId !== "string") errori.push('campo "npcId": stringa o null atteso');
+  const grezze = o["presenze"];
+  if (grezze !== undefined && !Array.isArray(grezze)) errori.push('campo "presenze": elenco atteso');
   const stato: StatoMura = {
-    npcId: typeof npcId === "string" ? npcId : null,
-    incontroFatto: booleano(o, "incontroFatto", errori),
+    presenze: Array.isArray(grezze) ? grezze.flatMap((p) => convalidaPresenza(p, errori)) : [],
+    chiacchiere: numero(o, "chiacchiere", errori, { min: 0, predefinito: 0 }),
     bonusForza: numero(o, "bonusForza", errori),
     bonusDifesa: numero(o, "bonusDifesa", errori),
   };
@@ -107,6 +124,6 @@ function convalidaStato(dati: unknown): Risultato<StatoMura> {
 export const statoMura = definisciStato<StatoMura>(
   ID_MURA,
   1,
-  () => ({ npcId: null, incontroFatto: false, bonusForza: 0, bonusDifesa: 0 }),
+  () => ({ presenze: [], chiacchiere: 0, bonusForza: 0, bonusDifesa: 0 }),
   convalidaStato,
 );

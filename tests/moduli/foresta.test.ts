@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DURATA_CICLO_MS, applicaGiorno, eseguiAzione } from "../../src/core/indice";
 import type { StatoGioco } from "../../src/core/indice";
 import { statoCombattimento } from "../../src/moduli/combattimento/indice";
-import { PARAMETRI_FORESTA, statoForesta } from "../../src/moduli/foresta/indice";
+import { PARAMETRI_AZIONI, statoAzioni } from "../../src/moduli/azioni/indice";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
 import { LUGLIO, combattiFinoAllaFine, creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from "../aiuti";
 
@@ -20,11 +20,11 @@ function giocatoreForte(): { ctx: ReturnType<typeof creaContestoDiProva>; stato:
 describe("foresta", () => {
   it("esplorare avvia uno scontro e consuma un turno", () => {
     const { ctx, stato } = giocatoreForte();
-    expect(statoForesta.leggi(stato).turniResidui).toBe(PARAMETRI_FORESTA.turniGiornoPredefinito);
+    expect(statoAzioni.leggi(stato).residue).toBe(PARAMETRI_AZIONI.azioniGiornoPredefinite);
     const r = eseguiOk(stato, esplora, ctx);
-    expect(statoForesta.leggi(r.stato).turniResidui).toBe(PARAMETRI_FORESTA.turniGiornoPredefinito - 1);
+    expect(statoAzioni.leggi(r.stato).residue).toBe(PARAMETRI_AZIONI.azioniGiornoPredefinite - 1);
     expect(statoCombattimento.leggi(r.stato).scontro).not.toBeNull();
-    expect(r.eventi.map((e) => e.chiave)).toEqual(["combattimento.inizio", "foresta.turnoConsumato"]);
+    expect(r.eventi.map((e) => e.chiave)).toEqual(["combattimento.inizio"]);
   });
 
   it("la fuga non restituisce il turno", () => {
@@ -34,18 +34,18 @@ describe("foresta", () => {
       corrente = eseguiOk(corrente, { tipo: "fuggi" }, ctx).stato;
     }
     expect(statoCombattimento.leggi(corrente).scontro).toBeNull();
-    expect(statoForesta.leggi(corrente).turniResidui).toBe(PARAMETRI_FORESTA.turniGiornoPredefinito - 1);
+    expect(statoAzioni.leggi(corrente).residue).toBe(PARAMETRI_AZIONI.azioniGiornoPredefinite - 1);
   });
 
   it("finiti i turni non si può più esplorare", () => {
     const { ctx, stato } = giocatoreForte();
     let corrente = stato;
-    for (let i = 0; i < PARAMETRI_FORESTA.turniGiornoPredefinito; i++) {
+    for (let i = 0; i < PARAMETRI_AZIONI.azioniGiornoPredefinite; i++) {
       corrente = combattiFinoAllaFine(eseguiOk(corrente, esplora, ctx).stato, ctx).stato;
     }
-    expect(statoForesta.leggi(corrente).turniResidui).toBe(0);
+    expect(statoAzioni.leggi(corrente).residue).toBe(0);
     const oltre = eseguiAzione(corrente, esplora, ctx);
-    expect(oltre.ok ? "" : oltre.errore.chiave).toBe("foresta.errore.turni_esauriti");
+    expect(oltre.ok ? "" : oltre.errore.chiave).toBe("azioni.errore.esaurite");
   });
 
   it("non si esplora durante un combattimento e il turno non viene consumato", () => {
@@ -53,7 +53,7 @@ describe("foresta", () => {
     const inCorso = eseguiOk(stato, esplora, ctx).stato;
     const di_nuovo = eseguiAzione(inCorso, esplora, ctx);
     expect(di_nuovo.ok ? "" : di_nuovo.errore.chiave).toBe("combattimento.errore.combattimento_in_corso");
-    expect(statoForesta.leggi(inCorso).turniResidui).toBe(PARAMETRI_FORESTA.turniGiornoPredefinito - 1);
+    expect(statoAzioni.leggi(inCorso).residue).toBe(PARAMETRI_AZIONI.azioniGiornoPredefinite - 1);
   });
 
   it("rifiuta un luogo sconosciuto", () => {
@@ -67,6 +67,6 @@ describe("foresta", () => {
     const consumato = combattiFinoAllaFine(eseguiOk(stato, esplora, ctx).stato, ctx).stato;
     const domani = { ...ctx, adesso: LUGLIO + DURATA_CICLO_MS };
     const esito = applicaGiorno(consumato, domani);
-    expect(esito.ok && statoForesta.leggi(esito.stato).turniResidui).toBe(PARAMETRI_FORESTA.turniGiornoPredefinito);
+    expect(esito.ok && statoAzioni.leggi(esito.stato).residue).toBe(PARAMETRI_AZIONI.azioniGiornoPredefinite);
   });
 });

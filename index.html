@@ -8,13 +8,12 @@
       html, body { margin: 0; background: #000; color: #aaa; }
       body { min-height: 100vh; font-family: "Cascadia Mono", Consolas, "Courier New", monospace; font-size: 18px; line-height: 1.3; font-variant-numeric: slashed-zero; font-feature-settings: "zero" 1; }
       /* Due colonne: a sinistra il gioco, a destra disegno e scheda del personaggio (che resta in vista scorrendo). */
-      #schermo { max-width: 124ch; margin: 0 auto; padding: 1rem; display: grid; grid-template-columns: minmax(0, 62ch) minmax(0, 50ch); column-gap: 3ch; align-items: start; }
+      #schermo { max-width: 200ch; margin: 0 auto; padding: 1rem; display: grid; grid-template-columns: minmax(0, 62ch) minmax(0, 1fr); column-gap: 3ch; align-items: start; }
       .colonna { min-width: 0; }
       .destra { position: sticky; top: 1rem; }
       .riga { white-space: pre-wrap; min-height: 1.3em; }
-      /* Disegni a pixel: ogni riga ha altezza fissa e ogni cella è uno sfondo a due colori (due pixel), senza glifi. */
-      .riga.arte { height: 1.3em; min-height: 1.3em; line-height: 0; white-space: nowrap; overflow: hidden; }
-      .px { display: inline-block; height: 1.3em; vertical-align: top; }
+      /* Immagini: un pixel dell'immagine = un pixel del canvas, ingrandito a numeri interi senza sfumature. */
+      .immagine { display: block; image-rendering: pixelated; image-rendering: crisp-edges; margin-bottom: 0.5em; }
       .campo { margin-top: 0.8em; width: 100%; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #555; padding: 0.3em 0.5em; font: inherit; outline: none; caret-color: #ff5; }
       .campo:focus { border-color: #ff5; }
       /* Su schermi stretti torna una colonna sola, con il disegno in cima. */
@@ -22,7 +21,16 @@
         #schermo { grid-template-columns: minmax(0, 1fr); max-width: 80ch; }
         .destra { order: -1; position: static; }
       }
-      /* Palette ANSI a 16 colori (CGA) */
+      /* Avvisi (es. "Puoi salire di livello"): lampeggiano solo con gli effetti grafici pieni. */
+      @keyframes lampeggio { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0.35; } }
+      body.effetti-pieni .lampeggia { animation: lampeggio 1.4s steps(1, end) infinite; }
+      /* Effetto CRT (opzionale): linee di scansione, vignettatura e bagliore */
+      body.crt::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 20;
+        background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.28) 0, rgba(0,0,0,0.28) 1px, transparent 1px, transparent 3px),
+                    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%); }
+      body.crt #schermo { text-shadow: 0 0 6px rgba(140,255,170,0.35); }
+      body.crt .immagine { filter: brightness(1.08) saturate(1.12) drop-shadow(0 0 8px rgba(120,160,255,0.4)); }
+      /* Palette ANSI a 16 colori (CGA) per il testo */
       .c0 { color: #000 } .c1 { color: #00a } .c2 { color: #0a0 } .c3 { color: #0aa }
       .c4 { color: #a00 } .c5 { color: #a0a } .c6 { color: #a50 } .c7 { color: #aaa }
       .c8 { color: #555 } .c9 { color: #55f } .c10 { color: #5f5 } .c11 { color: #5ff }

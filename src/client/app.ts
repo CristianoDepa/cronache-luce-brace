@@ -1,8 +1,8 @@
 import type { Istante, Lingua } from "../core/indice";
 import { traduci } from "../core/indice";
 import type { Gateway, RispostaGateway } from "../porte/gateway";
-import type { ComandoClient, LineaLog, Scelta, Schermata, StatoApp } from "./schermata";
-import { CONTESTO_INIZIALE, costruisciSchermata, logDaEventi } from "./schermata";
+import type { ComandoClient, Effetti, LineaLog, Scelta, Schermata, StatoApp } from "./schermata";
+import { CONTESTO_INIZIALE, EFFETTI, accodaLog, costruisciSchermata, logDaEventi } from "./schermata";
 
 // Ciò che dipende dal browser: le funzioni reali stanno in main.ts, quelle finte nei test.
 export interface Piattaforma {
@@ -10,11 +10,19 @@ export interface Piattaforma {
   scarica(nomeFile: string, testo: string): void;
   // Apre la scelta di un file e restituisce il suo contenuto (undefined se annullato).
   scegliFile(): Promise<string | undefined>;
+  // Vero se il sistema chiede di ridurre i movimenti: in tal caso gli effetti partono "ridotti".
+  movimentoRidotto(): boolean;
+  // Vero se il gioco è stato aperto con ?dev=1: compaiono i comandi di prova nelle Opzioni.
+  sviluppo(): boolean;
 }
 
 export interface PreferenzeUi {
   leggiLingua(): Lingua | undefined;
   salvaLingua(lingua: Lingua): void;
+  leggiEffetti(): Effetti | undefined;
+  salvaEffetti(effetti: Effetti): void;
+  leggiCrt(): boolean | undefined;
+  salvaCrt(attivo: boolean): void;
 }
 
 export interface App {
@@ -44,6 +52,9 @@ const STATO_INIZIALE: StatoApp = {
   navigazione: CONTESTO_INIZIALE,
   log: [],
   salvataggioPresente: false,
+  effetti: "pieni",
+  crt: false,
+  sviluppo: false,
   codaImpostazioni: [],
   daCreazione: false,
   erroriFatali: [],
@@ -66,7 +77,7 @@ export function creaApp(
   };
 
   const aggiungiLog = (righe: readonly LineaLog[]): void => {
-    imposta({ log: [...corrente.log, ...righe].slice(-RIGHE_LOG_MAX) });
+    imposta({ log: accodaLog(corrente.log, righe, RIGHE_LOG_MAX) });
   };
 
   const logTesto = (chiave: string, tono: LineaLog["tono"]): LineaLog => ({
@@ -80,12 +91,14 @@ export function creaApp(
       // Un nuovo giorno scattato prima dell'errore aggiorna comunque la vista.
       if (risposta.vista) corrente = { ...corrente, vista: risposta.vista };
       const nuovi = logDaEventi(registro, corrente.lingua, [...(risposta.eventi ?? [])]);
-      corrente = { ...corrente, log: [...corrente.log, ...nuovi].slice(-RIGHE_LOG_MAX) };
+      corrente = { ...corrente, log: accodaLog(corrente.log, nuovi, RIGHE_LOG_MAX) };
       aggiungiLog([logTesto(risposta.errore.chiave, "negativo")]);
       return;
     }
     const nuovi = logDaEventi(registro, corrente.lingua, [...risposta.eventi]);
-    corrente = { ...corrente, vista: risposta.vista, log: [...corrente.log, ...nuovi].slice(-RIGHE_LOG_MAX) };
+    // Quando comincia uno scontro (o un altro contesto imposto da un modulo) il registro riparte: si leggono solo le righe di quello in corso.
+    const inizioForzato = risposta.vista.contestoForzato !== undefined && risposta.vista.contestoForzato !== corrente.vista?.contestoForzato;
+    corrente = { ...corrente, vista: risposta.vista, log: accodaLog(inizioForzato ? [] : corrente.log, nuovi, RIGHE_LOG_MAX) };
     imposta(passaAlGioco ? { fase: "gioco" } : {});
   };
 
@@ -132,6 +145,17 @@ export function creaApp(
     if (risposta.ok) prossimaImpostazione(corrente.codaImpostazioni, corrente.daCreazione);
   };
 
+  const cambiaEffetti = (): void => {
+    const prossimo = EFFETTI[(EFFETTI.indexOf(corrente.effetti) + 1) % EFFETTI.length] ?? "pieni";
+    preferenze.salvaEffetti(prossimo);
+    imposta({ effetti: prossimo });
+  };
+
+  const cambiaCrt = (): void => {
+    preferenze.salvaCrt(!corrente.crt);
+    imposta({ crt: !corrente.crt });
+  };
+
   const cambiaLingua = (lingua: Lingua): void => {
     preferenze.salvaLingua(lingua);
     imposta({ lingua });
@@ -170,7 +194,8 @@ export function creaApp(
       case "nuova":
         return imposta({ fase: "nome", log: [] });
       case "opzioni":
-        return imposta({ fase: "opzioni" });
+        // Nelle opzioni il registro riparte: restano solo i messaggi delle opzioni (non le righe dell'ultimo scontro).
+        return imposta({ fase: "opzioni", log: [] });
       case "chiudiOpzioni":
         return imposta({ fase: corrente.vista ? "gioco" : "menuIniziale" });
       case "esporta":
@@ -181,10 +206,32 @@ export function creaApp(
         // Spostandosi in un altro luogo il registro riparte vuoto: restano solo gli eventi di quel luogo.
         // Aprendo una schermata INFO si ricorda il luogo di partenza, a cui "Torna indietro" riporta.
         return imposta({ navigazione: c.verso, log: [], ritorno: ritornoDopo(corrente.navigazione, c.verso, corrente.ritorno) });
-      case "azione":
-        return applica(await gateway.invia(c.azione), true);
+      case "azione": {
+        const prima = corrente.vista?.contestoBase;
+        const eraForzato = corrente.vista?.contestoForzato !== undefined;
+        const risposta = await gateway.invia(c.azione);
+        applica(risposta, true);
+        // Se l'azione ha spostato il giocatore (es. un viaggio) si riparte dalla schermata del nuovo luogo,
+        // con nel registro solo gli eventi dell'arrivo.
+        // Finito un contesto imposto (es. scelta la classe da una pagina descrittiva) si torna alla schermata di casa.
+        if (risposta.ok && eraForzato && corrente.vista?.contestoForzato === undefined) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE });
+        // Alcune voci dicono dove andare dopo l'azione riuscita (es. scegliere un mostro e vederne la scheda).
+        if (risposta.ok && c.poi !== undefined) return imposta({ navigazione: c.poi });
+        // Un'azione fatta da una pagina libera durante uno scontro (es. bere dallo zaino) riporta al combattimento, che resta imposto.
+        else if (risposta.ok && eraForzato && registro.contestiLiberiDaForzato.has(corrente.navigazione)) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE });
+        if (risposta.ok && corrente.vista?.contestoBase !== prima) {
+          imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE, log: logDaEventi(registro, corrente.lingua, [...risposta.eventi]) });
+        }
+        return;
+      }
+      case "sviluppo":
+        return imposta({ fase: "gioco", navigazione: "sviluppo", log: [] });
       case "impostazione":
         return prossimaImpostazione([c.id], false);
+      case "effetti":
+        return cambiaEffetti();
+      case "crt":
+        return cambiaCrt();
     }
   };
 
@@ -195,6 +242,9 @@ export function creaApp(
     schermata,
 
     async avvia() {
+      // Effetti: la scelta salvata, altrimenti "ridotti" se il sistema chiede meno movimento.
+      const effetti = preferenze.leggiEffetti() ?? (piattaforma.movimentoRidotto() ? "ridotti" : "pieni");
+      corrente = { ...corrente, effetti, crt: preferenze.leggiCrt() ?? false, sviluppo: piattaforma.sviluppo() };
       const lingua = preferenze.leggiLingua();
       if (lingua === undefined) {
         aggiorna(corrente);

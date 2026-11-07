@@ -3,7 +3,7 @@ import type { DefinizioneModulo, StatoGioco } from "../../src/core/indice";
 import { VERSIONE_API, costruisciRegistro, traduci, traduciEvento } from "../../src/core/indice";
 import { ID_COMBATTIMENTO, statoCombattimento } from "../../src/moduli/combattimento/indice";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
-import { LUGLIO, combattiFinoAllaFine, creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from "../aiuti";
+import { LUGLIO, combattiFinoAllaFine, creaContestoDiProva, eseguiOk, registroDa, statoDiProva, moduloColpiSicuri } from "../aiuti";
 
 // Contenuti di prova come DATI: una bestia che uccide sempre e un boss da cui non si fugge.
 const moduloProva: DefinizioneModulo = {
@@ -11,12 +11,12 @@ const moduloProva: DefinizioneModulo = {
   versioneApi: VERSIONE_API,
   dipende: [ID_COMBATTIMENTO],
   contenuti: [
-    { tipo: "creatura", id: "bestia", dati: { nomeChiave: "prova-stat.bestia", hp: 500, forza: 60, difesa: 0, oro: 0, esperienza: 0 } },
+    { tipo: "creatura", id: "bestia", dati: { nomeChiave: "prova-stat.bestia", hp: 500, forza: 60, difesa: 0, oro: 0, esperienza: 0, velocita: 0 } },
   ],
   testi: { it: { "prova-stat.bestia": "una bestia" }, en: { "prova-stat.bestia": "a beast" } },
 };
 
-const registro = registroDa([...MODULI_ATTIVI, moduloProva]);
+const registro = registroDa([...MODULI_ATTIVI, moduloProva, moduloColpiSicuri]);
 const inizia = (id: string) => ({ tipo: "iniziaCombattimento", dati: { creaturaId: id } });
 
 function forte(): StatoGioco {
@@ -111,8 +111,8 @@ describe("tabella delle statistiche", () => {
 
   it("ha intestazione, una riga per nemico incontrato, il totale e la legenda", () => {
     const righe = tabella("it");
-    expect(righe[0]).toMatch(/^Nemico\s+Inc\s+Vit\s+Mor\s+Fug\s+Fal\s+Inf\s+Sub$/);
-    expect(righe[1]).toMatch(/^Ratto gigante\s+2\s+2\s+0\s+0\s+0\s+\d+\s+\d+$/);
+    expect(righe[0]).toMatch(/^Nemico\s+Inc\s+Vit\s+Mor\s+Per\s+Fug\s+Fal\s+Inf\s+Sub$/);
+    expect(righe[1]).toMatch(/^Ratto gigante\s+2\s+2\s+0\s+0\s+0\s+0\s+\d+\s+\d+$/);
     expect(righe[2]).toMatch(/^Lupo famelico\s+1\s+1\s+0/);
     expect(righe[3]).toMatch(/^Totale\s+3\s+3\s+0\s+0\s+0/);
     expect(righe).toHaveLength(7); // intestazione, 2 nemici, totale, 3 righe di legenda
@@ -124,13 +124,13 @@ describe("tabella delle statistiche", () => {
       const righe = tabella(lingua);
       const lunghezze = righe.slice(0, 4).map((r) => r.length);
       expect(new Set(lunghezze).size, lingua).toBe(1);
-      expect(lunghezze[0], lingua).toBe(57);
+      expect(lunghezze[0], lingua).toBe(59);
     }
   });
 
   it("in inglese usa le intestazioni e i nomi inglesi", () => {
     const righe = tabella("en");
-    expect(righe[0]).toMatch(/^Enemy\s+Met\s+Won\s+Lost\s+Fled\s+Fail\s+Dealt\s+Taken$/);
+    expect(righe[0]).toMatch(/^Enemy\s+Met\s+Won\s+Died\s+Lost\s+Fled\s+Fail\s+Dealt\s+Taken$/);
     expect(righe[1]).toMatch(/^Giant rat/);
   });
 

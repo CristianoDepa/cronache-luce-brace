@@ -102,7 +102,7 @@ describe("gateway locale", () => {
     const testo = contenitore.dati.get("clb.partita") ?? "";
     const letto = JSON.parse(testo) as { stato: StatoGioco };
     expect(letto.stato.personaggio.nome).toBe("Aldo");
-    expect(Object.keys(letto.stato.moduli).sort()).toEqual(["banca", "classi", "combattimento", "equipaggiamento", "foresta", "locanda", "mura"]);
+    expect(Object.keys(letto.stato.moduli).sort()).toEqual(["azioni", "banca", "citta", "classi", "combattimento", "equipaggiamento", "inventario", "livelli", "locanda", "mana", "mura", "pozioni"]);
   });
 
   it("un'azione dopo la scadenza del giorno applica prima il nuovo giorno", async () => {
@@ -113,7 +113,7 @@ describe("gateway locale", () => {
     orologio.avanza(DURATA_CICLO_MS);
     const r = await gw.invia({ tipo: "esploraForesta", dati: { luogoId: "foresta" } });
     expect(r.ok && r.eventi.map((e) => e.chiave)[0]).toBe("nucleo.nuovoGiorno");
-    expect(r.ok && r.eventi.map((e) => e.chiave)).toContain("foresta.turnoConsumato");
+    expect(r.ok && r.eventi.map((e) => e.chiave)).toContain("combattimento.inizio");
   });
 
   it("se l'azione fallisce dopo un nuovo giorno, la risposta porta comunque la vista aggiornata", async () => {

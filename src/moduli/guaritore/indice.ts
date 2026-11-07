@@ -52,9 +52,9 @@ const testi: DizionarioTesti = {
     "guaritore.menu.completa": "Cura completa",
     "guaritore.menu.piccola": "Cura 10 HP",
     "guaritore.pannello.titolo": "Il guaritore",
-    "guaritore.pannello.mancanti": "HP mancanti: {mancanti}. Costo per HP: {costo} monete.",
-    "guaritore.pannello.totale": "Cura completa: {totale} monete.",
-    "guaritore.cura": "Recuperi {hp} HP per {prezzo} monete.",
+    "guaritore.pannello.mancanti": "HP mancanti: {mancanti}. Costo per HP: {costo} {costo#moneta|monete}.",
+    "guaritore.pannello.totale": "Cura completa: {totale} {totale#moneta|monete}.",
+    "guaritore.cura": "Recuperi {hp} HP per {prezzo} {prezzo#moneta|monete}.",
     "guaritore.errore.in_salute": "Sei già in piena salute.",
     "guaritore.errore.oro_insufficiente": "Non hai abbastanza monete.",
   },
@@ -64,9 +64,9 @@ const testi: DizionarioTesti = {
     "guaritore.menu.completa": "Full heal",
     "guaritore.menu.piccola": "Heal 10 HP",
     "guaritore.pannello.titolo": "The healer",
-    "guaritore.pannello.mancanti": "Missing HP: {mancanti}. Cost per HP: {costo} coins.",
-    "guaritore.pannello.totale": "Full heal: {totale} coins.",
-    "guaritore.cura": "You recover {hp} HP for {prezzo} coins.",
+    "guaritore.pannello.mancanti": "Missing HP: {mancanti}. Cost per HP: {costo} {costo#coin|coins}.",
+    "guaritore.pannello.totale": "Full heal: {totale} {totale#coin|coins}.",
+    "guaritore.cura": "You recover {hp} HP for {prezzo} {prezzo#coin|coins}.",
     "guaritore.errore.in_salute": "You are already in perfect health.",
     "guaritore.errore.oro_insufficiente": "You do not have enough coins.",
   },
@@ -76,14 +76,6 @@ const interfaccia: InterfacciaModulo = {
   titoliContesto: { [CONTESTO_GUARITORE]: "guaritore.luogo" },
   illustrazioniContesto: { [CONTESTO_GUARITORE]: "scena.guaritore" },
   menu: [
-    {
-      id: "guaritore.vai",
-      contesto: "villaggio",
-      etichettaChiave: "guaritore.menu.vai",
-      tasto: "G",
-      ordine: 40,
-      comando: { tipo: "naviga", verso: CONTESTO_GUARITORE },
-    },
     {
       id: "guaritore.completa",
       contesto: CONTESTO_GUARITORE,
@@ -107,7 +99,6 @@ const interfaccia: InterfacciaModulo = {
     const costo = costoPerHp(stato);
     return [
       {
-        titoloChiave: "guaritore.pannello.titolo",
         contesti: [CONTESTO_GUARITORE],
         righe: [
           { chiave: "guaritore.pannello.mancanti", parametri: { mancanti, costo } },

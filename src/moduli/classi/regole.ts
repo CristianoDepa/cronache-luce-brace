@@ -1,6 +1,7 @@
 import type { Contesto, StatoGioco } from "../../core/indice";
 import { leggiContenuto, puntoStatistiche, regola } from "../../core/indice";
-import { puntoFuga, puntoOro } from "../combattimento/indice";
+import { puntoOro, puntoVelocita } from "../combattimento/indice";
+import { puntoManaMassimo } from "../mana/indice";
 import type { Classe } from "./tipi";
 import { statoClassi, tipoClasse } from "./tipi";
 
@@ -25,10 +26,16 @@ export const regolaStatisticheClasse = regola(puntoStatistiche, 100, (calcolo, c
   };
 });
 
-export const regolaFugaClasse = regola(puntoFuga, 100, (calcolo, ctx) => {
+export const regolaVelocitaClasse = regola(puntoVelocita, 100, (calcolo, ctx) => {
   const classe = classeDelGiocatore(calcolo.stato, ctx);
   if (!classe) return calcolo;
-  return { ...calcolo, probabilita: calcolo.probabilita + classe.modificatori.probabilitaFuga };
+  return { ...calcolo, velocita: calcolo.velocita + classe.modificatori.velocita };
+});
+
+export const regolaManaClasse = regola(puntoManaMassimo, 100, (calcolo, ctx) => {
+  const classe = classeDelGiocatore(calcolo.stato, ctx);
+  if (!classe) return calcolo;
+  return { ...calcolo, mana: calcolo.mana + classe.modificatori.mana };
 });
 
 export const regolaOroClasse = regola(puntoOro, 100, (calcolo, ctx) => {

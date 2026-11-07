@@ -1,10 +1,20 @@
 import type { Azione, Contesto, DefinizioneModulo, EventoGioco, Registro, StatoGioco } from "../src/core/indice";
-import { costruisciRegistro, creaRng, creaStatoIniziale, eseguiAzione } from "../src/core/indice";
+import { VERSIONE_API, costruisciRegistro, creaRng, creaStatoIniziale, eseguiAzione, regola } from "../src/core/indice";
+import { ID_COMBATTIMENTO, puntoPrecisione } from "../src/moduli/combattimento/indice";
 import type { ContenitoreStringhe } from "../src/adattatori/locale/archivioStorage";
 import type { Orologio } from "../src/porte/orologio";
 
 export const LUGLIO = Date.UTC(2026, 6, 1, 12);
 export const NATALE = Date.UTC(2026, 11, 25, 12);
+
+// Per i test che vogliono combattimenti senza colpi mancati: porta a 1 la probabilità di colpire di tutti.
+// Le abilità che la modificano (es. Carica) agiscono comunque dopo questa regola.
+export const moduloColpiSicuri: DefinizioneModulo = {
+  id: "prova-colpi-sicuri",
+  versioneApi: VERSIONE_API,
+  dipende: [ID_COMBATTIMENTO],
+  regole: [regola(puntoPrecisione, 1000, (calcolo) => ({ ...calcolo, probabilita: 1 }))],
+};
 
 // Costruisce il registro o fa fallire il test con l'elenco degli errori di configurazione.
 export function registroDa(moduli: readonly DefinizioneModulo[]): Registro {

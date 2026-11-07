@@ -17,6 +17,7 @@ export function creaGatewayLocale(registro: Registro, archivio: Archivio, orolog
     rng,
     adesso: orologio.adesso(),
     offsetFusoMinuti: orologio.offsetFusoMinuti(),
+    ...(orologio.oraForzata?.() !== undefined ? { oraForzata: orologio.oraForzata() as number } : {}),
   });
 
   const risposta = (stato: StatoGioco, eventi: readonly EventoGioco[]): RispostaGateway => ({

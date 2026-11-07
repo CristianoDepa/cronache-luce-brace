@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { DefinizioneImpostazione, DefinizioneModulo } from "../../src/core/indice";
 import { VERSIONE_API, creaVistaPartita, costruisciRegistro, eseguiAzione, definisciAzione, esitoOk, ok } from "../../src/core/indice";
-import { PARAMETRI_FORESTA, statoForesta } from "../../src/moduli/foresta/indice";
+import { PARAMETRI_AZIONI, statoAzioni } from "../../src/moduli/azioni/indice";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
 import { creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from "../aiuti";
 import type { StatoGioco } from "../../src/core/indice";
@@ -9,30 +9,30 @@ import { statoMura } from "../../src/moduli/mura/indice";
 
 const registro = registroDa(MODULI_ATTIVI);
 const ctx = creaContestoDiProva(registro, 4);
-const imposta = (valore: unknown) => ({ tipo: "impostaTurni", dati: { valore } });
+const imposta = (valore: unknown) => ({ tipo: "impostaAzioni", dati: { valore } });
 
-describe("settaggio: incontri al giorno", () => {
-  it("di default sono 30 e il settaggio è dichiarato dal modulo", () => {
+describe("settaggio: azioni al giorno", () => {
+  it("di default sono 50 e il settaggio è dichiarato dal modulo", () => {
     const vista = creaVistaPartita(statoDiProva(registro), ctx);
-    const turni = vista.impostazioni.find((i) => i.id === "foresta.turni");
-    expect(turni).toMatchObject({ valore: 30, min: 5, max: 100, tasto: "T", azioneTipo: "impostaTurni", allaCreazione: true });
+    const turni = vista.impostazioni.find((i) => i.id === "azioni.giorno");
+    expect(turni).toMatchObject({ valore: 50, min: 5, max: 100, tasto: "T", azioneTipo: "impostaAzioni", allaCreazione: true });
   });
 
   it("alzare il valore aggiunge la differenza agli incontri rimasti oggi", () => {
-    const base = statoForesta.scrivi(statoDiProva(registro), { turniGiorno: 30, turniResidui: 12 });
+    const base = statoAzioni.scrivi(statoDiProva(registro), { giorno: 30, residue: 12 });
     const r = eseguiOk(base, imposta(50), ctx);
-    expect(statoForesta.leggi(r.stato)).toEqual({ turniGiorno: 50, turniResidui: 32 });
+    expect(statoAzioni.leggi(r.stato)).toEqual({ giorno: 50, residue: 32 });
   });
 
   it("abbassare il valore toglie la differenza, senza scendere sotto zero", () => {
-    const base = statoForesta.scrivi(statoDiProva(registro), { turniGiorno: 30, turniResidui: 12 });
-    expect(statoForesta.leggi(eseguiOk(base, imposta(25), ctx).stato)).toEqual({ turniGiorno: 25, turniResidui: 7 });
-    expect(statoForesta.leggi(eseguiOk(base, imposta(10), ctx).stato)).toEqual({ turniGiorno: 10, turniResidui: 0 });
+    const base = statoAzioni.scrivi(statoDiProva(registro), { giorno: 30, residue: 12 });
+    expect(statoAzioni.leggi(eseguiOk(base, imposta(25), ctx).stato)).toEqual({ giorno: 25, residue: 7 });
+    expect(statoAzioni.leggi(eseguiOk(base, imposta(10), ctx).stato)).toEqual({ giorno: 10, residue: 0 });
   });
 
   it("gli incontri rimasti non superano mai il nuovo massimo", () => {
-    const base = statoForesta.scrivi(statoDiProva(registro), { turniGiorno: 30, turniResidui: 30 });
-    expect(statoForesta.leggi(eseguiOk(base, imposta(5), ctx).stato)).toEqual({ turniGiorno: 5, turniResidui: 5 });
+    const base = statoAzioni.scrivi(statoDiProva(registro), { giorno: 30, residue: 30 });
+    expect(statoAzioni.leggi(eseguiOk(base, imposta(5), ctx).stato)).toEqual({ giorno: 5, residue: 5 });
   });
 
   it("accetta solo interi da 5 a 100", () => {
@@ -50,16 +50,16 @@ describe("settaggio: incontri al giorno", () => {
     expect(eseguiAzione(morto, { tipo: "attacca" }, ctx).ok).toBe(false);
   });
 
-  it("un salvataggio della versione precedente (senza turniGiorno) si legge con il valore di default", () => {
+  it("un salvataggio della versione precedente (senza giorno) si legge con il valore di default", () => {
     const vecchio: StatoGioco = {
       ...statoDiProva(registro),
-      moduli: { ...statoDiProva(registro).moduli, foresta: { versione: 1, dati: { turniResidui: 8 } } },
+      moduli: { ...statoDiProva(registro).moduli, azioni: { versione: 1, dati: { residue: 8 } } },
     };
-    expect(statoForesta.leggi(vecchio)).toEqual({ turniGiorno: PARAMETRI_FORESTA.turniGiornoPredefinito, turniResidui: 8 });
+    expect(statoAzioni.leggi(vecchio)).toEqual({ giorno: PARAMETRI_AZIONI.azioniGiornoPredefinite, residue: 8 });
   });
 
   it("i moduli e i salvataggi nuovi funzionano senza il modulo delle mura (modulare)", () => {
-    expect(statoMura.leggi(statoDiProva(registro)).incontroFatto).toBe(false);
+    expect(statoMura.leggi(statoDiProva(registro)).presenze).toEqual([]);
   });
 });
 

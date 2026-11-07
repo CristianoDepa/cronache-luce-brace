@@ -1,44 +1,80 @@
 import type { VoceContenuto } from "../../core/indice";
 import { voceIllustrazione } from "../../core/indice";
 
-// Disegni a pixel (palette ANSI a 16 colori): ogni carattere è un pixel, "." è trasparente.
-// Per ritoccarli si cambiano le cifre esadecimali: 0 nero, 1 blu, 2 verde, 3 ciano, 4 rosso, 5 magenta,
-// 6 marrone, 7 grigio chiaro, 8 grigio scuro, 9 blu chiaro, a verde chiaro, b ciano chiaro, c rosso chiaro,
-// d magenta chiaro, e giallo, f bianco.
+// Disegni a pixel generati da strumenti/arte (vedi LEGGIMI.md). Ogni disegno ha la propria palette di colori
+// (#rrggbb, fino a 62), l'eventuale versione di giorno (paletteGiorno), i cicli di palette per le animazioni
+// (fuoco, stelle) e righe di pixel: ogni carattere e' l'indice del colore ("." = trasparente).
 
 export const ILLUSTRAZIONI_FORESTA: readonly VoceContenuto[] = [
   voceIllustrazione("scena.foresta", `
-111111111111111111111111111111111111111111111117
-11111111111111111111111f111111111111111111111111
-111171111111111111111111111111111111111111111111
-111111111711117111111111111111111111111f11111111
-11f1111211111111111111111111117111111ff111111111
-111111127111111111111111111111111111ffe111111111
-1111111a1111111111111111111711711111eeeee1111171
-1111112a211111111711111111111111111feeeee1111111
-1111112a2e1111111111111111111171111eeeeeee111111
-1111f1aa2111111711111111111111111111eeeee1f11111
-111112aa2211111111211111111111711111eeeeef111111
-11111222221111111121111111111111111111ef11111111
-9191912a2191919191a19191919191919191919191919191
-1911192a2911191112a21911191119111911191119111911
-919192aa2291919192a29191919191919191919191919191
-191902aa2219191902221919191909191919191909191919
-99912aaa2221999109209991999109909991999202209991
-191922222229221902a21202221909101909192202202909
-2099092a2202202202a22202202209909909202202202202
-2090002a220220202aa22202202000000902202000000202
-000002aa2200000022222000000000000000000000000000
-00002aaa2220000002a20000000000000000000000000000
-2222aaaa222222222aa22222222222222222222222222222
-2222222222222222aaa22222222222222222222222222222
-a2a2a266a2a2a2a2222222a2a2a2a2a2a2a2a2a2a2a2a2a2
-2a222a662a222a2226622a222a222a222a222a222a222a22
-a2a2a266a2a2a2a2a662a2a2a2a2a2a2a2a2a2a2a2a2a2a2
-222a2266222a222a266a222a222a222a222a222a222a222a
-62a262a262a262a2666262a262a262a262a262a262a262a2
-2ae22a222a222a222a222ae22a222a222a222a222a222e22
-a262ac62a262e262a262a262ac6ea262a262a262a262a262
-222a222a222a222c222a222a222a22ca222a222a222a222a
-`, { x: 24, y: 28 }),
+000000000000000000000000000001000000000000000000000000000000000000000000202020202020000000000000
+000000000000000000000000000000000000000000000000000003100000000000000002420202020202000000000000
+505050505050505050505050405050515050505050505050505053505050505350505020202023202020205050505050
+000500050005000500053005000500050005000500050004000500050005000500054002060606060602000500050005
+505050505050505050505050505050505050505010505050505053505050505050502020666066606660202050505050
+050505050545750505050505050505050505050505050505050505050505050545020206060608060606020205050505
+555555555595a59555555555555555555555555555555555555555555555555444252565b5b8b8b88565652525555555
+055505550555a55505550555055505550555053505550555055505550555055545520656088888888856065205550555
+55555555955a975595555551555555555555555555555555555555555555555555256665b8b8b8b8c885666525555555
+55555555555aa755555555555555555555555555555555555555555555555555525256588888888ccc88565252555555
+d5d5d5d5d59aa795d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d1d5256568b8b8b8b8c888656525d5d5d5
+555d555d55aaa77d555d555d555d555d555d555d555d555d555d555d555d555d555256588888888888885652555d555d
+d5d5d5d595aa977595d3d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d525256688b8b8b8b8888886632523d5d5
+5d5d5d5d5aaaa7775d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5252565888c8888888885652525d5d5d
+d53dd59dda9aa797d59dd5ddd5ddd5ddd5ddd5ddd5ddd5ddd5ddd5ddd5ddd5ddd52d6568bcccb8bc8888656d25ddd5dd
+5d5d5d5d5aaaa7775d5d5d5d5d5d5d5d5d4d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d52565888c888ccc88856525d5d5d5d
+dddddddd9aea97779ddddddddddddddddddddddddddddddddddddddddddddddddd2d666db8b8b8bc888d666d2ddddddd
+ddddd4ddaeeea7777dddddddddddddddddddddd1ddddddddddddd4ddddddddddd2d2d6d6d888888888d6d6d2d2dddddd
+ddfddd9ded9ea7eddd9dddfdddfdddfdddfdddfdddfdddfdddfdddfdddf3ddfddd2d2d64b4b8b8b88d6d6d2d2dfdddfd
+ddddddddddaaa77dddddddddddddddddddddddddddddddddddddddddddddddddddd2ddd6d6d6d8d6d6d6ddd2dddddddd
+fdfdfdfd9aaa97779dfdfdfdfdfd4dfdfdfd9dfdfdfdfdfdfdfdfdfdfdfdfdfdfdfd2d2d666d6661666d2d2dfdfdfdfd
+dfdfdfdfdaaaa777dfdfdfdfdfdfdfdfdfdfafdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfd2d2d6d6d6d6d6d2d2dfdfdfdfdf
+fdfffd9faa9aa7977d9ffdfffdfffdfffd9fad9ffdf3fdfffdfffdfffdfffdfffdfffd2f2d2f2d2f2d2f2dfffdfffdff
+dfdfdfd4aaaaa7777fdfdfdfdfdfdfdfdfdfafdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfdfd2dfd2dfd2dfd2dfdfdfdfdfdf
+ffff9ffa9eaa977797ff93ffffffffffffff9fffffffffffffffffffff4fffffffffffff2f2f2f2f2f2fffffffffffff
+fffffffaeeeaa77777fffffffffffffffffaa7ffffffffffffffffffffffffffffffffffff3ff2ffffffffffffffffff
+ffgfffeffe9ae79eff9fffgfffgfffgfff9aa79fffgfffgfffgfffgfffgfffgfffgfffgfffgfffgfffgfffgfffgfffgf
+fffffffffaaaa777fffffffffffffffffffaa7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+gfgf9fgf9aaa97779fgf9fgfgfgfgfgf9fga9egf9fgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfhhhh
+fgfgfgfgaaaaa7777gfgfgfgfgfgfgfgfghae7hgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfhhhhh
+gfgggf9aaa9aa797779ggfgggfgggfgggh9ea79hgfgggfgggfhhhhgggfgggfgggfgggfgggfgggfgggfgggfgggfhhhhhh
+fgfgfgaaaaaaa777777gfgfgfgfgfgfghhaaa77hhhfgfgfghhhhhhhgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfghhhhhh
+gggg9gae9aaa9777977g9ggggggiiigh9haa977h9hhhgghhhhhhhhhhggggggggggggggggggggggggggggggggghhhhhhh
+gggggaeeeeaaa7777777gggggggijighhhaaa77hhhhhhhhhhhhhhhhhhggggggggggggggggggggggggggggggghhhhhhhh
+ggkgggegge9ae79eggegggkgggkiiihhha9ea797hhhhhhhhhhhhhhhhhhkgggkgggkgggkgggkgggkgggkgggkghhhhhhhh
+ggggggggaaaaa7777gggggglllggghhhhaeea777hhhhhhhhhhhhhhhhhhggggggggllllggggggggggggggggghhhhhhhhh
+hgkg9gkg9aaa97779gkg9llllllgkhhhehae977h9hhhhhhhhhhhhhhhlhhgkgkglllllllgkgkgkgkgkgkgkghhhhhhhhhh
+hhgkgkgaaaaaa77777glllllllllhhhhhaaaa777hhhhhhhhhhhhhhllllllgkllllllllllgkgkgkgkgkgkgkhhhhhhhhhh
+hh9kkg9aaa9aa797779lll9llllllh9hha9aa797hh9hhhhhhhhhhlllllllllllllllllllkhhhkgkkkgkkkhhhhhhhhhhh
+hhhkgkaiiiaaa777777llllllllllhhhaaeaa7777hhhhhhhhhhhlllllllllllllllllllllhhhhhgkgkgkhhhhhhhhhhhh
+hhhh9aeijiaa977797779lllllllllhh9eee97779hhhhhhhhhhhllllllllllllllllllllllhhhhhhhhhhhhhhhhhhhhhl
+hhhhaeeiiiaaa77777777llllllllllhheaae77ehhhhhhhhhhhlllllllllllllllllllllllhhhhhhhhhhhhhhhhhhhhhl
+hh9heh9eaaeaae97em9ell9llllmll9hma9aa797hh9hhhhmhhllmllllmllllmllllmllllmllhhmhhhhmhhhhmhhhhmhll
+hhmhhhlaaaaaa77777llllmllllmllllaaaaa7777hmhhhhmiiilmllllmllllmllllmllllmlllhmhhhlmlhhhmhhhhmlll
+hhmh9lla9aaa977797ll9lmllllm9lll9aaa97779lmh9hhmijilmllllmllllmllllmllllmllllmllllmlllhmhhhhmlll
+lmmmllaaaaaaa777777llmmmllmmmllaeaaaa77777mmhhmmiiimmmllmmmllmmmllmmmllmmmllmmmllmmmllmmmhhmmmll
+lm9mla9aaa9aa7977797lm9mllmmml9eee9aa797779mllmmmllmmmllmmmllmmmllmmmllmmmllmmmllmmmllmmmllmmmll
+mmmmaaaaaaaaa77777777mmmmmmmmmemaeaae77e7mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmml
+nnna9aaa9aaa9777977797nnnnnn9nnn9aaa97779nnn9nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnaeeeeeeaaaa7777777777nnonpnonaaaaaa77777qqqoqqnnnnnnnnnnniiinnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnpn
+re9pen9esnette9nep9eop9nonopon9eaa9aa797779qoqonrppnrnpnrppijipnrnpnrnpnrnpnrppnrnpnrnpnrnpprnsn
+nnpsnnnrnnuttvnrnssrniiinnponaeeeeaaa7777777qqponsnrnnnrnsniiinrnnnrnnnrnpnrnsprnnnpnnnrnnnpnnnr
+prpnprpnpruttvpnpppnoijippsperoe9ret9eopeqoq9qpnprpnprpnprpnprppprpnprpnpsppprpnpppsprpnprpnprpn
+srnpprnrnruttvnrpsnrniiispnsnonrnouttvqsqoqqqonrnrnrnrnrnrnrprppnpnrnrsrnrnpnrnrnsnrnrnrnpprnpnr
+rppssrprrruttvprrrprorororororororuttvopoqopororrrprrrprrpprsrsprsprrrprrrpsprprrpprrrprrsprrppr
+nprrnrrrnruttvprnrrrnrronrronrropquttvqsqqpsqrronrrrprrrnsrrnrrsnrrrnrrrnrrrprrrnrrrnrrrnrprnrrr
+prprprprpputtvprprprororpropororsquttvoqopsqororppppsrprprppprprppprprprprppprppprprprppprprprpr
+rrprrrprrspsprrrrrrrrorrsprprpqqqouttvqqqsqqrorrrsrswxrrsprsrrrrrssrrrrrrrrsrrrsrrrrprrsprrrrrrr
+yrpryrwxypsryrprypprororosorppoqoquttvoqoqorororprprzrpryppryrppyrpryrpryrpryrpryrpryrprwxpryrpr
+prpyrpzyrsrprrryrspyrrpprpropqqoqqqpqqqpqqpprrrosrrprpryrrpyrrrsrrryprrprrryrprprrryrrryzrryrrry
+sysrpssrpypspyprpysrpypsppoqopopoqoqoqospqspoyorpyppppprpyprpyprpyprsywxpyprpspppypppyprsyprpypr
+rprpryryryryryryryrysosyspqqqswxqoqqqoqqsoryroryryryppryryrpryrpryryryzyryryrypyryrsryryryryrysy
+ysppyypyyypyyypyyppyoyoqosoqoqzqoqoqoqoqoypyoyoyyypysspyypppyypsyypyyypyyypyyysyyypyyypyyypyyypy
+yssyyyyyyyyyyyyyypyyyyqoqqqoqqqoqqqoqqqoqypoyyyoyyyyyyyyysyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+`, {
+    palette: ["#0a0a30", "#d0d0ff", "#2e2ea0", "#ffe9a0", "#ffffff", "#0d0d42", "#4a4ac8", "#1f8f45", "#f6f2c4", "#52d36e", "#0e4d2b", "#d8d49a", "#c9c490", "#12125a", "#0a3a20", "#191970", "#222288", "#1b2a6b", "#6a6a2a", "#fff27a", "#2e2ea0", "#14304f", "#0c3a33", "#15632f", "#5a3a1c", "#2f9a47", "#7a5230", "#0f5326", "#4adf6a", "#5a3a1c", "#3d2812", "#7a5230", "#ff6b6b", "#ffd84a", "#0b3f1f", "#ffffff", "#6a6ad0", "#6a6a9a", "#4a4a9a"],
+    paletteGiorno: ["#3a7bd5", "#5e9ee8", "#8cc2f2", "#8cc2f2", "#74b0ee", "#4a8be0", "#a6d2f6", "#3fb860", "#f4f6ff", "#8af0a0", "#1a7040", "#d8e0f0", "#c4cce0", "#5e9ee8", "#125530", "#74b0ee", "#8cc2f2", "#6f86c8", "#2a8f45", "#2a8f45", "#a6d2f6", "#4a7a9a", "#2a6a50", "#2a8f45", "#5a3a1c", "#4fc060", "#7a5230", "#1f7a38", "#7af090", "#5a3a1c", "#3d2812", "#7a5230", "#ff6b6b", "#ffd84a", "#1a6a30", "#ffffff", "#74b0ee", "#8cc2f2", "#5e9ee8"],
+    cicli: [{ indici: [4, 36], ritardoMs: 900 }, { indici: [3, 37], ritardoMs: 1300 }, { indici: [1, 38], ritardoMs: 700 }, { indici: [19, 18], ritardoMs: 1100 }],
+    ancora: { x: 48, y: 57 },
+  }),
 ];
