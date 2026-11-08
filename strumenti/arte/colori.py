@@ -10,6 +10,7 @@ COL = {
     "st2": ("#ffe9a0", "#8cc2f2"), "st2b": ("#6a6a9a", "#8cc2f2"),
     "st3": ("#d0d0ff", "#5e9ee8"), "st3b": ("#4a4a9a", "#5e9ee8"),
     # luna
+    "vap1": ("#eceff4", None), "vap2": ("#9aa0ae", None),
     "luna": ("#f6f2c4", "#f4f6ff"), "luna_o": ("#d8d49a", "#d8e0f0"), "luna_c": ("#c9c490", "#c4cce0"),
     "alone1": ("#4a4ac8", "#a6d2f6"), "alone2": ("#2e2ea0", "#8cc2f2"),
     # tramonto del titolo (uguale di giorno)

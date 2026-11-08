@@ -153,10 +153,10 @@ describe("il pericolo per te tiene conto anche degli HP", () => {
 
   it("la zona lo dice: ferito, il pericolo sale e la riga lo spiega", () => {
     const st = personaggio("ladro", 6, 16);
-    const righe = (s: StatoGioco): string[] => creaVistaPartita(s, creaContestoDiProva(registro, 1)).pannelli.filter((p) => p.contesti?.includes("luogo:paludi")).flatMap((p) => p.righe).map((r) => traduciEvento(registro, "it", r));
+    const righe = (s: StatoGioco): string[] => creaVistaPartita(s, creaContestoDiProva(registro, 1)).pannelli.filter((p) => p.contesti?.includes("citta:porta-so")).flatMap((p) => p.righe).map((r) => traduciEvento(registro, "it", r));
     expect(righe(st).filter((r) => r.startsWith("La palude:") || r.startsWith("Il cimitero:")).every((r) => !r.includes("ferito"))).toBe(true);
     const ferito = { ...st, personaggio: { ...st.personaggio, hp: 5 } };
-    const paludi = righe({ ...ferito, moduli: { ...ferito.moduli, citta: { versione: 1, dati: { sito: "paludi", movimenti: 0, visitati: ["porta-s", "paludi"] } } } });
+    const paludi = righe({ ...ferito, moduli: { ...ferito.moduli, citta: { versione: 1, dati: { sito: "porta-so", movimenti: 0, visitati: ["porta-s", "porta-so"] } } } });
     expect(paludi.some((r) => r.startsWith("La palude: alto (sei ferito)"))).toBe(true);
   });
 });

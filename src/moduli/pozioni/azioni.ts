@@ -6,13 +6,15 @@ import { aggiungiMana, manaAttuale, manaMassimo } from "../mana/indice";
 import type { TipoPozione } from "./dati";
 import { FACCE_CURA, FACCE_MANA, POZIONI, definizione, idPozione, prezzoPozione, tipoDaId } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
-import { scortaRimasta } from "./scorta";
+import { scortaRimasta, tipiDelGiorno } from "./scorta";
 import { statoPozioni } from "./tipi";
 
-function validaTipo(dati: unknown): Risultato<{ readonly tipo: TipoPozione }> {
+// Si indica la pozione per tipo oppure per posizione nell'elenco di oggi (1, 2, 3): i tasti dello Speziale seguono l'elenco senza buchi.
+function validaTipo(dati: unknown): Risultato<{ readonly tipo?: TipoPozione; readonly posizione?: number }> {
   const o = comeOggetto(dati);
   if (!o) return fallisci("oggetto atteso");
   const errori: string[] = [];
+  if (o["posizione"] !== undefined) return chiudi(errori, { posizione: numero(o, "posizione", errori, { min: 1 }) });
   const tipo = stringa(o, "tipo", errori);
   if (!POZIONI.some((p) => p.tipo === tipo)) errori.push(`pozione sconosciuta "${tipo}"`);
   return chiudi(errori, { tipo: tipo as TipoPozione });
@@ -26,17 +28,18 @@ function validaPosizione(dati: unknown): Risultato<{ readonly posizione: number 
 }
 
 // Compra una pozione dallo Speziale: serve che oggi ne abbia ancora, le monete e un posto nello zaino.
-export const azioneCompraPozione = definisciAzione("compraPozione", validaTipo, (stato, dati) => {
-  if (scortaRimasta(stato, dati.tipo) <= 0) return esitoErrore("pozioni.errore.esaurita");
-  const prezzo = prezzoPozione(dati.tipo, stato.personaggio.livello);
+export const azioneCompraPozione = definisciAzione("compraPozione", validaTipo, (stato, dati, ctx) => {
+  const tipo = dati.tipo ?? tipiDelGiorno(stato, ctx)[(dati.posizione ?? 0) - 1];
+  if (tipo === undefined || scortaRimasta(stato, tipo, ctx) <= 0) return esitoErrore("pozioni.errore.esaurita");
+  const prezzo = prezzoPozione(tipo, stato.personaggio.livello);
   if (stato.personaggio.oro < prezzo) return esitoErrore("pozioni.errore.oro_insufficiente", String(prezzo));
-  const conOggetto = aggiungiOggetto(stato, idPozione(dati.tipo));
+  const conOggetto = aggiungiOggetto(stato, idPozione(tipo));
   if (!conOggetto) return esitoErrore("pozioni.errore.zaino_pieno");
   const pozioni = statoPozioni.leggi(conOggetto);
-  const venduti = { ...pozioni.venduti, [dati.tipo]: (pozioni.venduti[dati.tipo] ?? 0) + 1 };
+  const venduti = { ...pozioni.venduti, [tipo]: (pozioni.venduti[tipo] ?? 0) + 1 };
   const pagato = { ...conOggetto, personaggio: { ...conOggetto.personaggio, oro: conOggetto.personaggio.oro - prezzo } };
   return esitoOk(statoPozioni.scrivi(pagato, { ...pozioni, venduti }), [
-    { chiave: "pozioni.acquisto", parametri: { nomeChiave: `pozioni.nome.${dati.tipo}`, prezzo }, tono: "positivo" },
+    { chiave: "pozioni.acquisto", parametri: { nomeChiave: `pozioni.nome.${tipo}`, prezzo }, tono: "positivo" },
   ]);
 });
 
@@ -70,7 +73,7 @@ function applicaEffetto(stato: StatoGioco, tipo: TipoPozione, ctx: Contesto, inC
   const durata = PARAMETRI_POZIONI.durataBase + lancia(ctx, 1, PARAMETRI_POZIONI.durataDado);
   // Bevendo in combattimento il turno stesso conta come uno dei turni (lo scala la regola di fine round): si aggiunge uno.
   const restanti = durata + (inCombattimento ? 1 : 0);
-  return { stato: statoPozioni.scrivi(stato, { ...pozioni, effetto: { tipo, restanti } }), eventi: [{ chiave: "pozioni.effetto", parametri: { nomeChiave, turni: durata }, tono: "speciale" }] };
+  return { stato: statoPozioni.scrivi(stato, { ...pozioni, effetto: { tipo, restanti } }), eventi: [{ chiave: "pozioni.effetto", parametri: { nomeChiave, sensazioneChiave: `pozioni.sensazione.${tipo}`, turni: durata }, tono: "speciale" }] };
 }
 
 // Usa la pozione di uno slot dello zaino. Fuori dal combattimento è gratis; durante uno scontro costa il turno (il nemico attacca).
@@ -87,3 +90,22 @@ export const azioneUsaOggetto = definisciAzione("usaOggetto", validaPosizione, (
   const round = risolviRound(consumato, ctx, { salta: true });
   return round.ok ? esitoOk(round.stato, [...risultato.eventi, ...round.eventi]) : round;
 });
+
+// Quanto paga lo Speziale per una pozione sigillata: il 30% del suo valore (il prezzo di acquisto al tuo livello), almeno 1 moneta.
+export function prezzoRiacquisto(tipo: TipoPozione, livello: number): number {
+  return Math.max(1, Math.floor(prezzoPozione(tipo, livello) * PARAMETRI_POZIONI.quotaRiacquisto));
+}
+
+// Vende allo Speziale la pozione di uno slot dello zaino (serve a liberarsi di quelle inutili senza buttarle).
+export const azioneVendiPozione = definisciAzione("vendiPozione", validaPosizione, (stato, dati) => {
+  const id = oggettoInSlot(stato, dati.posizione - 1);
+  if (id === null) return esitoErrore("pozioni.errore.slot_vuoto");
+  const tipo = tipoDaId(id);
+  if (tipo === undefined) return esitoErrore("pozioni.errore.non_utilizzabile");
+  const oro = prezzoRiacquisto(tipo, stato.personaggio.livello);
+  const venduto = rimuoviOggetto(stato, dati.posizione - 1);
+  return esitoOk({ ...venduto, personaggio: { ...venduto.personaggio, oro: venduto.personaggio.oro + oro } }, [
+    { chiave: "pozioni.venduta", parametri: { nomeChiave: `pozioni.nome.${tipo}`, oro }, tono: "positivo" },
+  ]);
+});
+

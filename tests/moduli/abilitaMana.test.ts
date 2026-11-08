@@ -395,7 +395,7 @@ describe("abilità di classe", () => {
       const ps = registroReale.moduli.flatMap((m) => m.interfaccia?.pannelli?.(s, ctxR) ?? []).filter((p) => p.contesti?.includes("info:personaggio"));
       return ps.flatMap((p) => p.righe.map((r) => traduciEvento(registroReale, "it", r)));
     };
-    expect(scheda("mistico")).toContain("Mana: 10/10");
+    expect(scheda("mistico")).toContain("Mana: 10/10 (base 0, bonus +10)"); // nel gruppo Statistiche, con base e bonus
     expect(scheda("mistico").some((t) => t.startsWith("Concentrazione:"))).toBe(true);
     expect(scheda("cavaliere").some((t) => t.startsWith("Mana"))).toBe(false);
     expect(scheda("cavaliere").some((t) => t.startsWith("Carica:"))).toBe(true);

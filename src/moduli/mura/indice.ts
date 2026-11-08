@@ -239,7 +239,7 @@ const interfaccia: InterfacciaModulo = {
       id: `mura.parla.${s.id}`,
       contesto: s.contesto,
       etichettaChiave: "mura.menu.parla",
-      tasto: "P",
+      tasto: "N",
       ordine: 1,
       comando: { tipo: "azione" as const, azione: { tipo: "parlaConNpc" } },
     })),

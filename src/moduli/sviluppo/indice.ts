@@ -130,7 +130,7 @@ function menu(): readonly VoceMenu[] {
   CATEGORIE.forEach((c, i) => {
     voci.push({ id: `sviluppo.cat.${c.id}`, contesto: CONTESTO_VAI, etichettaChiave: `citta.cat.${c.id}`, tasto: String(i + 1), ordine: i + 1, comando: { tipo: "naviga", verso: `${CONTESTO_VAI}:${c.id}` } });
     DEFINIZIONI_SITI.filter((s) => s.categoria === c.categoria).forEach((s, k) => {
-      voci.push({ id: `sviluppo.tele.${s.id}`, contesto: `${CONTESTO_VAI}:${c.id}`, etichettaChiave: chiaveNome(s.id), tasto: String(k + 1), ordine: k + 1, comando: { tipo: "azione", azione: { tipo: "devTeletrasporta", dati: { sito: s.id } } } });
+      voci.push({ id: `sviluppo.tele.${s.id}`, contesto: `${CONTESTO_VAI}:${c.id}`, etichettaChiave: chiaveNome(s.id), tasto: k < 9 ? String(k + 1) : String.fromCharCode(65 + k - 9), ordine: k + 1, comando: { tipo: "azione", azione: { tipo: "devTeletrasporta", dati: { sito: s.id } } } });
     });
   });
   MOSTRI.forEach(({ id, modulo }, i) => {

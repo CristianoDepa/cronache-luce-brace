@@ -1,7 +1,7 @@
-import type { DefinizioneModulo, InterfacciaModulo, PannelloVista, RigaVista } from "../../core/indice";
+import type { Contesto, DefinizioneModulo, InterfacciaModulo, PannelloVista, RigaVista, StatoGioco } from "../../core/indice";
 import { VERSIONE_API, calcolaStatistiche } from "../../core/indice";
 import { ID_AZIONI } from "../azioni/indice";
-import { ID_CITTA } from "../citta/indice";
+import { ID_CITTA, leggiSito } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_FORESTA, avvisoFerito } from "../foresta/indice";
 import { ID_LUOGHI, calcolaPotenza, faseDelGiorno } from "../luoghi/indice";
@@ -14,15 +14,24 @@ export const ID_PALUDE = "palude";
 export { livelloPericolo, pericoloConFerite, èFerito } from "./pericolo";
 export { SOGLIE_PERICOLO } from "./dati";
 
-const CONTESTO_PALUDI = "luogo:paludi";
+// La scelta tra palude e cimitero parte direttamente dalla Porta Sant'Anna, dal livello in cui la porta si apre (dalla 0.13.0).
+const CONTESTO_PALUDI = "citta:porta-so";
+const PORTA_PALUDI = "porta-so";
 const ESPLORAZIONI = ["palude", "cimitero"] as const;
 // Azioni fuori dai luoghi: lettere (l'iniziale della zona).
 const TASTI_ESPLORAZIONI: Readonly<Record<string, string>> = { palude: "P", cimitero: "C" };
 
+// La porta è aperta solo dal livello minimo scritto nei suoi dati (città).
+function portaAperta(stato: StatoGioco, ctx: Contesto): boolean {
+  return stato.personaggio.livello >= (leggiSito(ctx.registro, PORTA_PALUDI)?.livelloMin ?? 0);
+}
+
 // La zona fuori da Porta Sant'Anna (si apre dal livello 4): due esplorazioni con mix di creature diversi e, per ciascuna, il pericolo per te.
 const interfaccia: InterfacciaModulo = {
-  titoliContesto: { [CONTESTO_PALUDI]: "palude.luogo.paludi" },
-  illustrazioniContesto: { [CONTESTO_PALUDI]: "scena.palude" },
+  titoliContesto: { "luogo:paludi": "palude.luogo.paludi" },
+  illustrazioniContesto: { "luogo:paludi": "scena.palude" },
+  // Le due esplorazioni si vedono solo se la porta è aperta (livello 4).
+  menuNascosto: (stato, ctx) => (portaAperta(stato, ctx) ? [] : ESPLORAZIONI.map((z) => `palude.esplora.${z}`)),
   menu: ESPLORAZIONI.map((z, i) => ({
     id: `palude.esplora.${z}`,
     contesto: CONTESTO_PALUDI,
@@ -32,6 +41,7 @@ const interfaccia: InterfacciaModulo = {
     comando: { tipo: "azione" as const, azione: { tipo: "esploraForesta", dati: { luogoId: z } } },
   })),
   pannelli(stato, ctx): readonly PannelloVista[] {
+    if (!portaAperta(stato, ctx)) return [];
     const statistiche = calcolaStatistiche(stato, ctx);
     const potenza = calcolaPotenza(statistiche);
     const ferito = èFerito(stato.personaggio.hp, statistiche.hpMax);

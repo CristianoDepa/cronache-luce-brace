@@ -170,7 +170,7 @@ describe("giorno e notte", () => {
   });
 
   it("la zona dice che fase è, e il pericolo usa le soglie della fase", () => {
-    const righe = (sito: string, h: number): string[] => creaVistaPartita(pg(sito), { ...ctx, oraForzata: h }).pannelli.filter((p) => p.contesti?.includes(`luogo:${sito}`)).flatMap((p) => p.righe).map((r) => traduciEvento(registro, "it", r));
+    const righe = (sito: string, h: number): string[] => creaVistaPartita(pg(sito), { ...ctx, oraForzata: h }).pannelli.filter((p) => p.contesti?.includes(sito === "foresta" ? "citta:porta-s" : "citta:porta-so")).flatMap((p) => p.righe).map((r) => traduciEvento(registro, "it", r));
     expect(righe("foresta", 12).some((r) => r.startsWith("È giorno"))).toBe(true);
     expect(righe("foresta", 22).some((r) => r.startsWith("È notte"))).toBe(true);
     expect(righe("paludi", 22).some((r) => r.startsWith("È notte") && r.includes("25%"))).toBe(true);

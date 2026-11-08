@@ -39,9 +39,9 @@ const interfacciaMana: InterfacciaModulo = {
     if (massimo === 0) return [];
     return [
       {
-        titoloChiave: "mana.scheda.titolo",
+        titoloChiave: "interfaccia.scheda.statistiche",
         contesti: [CONTESTO_INFO_PERSONAGGIO],
-        righe: [{ chiave: "mana.scheda.riga", parametri: { attuale: manaAttuale(stato, ctx), massimo } }],
+        righe: [{ chiave: "mana.scheda.riga", parametri: { attuale: manaAttuale(stato, ctx), massimo, base: 0, bonus: `+${massimo}` } }],
       },
     ];
   },
@@ -53,8 +53,8 @@ export const moduloMana: DefinizioneModulo = {
   dipende: [ID_COMBATTIMENTO],
   regole: [regolaManaGiornaliero, regolaManaPerVittoria],
   testi: {
-    it: { "mana.scheda.titolo": "Mana", "mana.scheda.riga": "Mana: {attuale}/{massimo}", "mana.laterale.etichetta": "Mana" },
-    en: { "mana.scheda.titolo": "Mana", "mana.scheda.riga": "Mana: {attuale}/{massimo}", "mana.laterale.etichetta": "Mana" },
+    it: { "mana.scheda.titolo": "Mana", "mana.scheda.riga": "Mana: {attuale}/{massimo} (base {base}, bonus {bonus})", "mana.laterale.etichetta": "Mana" },
+    en: { "mana.scheda.titolo": "Mana", "mana.scheda.riga": "Mana: {attuale}/{massimo} (base {base}, bonus {bonus})", "mana.laterale.etichetta": "Mana" },
   },
   stato: statoMana,
   interfaccia: interfacciaMana,

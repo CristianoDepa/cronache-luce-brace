@@ -1,8 +1,8 @@
 @echo off
 setlocal
 rem Applica clb-delta.zip (dalla cartella Download) sopra la versione BASE indicata qui sotto.
-set BASE=0.11.4
-set NUOVA=0.11.5
+set BASE=0.13.1
+set NUOVA=0.14.0
 cd /d "%~dp0"
 if not exist VERSIONE.txt ( echo Non trovo VERSIONE.txt: lancia lo script dalla cartella del progetto. & pause & exit /b 1 )
 set /p ATTUALE=<VERSIONE.txt

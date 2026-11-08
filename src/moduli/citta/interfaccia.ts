@@ -14,6 +14,8 @@ const ID_SCENA_MAPPA = "scena.mappa";
 const ID_MARCATORE = "sprite.marcatore";
 const ID_PORTA_APERTA = "sprite.porta_aperta";
 const SCENA_PER_CATEGORIA: Record<string, string> = { porta: "scena.villaggio", mura: "scena.mura", piazza: "scena.villaggio" };
+// Alcuni luoghi hanno una scena propria invece di quella della loro categoria (es. la base della Torre Guinigi).
+const SCENA_PER_SITO: Record<string, string> = { torre: "scena.torre", fillungo: "scena.fillungo" };
 
 // Le categorie della mappa: la destinazione si sceglie in due passi (categoria, poi luogo).
 const CATEGORIE: readonly { readonly id: string; readonly categoria: CategoriaSito }[] = [
@@ -44,7 +46,8 @@ function vociMenu(): readonly VoceMenu[] {
         id: `citta.viaggia.${s.id}`,
         contesto: contestoCategoria(c.id),
         etichettaChiave: chiaveMappa(s.id),
-        tasto: String(k + 1),
+        // Dal decimo luogo di una categoria il tasto è una lettera (A, B...): le cifre finiscono a 9.
+        tasto: k < 9 ? String(k + 1) : String.fromCharCode(65 + k - 9),
         ordine: k + 1,
         comando: { tipo: "azione", azione: { tipo: "viaggia", dati: { sito: s.id } } },
       });
@@ -82,7 +85,7 @@ function illustrazioniFisse(): Record<string, string> {
   const m: Record<string, string> = { [CONTESTO_MAPPA]: ID_SCENA_MAPPA };
   for (const c of CATEGORIE) m[contestoCategoria(c.id)] = ID_SCENA_MAPPA;
   for (const s of DEFINIZIONI_SITI) {
-    const scena = SCENA_PER_CATEGORIA[s.categoria];
+    const scena = SCENA_PER_SITO[s.id] ?? SCENA_PER_CATEGORIA[s.categoria];
     if (s.contesto.startsWith("citta:") && scena) m[s.contesto] = scena;
   }
   return m;
@@ -187,6 +190,9 @@ export const interfacciaCitta: InterfacciaModulo = {
   // Nella mappa la scheda del personaggio è compatta: più spazio al disegno.
   contestiSchedaCompatta: [CONTESTO_MAPPA, ...CATEGORIE.map((c) => contestoCategoria(c.id))],
   menu: vociMenu(),
+  // Le porte aperte non hanno più il comando di uscita: dalla 0.13.0 le zone (foresta, palude, cimitero) aggiungono le loro esplorazioni direttamente alla porta.
+  // Resta per le porte chiuse (e per Sant'Anna sotto il livello minimo), dove racconta cosa c'è oltre.
+  menuNascosto: (stato) => DEFINIZIONI_SITI.filter((s) => s.categoria === "porta" && s.areaId !== undefined && stato.personaggio.livello >= (s.livelloMin ?? 0)).map((s) => `citta.esci.${s.id}`),
   titoliContesto: titoli(),
   illustrazioniContesto: illustrazioniFisse(),
   contestiPadre: contestiPadre(),

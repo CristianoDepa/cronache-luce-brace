@@ -30,11 +30,13 @@ export function combattiFinoAllaFine(stato: StatoGioco, ctx: Contesto, eventiPre
   let corrente = stato;
   let round = 0;
   let ultimi: readonly EventoGioco[] = [];
+  const importanti: EventoGioco[] = []; // messaggi da non perdere dei round intermedi
   while (caricaScontro(corrente, ctx) && round < ROUND_MASSIMI && !sottoSoglia(corrente, ctx, soglia)) {
     const r = risolviRound(corrente, ctx);
     if (!r.ok) return r;
     corrente = r.stato;
     ultimi = r.eventi;
+    importanti.push(...r.eventi.filter((e) => e.importante));
     round++;
   }
   const dopo = statoCombattimento.leggi(corrente).statistiche[inizio.creaturaId] ?? STATISTICHE_VUOTE;
@@ -42,10 +44,13 @@ export function combattiFinoAllaFine(stato: StatoGioco, ctx: Contesto, eventiPre
   if (round > 0) {
     eventi.push({ chiave: "combattimento.automatico.riassunto", parametri: { round, inflitti: dopo.dannoInflitto - prima.dannoInflitto, subiti: dopo.dannoSubito - prima.dannoSubito }, tono: "speciale" });
   }
-  if (caricaScontro(corrente, ctx)) {
-    eventi.push({ chiave: "combattimento.automatico.stop", parametri: { soglia }, tono: "avviso" });
-  } else {
+  const finito = !caricaScontro(corrente, ctx);
+  // Quelli dell'ultimo round (se lo scontro è finito) arrivano già con gli altri eventi dell'ultimo round.
+  eventi.push(...importanti.filter((e) => !finito || !ultimi.includes(e)));
+  if (finito) {
     eventi.push(...ultimi);
+  } else {
+    eventi.push({ chiave: "combattimento.automatico.stop", parametri: { soglia }, tono: "avviso" });
   }
   return esitoOk(corrente, eventi);
 }

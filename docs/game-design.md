@@ -569,7 +569,7 @@ Due categorie: **oggetti con proprietà** (comuni; una bella proprietà e meno p
 Soglie del pericolo per fase (basso da / medio da): palude giorno 44/40, notte 46/40; cimitero giorno 44/36, notte 64/40. Rischio per scontro simulato (50 prove, attacca sempre): con 8 punti per pezzo Mistico palude 15% (giorno) e 13% (notte), cimitero 9% e 13%; Ladro palude 7% e 17%, cimitero 40% e 36%; Cavaliere 0%. Da 12 punti in su quasi sempre sotto il 5%.
 
 ## 35. Pozioni e inventario (realizzato nella 0.11.0)
-- **Speziale** in Piazza Napoleone (lettera `S`). A ogni nuovo giorno ogni tipo di pozione è in vendita al **50%**, in **1-2 pezzi**; comprando scende la scorta fino al giorno dopo.
+- **Speziale** in Piazza Napoleone (lettera `S`). A ogni nuovo giorno ha da **1 a 3 pozioni DIVERSE** (a caso tra le sei), ciascuna in **1-2 pezzi** (dalla 0.11.4; prima ogni tipo usciva al 50%); comprando scende la scorta fino al giorno dopo.
 - **Pozioni:** forza (+2), destrezza (+2 velocità), corazza (+2 difesa) per **5 + d6 turni di combattimento**, **non cumulabili** (una attiva impedisce le altre tre); mana (+1d4); cura leggera (+1d6 HP); cura robusta (+2d6 HP).
 - **Prezzi:** le cure al **doppio del Guaritore** a pari HP medi (circa 7 × livello la leggera, 14 × livello la robusta); effetto e mana a prezzo fisso, da tarare.
 - **Inventario:** **6 slot**, una pozione per slot, **nessun limite per tipo** (il tetto è lo zaino e la scorta giornaliera dello Speziale); gli slot serviranno anche per altro. Comando `[I]` → `[4] Inventario`; in combattimento `[B] Bevi` costa il turno. Zaino pieno: la pozione trovata si lascia.
@@ -615,4 +615,49 @@ Soglie del pericolo per fase (basso da / medio da): palude giorno 44/40, notte 4
 ## 41. Pericolo con gli HP e icone del libro (0.11.3)
 - **Pericolo per te:** come prima dalla potenza e dalle soglie della zona e della fase, poi **+1 livello sotto la metà degli HP e +2 sotto un quarto** (mai oltre "alto"); la riga dice "(sei ferito)".
 - **Icone del libro:** solo per debolezze (segno + verde, in alto) e resistenze (segno - rosso, sotto); mai le icone dei tipi normali. I colori sono gli stessi del testo: verde = un vantaggio per te, rosso = uno svantaggio.
+- **Arte della Torre (0.12.0):** due scene nuove. (1) **La base della Torre Guinigi**, per la schermata del luogo: oggi mostra per errore la scena generica della città (torre con croce dorata e tetti rossi), che non è la Torre; serve la torre in mattoni con le querce in cima, vista dal basso, con il giardino. (2) **La cima**, per la salita.
+- **Scene proprie per i luoghi della città (da disegnare, in lista):** oggi **le tre piazze (Anfiteatro, San Michele, Napoleone), la Torre Guinigi e le sei porte** mostrano tutte la stessa scena generica del vecchio villaggio (torre con croce dorata e tetti rossi); solo le mura, gli edifici e le zone hanno una scena propria. Da disegnare: la **Torre** (base e cima, 0.12.0); **Piazza dell'Anfiteatro** (la piazza ovale chiusa dalle case), **Piazza San Michele** (la facciata romanica a loggette), **Piazza Napoleone** (grande piazza aperta con il palazzo e gli alberi); le **sei porte** (un varco nelle mura, con una variante per ciascuna se possibile).
+
+## 42. Effetti delle pozioni nascosti (0.11.5)
+- La durata (5 + d6 turni di combattimento) **non si mostra mai**: né prima né dopo; nessun avviso "sta per svanire". Quando l'effetto finisce c'è solo il messaggio "L'effetto di ... è terminato.".
+- La pozione di mana non si offre (Speziale) né si trova (bottino) a chi non ha mana massimo.
+
+## 43. Vendere le pozioni (0.11.6)
+- Lo Speziale **ricompra le pozioni sigillate al 30% del loro valore** (prezzo di acquisto al livello del giocatore, arrotondato per difetto, almeno 1 moneta). Si vende dalla schermata `[V]` dello Speziale, per slot dello zaino. Le pozioni vendute non tornano nella scorta del giorno.
+
+## 44. Cronache della città e Via Fillungo (DECISO, non ancora realizzato)
+- **Cronache della città:** un quotidiano di gossip. Ogni giorno 3 notizie (solo flavor, per ora) tratte da un **mazzo di circa 60** mescolato una volta per giocatore: 20 giorni senza ripetizioni, poi si rimescola. Scritte come **voci** ("si dice...") per non promettere cose che il gioco non ha. Ogni notizia ha **etichette nascoste** (tema e zona) per poterle "attivare" in futuro (quest, rivali, annunci di Castruccio, "Fatti del giorno" del Mondo vivo). Prima del codice si prepara il file delle 60 notizie in italiano, da rivedere; l'inglese si traduce dopo. Spunti già scelti: la leggenda di Lucida Mansi (alla Torre delle Ore).
+- **Dove si legge:** in un luogo nuovo, la **Stamperia**, edificio (tasto `S`) dentro **Via Fillungo**.
+- **Via Fillungo:** nuovo tipo di luogo, la "via", nella categoria della mappa "Piazze, vie e Torre". Geometria vera di Lucca: sta tra San Michele e l'Anfiteatro. Collegamenti (movimenti): San Michele 2, Anfiteatro 2 (il percorso diretto San Michele-Anfiteatro resta di 4), **Torre Guinigi 2** (via Sant'Andrea; le distanze della Torre diventano San Michele 4, Napoleone 8, Anfiteatro 3), Stamperia 2. Livello di verifica: critico (città).
+
+## 45. Tornei all'Anfiteatro (IDEA, forma decisa, dettagli da progettare)
+Idea del game designer: la Piazza dell'Anfiteatro (antico anfiteatro romano) come sede di **tornei**.
+- **Cadenza settimanale:** un torneo ogni 7 giorni di gioco (serve un contatore dei giorni giocati), annunciato dalle Cronache nei giorni prima.
+- **Quattro tornei con nome, a rotazione** come le settimane di un mese (nomi provvisori: Palio della Libertas, Giostra del Serchio, Coppa della Torre, Trofeo dell'Anfiteatro).
+- **Comando di prova** (`?dev=1`): "Avvia torneo", che apre subito il torneo di quella settimana (e permette di farne passare una).
+- Duelli non letali con avversari con nome (riuso del motore dei duelli e del potenziamento dello scontro); gli avversari potranno diventare i rivali del Mondo vivo. Livello di verifica: critico (combattimento).
+- **Turni del torneo:** tre turni (quarti, semifinale, finale), tutti duelli non letali. **Tra un turno e l'altro si recupera il 30% degli HP persi** (30% della differenza tra HP massimi e attuali) e **si possono usare le pozioni** (fuori dal duello gratis, dentro costano il turno).- **Avversari:** combattenti con nome (elenco), con la potenza **attesa per il livello del giocatore** (non per il suo equipaggiamento: chi è ben equipaggiato è avvantaggiato): quarti circa l'80%, semifinale il 100%, finale il 120%, con un **pizzico di casualità** (±10% su HP e forza di ciascun avversario, a caso, in più o in meno). Si costruiscono con il potenziamento dello scontro su un combattente base e riusano gli sprite delle tre classi.
+- **Iscrizione e premi (proposti, da tarare):** iscrizione 10 monete per livello, non rimborsabile; una sola iscrizione a settimana, il torneo resta aperto per tutta la settimana e ogni turno si combatte quando vuoi (1 azione per duello). Premi: eliminato ai quarti 0; vinti i quarti 1,5 volte l'iscrizione; vinta la semifinale 3 volte; campione 6 volte, una pozione e il titolo (una riga di prestigio nella scheda). Sconfitta: come negli altri duelli non letali (1 HP, nessuna penalità di esperienza).- **Albo dei tornei nella scheda del personaggio** (`[I]` → `[1]`): lo storico di ogni torneo (i quattro nomi), con le **vittorie**, le finali raggiunte e le iscrizioni. Una riga per torneo, che compare dopo la prima iscrizione; i contatori stanno nel salvataggio. Il titolo di prestigio del campione indica il torneo vinto più di recente e quante volte.
+
+## 46. Torre e Castruccio, realizzati (0.12.0)
+Come da §38 e §39. Valori in `torre/parametri.ts` (bonus HP 3, bonus mana 1, mostro delle stelle: Spettro) e `cacciatore/parametri.ts` (4 mostri uccisi, quantità fino a 3, moltiplicatori 2 e 4, probabilità della preda nella missione 50% e nell'incontro 10%, livelli di preda). Il tasto di Castruccio è `[C]` (e non `[P]`, che nella Torre può servire a un NPC delle mura). Le missioni che dicono "nelle Paludi" o "nel Cimitero" si propongono solo se hai già visitato le Paludi.
+
+## 47. Il tomo delle statistiche e la parete dei trofei
+- **Tomo degli incontri** (`[I]` → `[2]`, realizzato nell'albero di lavoro, non ancora consegnato): lo stesso libro del bestiario. A sinistra, inciso, il mostro che hai **battuto più volte**; a destra le **stecche dei conti**: una per vittoria sui mostri del bestiario, a gruppi di cinque (quattro segni barrati), fino a 100 (poi la pagina è piena). I duelli con i capigilda non contano. Sostituisce la X delle spade.
+- **Parete dei trofei** (idea, riservata ai **tornei**): un muro di pietra con trofei (teschi, corna, zanne) che compaiono con le vittorie; da disegnare con i tornei.
+
+## 48. La Zara alla Locanda (DECISO, in attesa di GO)
+Gioco di dadi da osteria, nel clima medievale (è il gioco che cita Dante): `[4] Gioca alla Zara` alla Locanda.
+- **Puntata:** tre importi per livello: piccola 2, media 5, grossa 10 monete per livello (a livello 7: 14, 35, 70). 1 azione a partita.
+- **Il numero:** si chiama la somma di tre dadi, da 7 a 14. Il tiro è dell'oste. Somme da 3 a 6 e da 15 a 18 (circa il 18% dei tiri): "Zara!", vince l'oste, e non si possono chiamare.
+- **Quote** (volte la puntata): 7 e 14 pagano 12×; 8 e 13 pagano 8×; 9 e 12 pagano 7×; 10 e 11 pagano 6×. Ritorno medio circa 90%.
+- **Immagine:** un tavolaccio di legno visto dall'alto (con un bossolo di cuoio nell'angolo); dopo il lancio compaiono tre dadi grandi con l'ombra, disegnati con le facce uscite (aggiornato nella 0.12.2: prima i dadi piccoli stavano sulla scena della Locanda).
+- **Testi:** una decina di battute dell'oste (vinci, perdi, Zara), in italiano e inglese.
+- Livello di verifica: leggero (modulo foglia). Il caso usa il generatore con seme del motore.
+
+## 49. Le Cronache, Via Fillungo e le porte (0.13.0, realizzato)
+Come da §44 (Cronache, Via Fillungo, Stamperia), con questi dettagli: contatore dei giorni giocati nello stato del modulo `cronache`; mazzo mescolato per giocatore (seme dal nome del personaggio), tre notizie di seguito per giorno, 20 giorni di giro; il giornale non ha archivio dei giorni passati. Via Fillungo è nella categoria delle piazze (etichetta "Piazze, vie e Torre"). Uscita dalle porte: foresta `[F]` da San Pietro; palude `[P]` e cimitero `[C]` da Sant'Anna dal livello 4; le zone sono "conosciute" (per le missioni di Castruccio) dopo il passaggio dalla porta. "Parla" con gli NPC è ora `[N]`. Luna: nascosta di giorno nelle scene all'aperto. Zara: quote da roulette e probabilità nel menu (§48 aggiornato). Locanda: tavolo ridisegnato (boccale, piatto fumante).
+
+## 50. I tornei, realizzati (0.14.0)
+Come da §45. Avversario = (30 + 12 × livello) HP e (6 + 1,5 × livello) di forza, per il fattore del turno (0,8 / 1 / 1,2) e ±10% a caso; difesa 4 e velocità 9 fisse. Simulazione (120 prove per caso, attaccando sempre): un personaggio con l'equipaggiamento "naturale" per il livello vince il torneo circa 1 volta su 2 per il Cavaliere, meno per Mistico e Ladro (livello 4 con 12 punti per pezzo: 78% / 48% / 57%; livello 7 con 16 punti: 68% / 40% / 34%; livello 10 con 20 punti: 68% / 30% / 23%); con più punti per pezzo sale rapidamente, con meno scende. I quarti sono quasi sempre superati. Valori in `torneo/parametri.ts`.
 

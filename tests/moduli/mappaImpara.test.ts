@@ -27,7 +27,8 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
       "[1] Piazza dell'Anfiteatro - 13 movimenti, 1 azione",
       "[2] Piazza San Michele - 10 movimenti, 1 azione",
       "[3] Piazza Napoleone - 6 movimenti, 0 azioni",
-      "[4] Torre Guinigi - 16 movimenti, 2 azioni",
+      "[4] Via Fillungo - 12 movimenti, 1 azione",
+      "[5] Torre Guinigi - 14 movimenti, 1 azione",
     ]);
   });
 
@@ -46,7 +47,7 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
     expect(statoCitta.leggi(dentro).visitati).toEqual(["porta-s", "piazza-s", "guaritore"]);
     expect(lista(dentro, "piazze")[2]).toBe("[3] Piazza Napoleone: Guaritore, Speziale, Gilda dei Ladri - sei qui"); // da dentro, "sei qui" è la piazza ospite
     const torre = eseguiOk(partenza(), viaggia("torre"), ctx).stato;
-    expect(lista(torre, "piazze")[3]).toBe("[4] Torre Guinigi - sei qui");
+    expect(lista(torre, "piazze")[4]).toBe("[5] Torre Guinigi - sei qui");
   });
 
   it("il teletrasporto di prova e la rinascita segnano il luogo come visitato", () => {
@@ -68,7 +69,7 @@ describe("le frasi di arrivo e le etichette di uscita hanno le preposizioni gius
     expect(arrivo(partenza(), viaggia("porta-n"))).toBe("Arrivi a Porta Santa Maria (19 movimenti, 2 azioni).");
     expect(arrivo(partenza(), viaggia("mura-s"))).toBe("Arrivi sulle Mura - San Pietro (2 movimenti, 0 azioni).");
     expect(arrivo(partenza(), viaggia("piazza-c"))).toBe("Arrivi in Piazza San Michele (10 movimenti, 1 azione).");
-    expect(arrivo(partenza(), viaggia("torre"))).toBe("Arrivi alla Torre Guinigi (16 movimenti, 2 azioni).");
+    expect(arrivo(partenza(), viaggia("torre"))).toBe("Arrivi alla Torre Guinigi (14 movimenti, 1 azione).");
     expect(arrivo(partenza(), viaggia("mura-s"), "en")).toBe("You arrive on The Walls - San Pietro (2 moves, 0 actions).");
   });
 

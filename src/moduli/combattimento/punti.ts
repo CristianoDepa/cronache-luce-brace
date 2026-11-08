@@ -1,6 +1,6 @@
 import type { EventoGioco, Id, StatoGioco } from "../../core/indice";
 import { definisciPuntoRegola } from "../../core/indice";
-import type { TipoDanno } from "./tipi";
+import type { Potenziamento, TipoDanno } from "./tipi";
 
 export interface CalcoloDanno {
   readonly stato: StatoGioco;
@@ -42,11 +42,15 @@ export interface CalcoloFineScontro {
   readonly creaturaId: Id;
   readonly esito: "vittoria" | "sconfitta";
   readonly eventi: readonly EventoGioco[];
+  // Se lo scontro era potenziato (es. una preda con nome): serve a chi conta le missioni.
+  readonly potenziamento?: Potenziamento;
 }
 
 // Fine di ogni round (anche l'ultimo, anche una fuga fallita): serve a contare i turni di combattimento (es. gli effetti delle pozioni).
 export interface CalcoloRound {
   readonly stato: StatoGioco;
+  // Messaggi che le regole vogliono aggiungere al round (si accodano agli eventi del round).
+  readonly eventi: readonly EventoGioco[];
 }
 
 // Punti di estensione del combattimento: altri moduli vi agganciano le proprie regole.

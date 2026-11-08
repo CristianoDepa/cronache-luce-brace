@@ -6,7 +6,7 @@ import { aggiungiEffetti, applicaMoltiplicatoreDanno, calcolaPrecisione, consuma
 import type { Attaccante } from "./effetti";
 import { puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoTipoDanno } from "./punti";
 import { iniziativaContro } from "./velocita";
-import type { Creatura, EffettoScontro, ScontroAttivo, TipoDanno } from "./tipi";
+import type { Creatura, EffettoScontro, Potenziamento, ScontroAttivo, TipoDanno } from "./tipi";
 import { registraStatistiche, impostaScontro } from "./statistiche";
 import { statoCombattimento, tipoCreatura } from "./tipi";
 
@@ -22,23 +22,30 @@ export function creaturaDisponibile(creatura: Creatura, ctx: Contesto): boolean 
 
 // Avvia uno scontro con la creatura indicata. Riusabile da altri moduli (es. foresta).
 // scenaId è l'illustrazione del luogo, usata come sfondo del combattimento.
-export function iniziaScontro(stato: StatoGioco, creaturaId: Id, ctx: Contesto, scenaId?: Id, moltiplicatorePremio = 1): Esito {
+export function iniziaScontro(stato: StatoGioco, creaturaId: Id, ctx: Contesto, scenaId?: Id, moltiplicatorePremio = 1, potenziamento?: Potenziamento): Esito {
   if (statoCombattimento.leggi(stato).scontro) return esitoErrore("combattimento.errore.combattimento_in_corso");
   const creatura = leggiContenuto(ctx.registro, tipoCreatura, creaturaId);
   if (!creatura) return esitoErrore("combattimento.errore.creatura_sconosciuta", creaturaId);
   if (!creaturaDisponibile(creatura, ctx)) {
     return esitoErrore("combattimento.errore.creatura_non_disponibile", creaturaId);
   }
-  const scontro: ScontroAttivo = { creaturaId, hpNemico: creatura.hp, round: 1, effetti: [], usi: {}, ...(scenaId !== undefined ? { scenaId } : {}), ...(moltiplicatorePremio !== 1 ? { moltiplicatorePremio } : {}) };
+  const scontro: ScontroAttivo = { creaturaId, hpNemico: Math.round(creatura.hp * (potenziamento?.hp ?? 1)), round: 1, effetti: [], usi: {}, ...(scenaId !== undefined ? { scenaId } : {}), ...(moltiplicatorePremio !== 1 ? { moltiplicatorePremio } : {}), ...(potenziamento ? { potenziamento } : {}) };
   const nuovo = registraStatistiche(impostaScontro(stato, scontro), creaturaId, { incontri: 1 });
-  return esitoOk(nuovo, [{ chiave: "combattimento.inizio", parametri: { creaturaChiave: creatura.nomeChiave } }]);
+  const inizio: EventoGioco = potenziamento?.soprannomeChiave
+    ? { chiave: "combattimento.inizioNome", parametri: { creaturaChiave: creatura.nomeChiave, soprannomeChiave: potenziamento.soprannomeChiave } }
+    : { chiave: "combattimento.inizio", parametri: { creaturaChiave: creatura.nomeChiave } };
+  return esitoOk(nuovo, [inizio]);
 }
 
 export function caricaScontro(stato: StatoGioco, ctx: Contesto): ScontroCorrente | undefined {
   const scontro = statoCombattimento.leggi(stato).scontro;
   if (!scontro) return undefined;
   const creatura = leggiContenuto(ctx.registro, tipoCreatura, scontro.creaturaId);
-  return creatura ? { scontro, creatura, creaturaId: scontro.creaturaId } : undefined;
+  if (!creatura) return undefined;
+  // Un nemico potenziato ha HP e forza moltiplicati: tutti i calcoli del combattimento usano queste statistiche.
+  const p = scontro.potenziamento;
+  const potenziata = p ? { ...creatura, hp: Math.round(creatura.hp * p.hp), forza: Math.round(creatura.forza * p.forza) } : creatura;
+  return { scontro, creatura: potenziata, creaturaId: scontro.creaturaId };
 }
 
 // Danno del giocatore dopo le regole dei moduli (es. magia, equipaggiamento).
@@ -53,6 +60,12 @@ export function calcolaDannoGiocatore(stato: StatoGioco, creatura: Creatura, ctx
 export function tipoDannoGiocatore(stato: StatoGioco, effetti: readonly EffettoScontro[], ctx: Contesto): TipoDanno {
   const dalleRegole = applicaRegole(ctx, puntoTipoDanno, { stato, tipo: "contundente" as TipoDanno }).tipo;
   return effetti.find((e) => e.bersaglio === "giocatore" && e.tipoDanno !== undefined)?.tipoDanno ?? dalleRegole;
+}
+
+// Il potenziamento dello scontro in corso, nella forma che serve alla regola di fine scontro (vuoto se non c'è).
+function potenziamentoDi(stato: StatoGioco): { readonly potenziamento?: Potenziamento } {
+  const p = statoCombattimento.leggi(stato).scontro?.potenziamento;
+  return p ? { potenziamento: p } : {};
 }
 
 export function scontroFinito(stato: StatoGioco): boolean {
@@ -164,7 +177,9 @@ export function risolviRound(stato: StatoGioco, ctx: Contesto, opzioni: OpzioniR
 
 // Dopo ogni round le regole dei moduli contano il turno giocato (es. le pozioni di effetto durano un numero di turni di combattimento).
 export function conteggioRound(esito: Esito, ctx: Contesto): Esito {
-  return esito.ok ? { ...esito, stato: applicaRegole(ctx, puntoFineRound, { stato: esito.stato }).stato } : esito;
+  if (!esito.ok) return esito;
+  const dopo = applicaRegole(ctx, puntoFineRound, { stato: esito.stato, eventi: [] });
+  return { ...esito, stato: dopo.stato, eventi: [...esito.eventi, ...dopo.eventi] };
 }
 
 function risolviRoundBase(stato: StatoGioco, ctx: Contesto, opzioni: OpzioniRound = {}): Esito {
@@ -243,7 +258,7 @@ function concludiVittoria(
     parametri: { oro, esperienza },
     tono: "positivo",
   };
-  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "vittoria", eventi: [] });
+  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "vittoria", eventi: [], ...potenziamentoDi(stato) });
   return esitoOk(fine.stato, [...eventi, evento, ...fine.eventi]);
 }
 
@@ -254,7 +269,7 @@ function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id
     // Duello non letale: si resta vivi a 1 HP, senza perdere monete né esperienza.
     const vivo: StatoGioco = { ...stato, personaggio: { ...p, hp: 1 } };
     const registrato = registraStatistiche(impostaScontro(vivo, null), creaturaId, { perse: 1 });
-    const fine = applicaRegole(ctx, puntoFineScontro, { stato: registrato, creaturaId, esito: "sconfitta", eventi: [] });
+    const fine = applicaRegole(ctx, puntoFineScontro, { stato: registrato, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato) });
     return esitoOk(fine.stato, [...eventi, { chiave: "combattimento.sconfittaNonLetale", tono: "negativo" }, ...fine.eventi]);
   }
   const oroPerso = calcolaOroPerso(p.oro, PARAMETRI_COMBATTIMENTO.penalitaOroMorte);
@@ -263,6 +278,6 @@ function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id
     personaggio: { ...p, hp: 0, morto: true, oro: p.oro - oroPerso },
   };
   const finale = registraStatistiche(impostaScontro(morto, null), creaturaId, { morti: 1 });
-  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "sconfitta", eventi: [] });
+  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato) });
   return esitoOk(fine.stato, [...eventi, { chiave: "combattimento.sconfitta", parametri: { oroPerso }, tono: "negativo" }, ...fine.eventi]);
 }

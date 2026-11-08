@@ -177,7 +177,7 @@ export const moduloTorreProva: DefinizioneModulo = {
   versioneApi: VERSIONE_API,
   dipende: [ID_COMBATTIMENTO, ID_LUOGHI, "foresta"],
   contenuti: [
-    voceIllustrazione("scena.torre", `
+    voceIllustrazione("scena.torreprova", `
 ..........
 ....11....
 ...1111...
@@ -200,7 +200,7 @@ export const moduloTorreProva: DefinizioneModulo = {
     {
       tipo: "luogo",
       id: "torre",
-      dati: { nomeChiave: "torre-prova.luogo", azioni: ["esploraForesta"], creature: ["gufo"], scenaId: "scena.torre" },
+      dati: { nomeChiave: "torre-prova.luogo", azioni: ["esploraForesta"], creature: ["gufo"], scenaId: "scena.torreprova" },
     },
   ],
   testi: {
@@ -209,7 +209,7 @@ export const moduloTorreProva: DefinizioneModulo = {
   },
   interfaccia: {
     titoliContesto: { "luogo:torre": "torre-prova.luogo" },
-    illustrazioniContesto: { "luogo:torre": "scena.torre" },
+    illustrazioniContesto: { "luogo:torre": "scena.torreprova" },
     menu: [
       { id: "torre-prova.vai", contesto: "villaggio", etichettaChiave: "torre-prova.vai", tasto: "R", ordine: 80, comando: { tipo: "naviga", verso: "luogo:torre" } },
       {

@@ -1,5 +1,63 @@
 # Cronologia delle versioni
 
+## 0.14.0 - I tornei dell'Anfiteatro
+- **Il torneo settimanale** (`[T]` dalla Piazza dell'Anfiteatro): un torneo ogni 7 giorni di gioco (dal contatore delle Cronache), con **quattro nomi a rotazione**: Palio della Libertas, Giostra del Serchio, Coppa della Torre, Trofeo dell'Anfiteatro. Resta aperto tutta la settimana; **una sola iscrizione a settimana**.
+- **Iscrizione** 10 monete per livello (non rimborsabile). **Tre duelli** non letali (quarti, semifinale, finale), 1 azione ciascuno, quando vuoi. Gli avversari sono **gladiatori con nome** (12 soprannomi) **scalati sul tuo livello**, non sul tuo equipaggiamento (quarti 80%, semifinale 100%, finale 120%, con ±10% a caso su HP e forza): chi è ben equipaggiato è avvantaggiato. Non si fugge.
+- **Premi** a ogni turno vinto: 1,5×, 1,5× e 3× l'iscrizione (totali 1,5×, 3× e 6×) e, al campione, una **pozione** e il **titolo**. Tra un turno e l'altro **recuperi il 30% degli HP persi**, e puoi usare le pozioni. Se perdi sei eliminato: resti a 1 HP senza altre perdite, e riprovi la settimana dopo.
+- **Albo** nella scheda del personaggio: per ogni torneo vittorie, finali e iscrizioni (la riga compare dopo la prima iscrizione) e il titolo del campione ("campione del Palio della Libertas, 2 volte").
+- **Arena** disegnata (arcate di pietra e sabbia) con la **mensola dei trofei**: una coppa d'oro per ogni vittoria (fino a 12).
+- Le **Cronache annunciano** il torneo della settimana nel giornale della Stamperia.
+- **Comando di prova** (`?dev=1`, `[O]` → `[V]` → `[9]`): "Avvia il torneo", passa alla settimana seguente (un altro torneo; l'albo resta).
+- Interno: modulo `torneo` (stato: iscrizione della settimana, turni, albo, titolo), creatura `gladiatore` con potenziamento, regola di fine duello; l'annuncio usa l'unione dei pannelli.
+
+## 0.13.1 - Scheda del personaggio più chiara
+- **Il mana sta nelle Statistiche**, con base e bonus come HP, forza e difesa: `Mana: 10/11 (base 0, bonus +11)` (solo per chi ha mana). Sparisce la sezione "Mana" separata.
+- **La riga della classe** dice il nome e, sotto, **cosa si guadagna al prossimo livello** ("Al prossimo livello: HP massimi +3, difesa +1, mana +2") e i bonus dei livelli successivi ("Al livello 4: velocità +1"), dai dati di crescita; al posto di "HP -2, forza +3, ..." che fuorviava. Al livello massimo resta il solo nome.
+- Interno: nel nucleo i pannelli con lo stesso titolo e gli stessi contesti si uniscono (un modulo può aggiungere righe al gruppo di un altro).
+
+## 0.13.0 - Le Cronache della città e le correzioni
+- **Cronache della città:** un quotidiano di gossip, nuovo luogo la **Stamperia** (`[S]` da Via Fillungo). Ogni giorno **tre notizie** pescate da un mazzo di **60** (scritte in italiano e inglese, con tono ironico): per 20 giorni non si ripetono, poi il mazzo si rimescola. Le stesse tre per tutto il giorno; la testata dice il numero ("CRONACHE DELLA CITTÀ — numero 2"). Ogni notizia ha etichette nascoste (tema, zona, personaggio, semi per funzioni future: tornei, missioni, Drago, tesori). Serve un contatore dei giorni giocati nel salvataggio (servirà anche ai tornei).
+- **Via Fillungo:** una via tra San Michele e l'Anfiteatro (2 + 2 movimenti, come ora il percorso diretto di 4), con scena propria. La **Torre Guinigi** è a 2 movimenti da Via Fillungo, quindi più vicina al centro (da San Pietro 14 movimenti invece di 16). La categoria della mappa si chiama "Piazze, vie e Torre".
+- **Uscita dalle porte:** niente più schermata intermedia "La Foresta" o "Le Paludi". Dalla **Porta San Pietro** `[F] Addentrati nella foresta`; dalla **Porta Sant'Anna** (dal livello 4) `[P] Addentrati nella palude` e `[C] Esplora il cimitero`. Dopo un combattimento si torna alla porta. Il pericolo per te e il testo di giorno e notte stanno sulla porta.
+- **"Parla" con un NPC passa da `[P]` a `[N]`** (la P serve alla palude).
+- **Luna di giorno:** nelle scene all'aperto la luna di giorno sparisce nel cielo azzurro (senza sole).
+- **Castruccio:** non ripete più il suo nome nella sua schermata (titolo del pannello tolto, righe come "Ti conta 180 monete: «Bene. Alla prossima.»"). Le missioni delle zone si propongono dopo esserci passati dalla porta.
+- **Zara:** quote da roulette europea (vantaggio dell'oste da 1,6% a 3,1%): 7 e 14 pagano 13×, 8 e 13 pagano 9×, 9 e 12 pagano 7,5×, 10 e 11 pagano 6,75× (arrotondato per difetto alla moneta). **La probabilità in percentuale nel menu** (`Chiama 7 (6,9%, vinci 182 monete)`). Nuova scena: un **tavolaccio** di legno visto dall'alto con **tre dadi grandi**.
+- **Locanda:** il tavolo ridisegnato: più chiaro (con le zampe) per staccarsi dallo sfondo, **un boccale** di peltro con la schiuma e un **piatto fumante** con il vapore che tremola.
+- Interno: moduli `cronache`; punto di regola della foresta usato dalle porte; tasti con lettera dal decimo luogo (mappa e comandi di prova); la luna usa ruoli di colore che di giorno copiano il cielo.
+
+## 0.12.1 - La Zara e vari ritocchi
+- **La Zara alla Locanda** (`[4] Gioca alla Zara`): gioco di dadi da osteria. Chiami la somma di tre dadi (da 7 a 14); l'oste li tira: se esce, vinci la quota; altrimenti perdi la puntata. Puntata piccola, media o grossa (2, 5 o 10 monete per livello; `[P]` la cambia); 1 azione a mano. Quote: 7 e 14 pagano 12×, 8 e 13 pagano 8×, 9 e 12 pagano 7×, 10 e 11 pagano 6× (ritorno medio circa 90%). Somme da 3 a 6 e da 15 a 18 sono «Zara!»: vince sempre l'oste. I **tre dadi** compaiono disegnati sul tavolo della Locanda; nove battute dell'oste.
+- **Tomo delle statistiche** (`[I]` → `[2]`): lo stesso libro del bestiario; a sinistra, inciso, il mostro battuto più volte; a destra le **stecche dei conti** (una per vittoria, a gruppi di cinque, fino a 100). Al posto della X delle spade.
+- **Promemoria della missione** nella colonna di destra: in corso ("Missione: Ratto gigante 1/2", "Missione: «Dente Nero» da cacciare") e, quando è finita, in verde "Missione compiuta: da Castruccio!".
+- **Spettro ridisegnato** (cappuccio tondo, coda ondulata, un braccio teso: non più una navicella). **Camino della Locanda** ridisegnato come un vero fuoco (brace, ceppi incrociati, una fiamma sola).
+- Torre: la frase della vista non compare più due volte (resta nel pannello della cima). Castruccio: «Bene. Alla prossima.»
+- Interno: nuovo modulo `zara` (stato: puntata e ultimi dadi); `illustrazioneStatistiche` nel bestiario; `laterale` del cacciatore; dadi `dado.1`-`dado.6` e stecche `stecche.1`-`stecche.5`.
+
+## 0.12.0 - La Torre e Castruccio
+- **La Torre Guinigi:** `[1] Sali in cima alla Torre`, con la sua scena (base in mattoni con le querce in cima) e una schermata della cima con la città sotto. Costa **1 azione solo quando c'è un segreto da scoprire in quel momento**, altrimenti è gratis e senza limite (l'etichetta dice "(1 azione)" o "(gratis)"). La vista cambia con il momento della giornata (alba, giorno, tramonto, notte). **Tre segreti:** la prima salita dà la storia della Torre e **+3 HP massimi permanenti**; la prima salita di notte svela **lo Spettro nel bestiario** (senza averlo incontrato); solo il Mistico, alla prima salita, **+1 mana massimo permanente**. I ricordi dei segreti restano nella schermata della cima.
+- **Castruccio, il cacciatore di taglie** (`[C]` dalla Torre), rude e spiccio. **Una missione al giorno** (1 azione per chiederla), valida fino al nuovo giorno; senza **4 mostri diversi uccisi** dice "Non ho missioni disponibili al momento". Comandi: chiedi (1), riscuoti (2), abbandona (3, senza penalità; per oggi non ne arriva un'altra). Conta solo ciò che uccidi **dopo** aver preso la missione.
+- **Battuta:** da 1 a 3 mostri di un tipo già ucciso e raggiungibile adesso; compenso oro × quantità × 2 e, se sono 3, una pozione a caso.
+- **Preda con nome:** un mostro raggiungibile adesso con un soprannome («Zanna Rossa», «Cuor di Pietra»...) e un livello: **debole** (HP ×1,5, forza ×1,15, compenso ×2, nessuna pozione), **pari a te** (×2, ×1,3, ×3, una pozione), **pericolosa** (×3, ×1,5, ×5, due pozioni), cioè 40%, 40% e 20%. Compenso = oro del mostro × 4 × il moltiplicatore. Compare **nella sua zona al posto di un incontro normale (circa 10%)**; il combattimento automatico non parte da solo contro di lei. Se non hai mai incontrato il mostro di base, Castruccio ne dice solo la famiglia. Con lo zaino pieno le pozioni diventano monete.
+- **Nel bestiario** la preda conta come il mostro di base. La missione compare anche nella scheda del personaggio (`[I]` → `[1]`).
+- Interno: **potenziamento dello scontro** (HP e forza moltiplicati e un soprannome, salvato nello scontro) e punto di regola `puntoIncontro` nella foresta; `scopriMostro` e `mostriUccisi` nel bestiario; `momentoDelGiorno`; scena propria per un luogo (`SCENA_PER_SITO`); moduli `torre` e `cacciatore`.
+
+## 0.11.6 - Lo Speziale ricompra le pozioni
+- **Vendi le tue pozioni** (`[V]` dallo Speziale): una schermata con gli slot dello zaino che hanno una pozione; il numero è quello dello slot ("Vendi: Pozione di mana (9 monete)"). Lo Speziale ricompra le pozioni sigillate al **30% del loro valore** (il prezzo di acquisto al tuo livello, almeno 1 moneta). Serve a liberarsi di quelle inutili (per esempio il mana per un Cavaliere) senza buttarle. Comprare per rivendere non conviene mai.
+- Interno: azione `vendiPozione`, contesto `luogo:speziale:vendi` con padre lo Speziale, parametro `quotaRiacquisto`.
+
+## 0.11.5 - Effetti delle pozioni senza numeri, con il messaggio di fine
+- **I turni non si vedono più:** né quando bevi ("Bevi Pozione di forza: senti la forza crescere dentro di te."), né nel pannello ("Effetto in corso: Pozione di forza (+2)"), né nelle descrizioni ("+2 forza per alcuni turni di combattimento"). La durata (5 + d6 turni di combattimento) resta nascosta.
+- **Messaggio di fine effetto:** quando l'effetto scade compare "L'effetto di Pozione di forza è terminato." (in cyan). Non va perso nemmeno con "Combatti fino alla fine".
+- **La pozione di mana solo per chi ha mana:** lo Speziale non la offre e il bottino non la lascia a Cavaliere e Ladro (resta per il Mistico). Quelle già nello zaino restano.
+- Interno: `EventoGioco.importante` (messaggio da non perdere), `CalcoloRound.eventi` (le regole di fine round possono aggiungere messaggi), `tipiDelGiorno`/`scortaDelGiorno`/`scortaRimasta` con il contesto (per sapere se c'è mana).
+
+## 0.11.4 - Lo Speziale con tre pozioni al giorno
+- **Lo Speziale ha ogni giorno da 1 a 3 pozioni DIVERSE** (a caso tra le sei), ciascuna in **1-2 pezzi**; prima ogni tipo usciva con il 50% e potevano esserci fino a sei tipi.
+- **Elenco di oggi, senza buchi nei tasti:** `[1]`, `[2]`, `[3]` aprono le pozioni di oggi e dicono quale ("Compra: Pozione di mana"). Per ogni pozione due righe brevi: nome con l'effetto, poi prezzo e quanti ne restano ("esaurita oggi" se finita). Via la nota sulla capienza dello zaino.
+- **Titolo corretto:** la schermata si chiamava "luogo:speziale"; ora è **"Lo Speziale"**.
+- Interno: `tipiDelGiorno` (pura, deterministica dalla data del reset), azione `compraPozione` per posizione oltre che per tipo, parametri `tipiMin` e `tipiMax`.
+
 ## 0.11.3 - Pericolo con gli HP e bestiario più chiaro
 - **Il pericolo per te tiene conto degli HP:** sotto la metà degli HP sale di un livello, sotto un quarto di due (basso → medio → alto), con il suffisso "(sei ferito)". Prima un personaggio forte ma ferito vedeva "basso" sotto la riga rossa "Sei ferito". L'esplorazione sceglie i mostri come prima.
 - **Bestiario, pagina delle famiglie:** il titolo è "Famiglie di mostri" (non ripete più "Mostri incontrati").

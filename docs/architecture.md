@@ -701,3 +701,52 @@ Nessuna modifica al nucleo: due moduli nuovi e piccole estensioni additive in `c
 | Arte | `scene_c.tomo`, quattro icone e tre segni in `strumenti/arte`, esportati nel modulo combattimento |
 | Verifica | Test sull'incisione e sul libro (dimensioni, palette dei toni, immagine diversa per natura diversa); prova nel browser con il salvataggio del Ladro |
 
+## 37. Messaggi di fine round e di fine effetto (0.11.5)
+
+| Aspetto | Scelta |
+|---|---|
+| Nucleo | `EventoGioco.importante`: il combattimento automatico lo conserva anche se scarta le righe dei round intermedi |
+| Combattimento | `CalcoloRound.eventi`: le regole di fine round possono accodare messaggi agli eventi del round; `combattiFinoAllaFine` raccoglie gli eventi importanti di ogni round, senza duplicare quelli dell'ultimo |
+| Pozioni | La regola del turno emette `pozioni.effettoFinito` (importante) quando l'effetto arriva a zero; la scelta del giorno e il bottino escludono la pozione di mana se il personaggio non ha mana |
+
+## 38. Torre, Castruccio e potenziamento dello scontro (0.12.0)
+
+| Aspetto | Scelta |
+|---|---|
+| Combattimento (critico) | `ScontroAttivo.potenziamento` ({ hp, forza, soprannomeChiave? }): `iniziaScontro` lo accetta, `caricaScontro` restituisce la creatura con HP e forza moltiplicati (tutti i calcoli la usano), l'evento di inizio e il pannello mostrano il soprannome; la regola di fine scontro riceve il potenziamento. `scopriMostro` (apre una scheda senza incontro: `ordine` > 0) e `mostriUccisi` |
+| Foresta | Punto di regola `puntoIncontro`: dopo la scelta della creatura i moduli possono sostituirla, potenziarla e vietare il combattimento automatico; `pesiIncontro` e `creatureIncontrabili` riusabili |
+| Torre | Modulo `torre`: stato dei segreti, azione `saliTorre` (costo solo se c'è un segreto), regole sugli HP e sul mana massimi, contesto `citta:torre:cima` (aperto con `poi`), etichetta dinamica del costo |
+| Castruccio | Modulo `cacciatore`: stato { propostaAl, missione } (la missione vale solo nel giorno in cui è stata proposta), generazione (`missione.ts`), azioni `chiediMissione`, `riscuotiMissione`, `abbandonaMissione`, regole sul progresso (fine scontro) e sulla preda (incontro) |
+| Pozioni | `consegnaPozioni` (le pozioni del premio, o il loro prezzo in monete) e `pozioneCasuale` |
+| Città | `SCENA_PER_SITO`: un luogo può avere una scena propria |
+| Verifica | Livello critico: suite completa; test su segreti, costi, bonus, momenti della giornata, potenziamento, missioni (generazione, scadenza, completamento, riscossione), preda (probabilità, automatico, zona), schermate |
+
+## 39. La Zara e il tomo delle statistiche (0.12.1)
+
+| Aspetto | Scelta |
+|---|---|
+| Zara | Modulo foglia `zara` (dipende da azioni e locanda): regole pure in `gioco.ts` (puntata, quote, tiro, esito), azioni `giocaZara` e `cambiaPuntataZara`, contesto `luogo:locanda:zara` con padre la Locanda, comando `[4]` aggiunto dal modulo al contesto della Locanda (lo stato della Locanda non cambia), immagine dinamica con i dadi dell'ultimo tiro |
+| Statistiche | `illustrazioneStatistiche` (bestiario.ts): il libro con il mostro più battuto inciso e le stecche composte da cinque sprite (1-5 segni) |
+| Cacciatore | `laterale`: riga di promemoria della missione nella colonna di destra |
+| Verifica | Il combattimento è un modulo critico e l'immagine delle statistiche lo tocca: suite completa |
+
+## 40. Le Cronache e le porte come punto di partenza delle esplorazioni (0.13.0)
+
+| Aspetto | Scelta |
+|---|---|
+| Cronache | Modulo `cronache` (dipende dalla città): stato `{ giorni }` incrementato dalla regola del cambio giorno; `notizieDelGiorno(giorno, seme)` pura e deterministica (mazzo mescolato con un generatore con seme, tre carte di seguito); le 60 notizie sono dati (`dati.ts`, etichette) con testi in italiano e inglese; pannello del giornale nel contesto della Stamperia |
+| Città | Nuovi siti `fillungo` (categoria piazza) e `stamperia` (edificio ospitato da Via Fillungo); scena propria per sito (`SCENA_PER_SITO`); tasti con lettera dal decimo luogo; `menuNascosto` nasconde il comando di uscita delle porte aperte |
+| Zone | Le esplorazioni di foresta, palude e cimitero sono voci di menu del contesto delle porte (`citta:porta-s`, `citta:porta-so`); la palude si nasconde sotto il livello minimo della porta (letto dai dati della città); le aree esterne restano come siti ma non hanno più comandi |
+| Arte | La luna usa ruoli di colore composti ("luna@k") che di giorno hanno il colore del cielo sotto, ridotto a tre sfumature per restare nei 62 colori |
+| Verifica | Livello critico (città, zone, combattimento toccato prima): suite completa nell'albero e sulla copia pulita, prova nel browser |
+
+## 41. I tornei (0.14.0)
+
+| Aspetto | Scelta |
+|---|---|
+| Modulo | `torneo` (dipende da azioni, città, combattimento, cronache, pozioni): stato `{ settimana, iscritto, turni, eliminato, albo, titolo }`; la settimana viene dal contatore dei giorni delle Cronache, e se cambia l'iscrizione si azzera in lettura (l'albo resta) |
+| Avversari | Creatura `gladiatore` (non letale, senza premi) potenziata con il meccanismo della 0.12.0: HP e forza dal livello e dal turno, soprannome |
+| Regola | A fine duello (`puntoFineScontro`): vittoria = premio del turno, recupero del 30% degli HP persi, avanzamento e, in finale, albo, titolo e pozione; sconfitta = eliminazione |
+| Schermate | Contesto `luogo:torneo` (padre: Piazza dell'Anfiteatro, tasto `[T]`), pannello, albo nel contesto della scheda, annuncio unito al pannello del giornale della Stamperia, arena con le coppe (immagine dinamica) |
+| Verifica | Livello critico: suite completa e prova nel browser; simulazione di bilanciamento sulle tre classi |
+

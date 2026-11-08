@@ -257,3 +257,18 @@ describe("incisione: un disegno a colori reso con pochi toni d'inchiostro", () =
   });
 });
 
+describe("la luna di giorno (0.13.0)", () => {
+  const tutte = elencaContenuti(registro, tipoIllustrazione);
+
+  it("nelle scene all'aperto con la palette di giorno la luna non ha più i colori chiari di prima: sparisce nel cielo", () => {
+    const lunaDiGiorno = ["#f4f6ff", "#d8e0f0", "#c4cce0"];
+    let controllate = 0;
+    for (const { id, dati } of tutte.filter((i) => i.id.startsWith("scena."))) {
+      if (!dati.paletteGiorno) continue;
+      controllate++;
+      for (const colore of dati.paletteGiorno) expect(lunaDiGiorno, `${id} ${colore}`).not.toContain(colore.toLowerCase());
+    }
+    expect(controllate).toBeGreaterThanOrEqual(6);
+  });
+});
+

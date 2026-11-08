@@ -245,6 +245,61 @@ export const ILLUSTRAZIONI_COMBATTIMENTO: readonly VoceContenuto[] = [
 `, {
     palette: ["#b01a1a"],
   }),
+  voceIllustrazione("stecche.1", `
+0......
+0......
+0......
+0......
+0......
+0......
+0......
+`, {
+    palette: ["#4a2c14"],
+  }),
+  voceIllustrazione("stecche.2", `
+0.0....
+0.0....
+0.0....
+0.0....
+0.0....
+0.0....
+0.0....
+`, {
+    palette: ["#4a2c14"],
+  }),
+  voceIllustrazione("stecche.3", `
+0.0.0..
+0.0.0..
+0.0.0..
+0.0.0..
+0.0.0..
+0.0.0..
+0.0.0..
+`, {
+    palette: ["#4a2c14"],
+  }),
+  voceIllustrazione("stecche.4", `
+0.0.0.0
+0.0.0.0
+0.0.0.0
+0.0.0.0
+0.0.0.0
+0.0.0.0
+0.0.0.0
+`, {
+    palette: ["#4a2c14"],
+  }),
+  voceIllustrazione("stecche.5", `
+0.0.0.0
+0.0.000
+0.0.0.0
+0.000.0
+0.0.0.0
+000.0.0
+0.0.0.0
+`, {
+    palette: ["#4a2c14"],
+  }),
   voceIllustrazione("sprite.ratto", `
 ................................
 .......................0........

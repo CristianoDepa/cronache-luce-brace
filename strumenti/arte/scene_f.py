@@ -140,19 +140,22 @@ def zombi():
     return contorno(q)
 
 def spettro():
-    # Mantello che sfuma verso il basso in brandelli; nessuna texture rumorosa, solo luce dall'alto.
-    q = Quadro(30, 42, [(["cian_s", "blu_l"], 600)])
-    q.poli([(15, 1), (24, 9), (27, 36), (3, 36), (6, 9)], "acc_l")
-    q.poli([(15, 4), (22, 11), (24, 36), (6, 36), (8, 11)], "acc")
-    q.poli([(15, 6), (20, 12), (21, 36), (9, 36), (10, 12)], "acc_l")
-    r = random.Random(11)
-    for y in range(26, 42):
-        for x in range(30):
-            if q.p[y][x] is not None and r.random() > (41 - y) / 15.0: q.p[y][x] = None  # il fondo si sfilaccia
-    for x, y in ((5, 38), (9, 40), (15, 41), (21, 40), (25, 38)): q.rett(x, y, x, 41, "acc_l")
-    q.ell(15, 13, 4, 5, "ombra"); q.disco(13, 12.5, 1.5, "cian"); q.disco(17, 12.5, 1.5, "cian"); q.set(13, 12, "bianco"); q.set(17, 12, "bianco"); q.rett(14, 16, 16, 17, "nero")
-    q.linea(7, 18, 2, 28, "acc_l", 2); q.linea(23, 18, 28, 28, "acc_l", 2); q.disco(2, 29, 1.8, "bianco"); q.disco(28, 29, 1.8, "bianco")
-    q.rett(12, 21, 18, 21, "bianco"); q.rett(13, 24, 17, 24, "bianco")  # pieghe di luce
+    # Una figura incappucciata che fluttua: cappuccio tondo e inclinato, mantello che si assottiglia in una coda ondulata (niente
+    # base larga né punta a cono), un braccio teso in avanti con le dita ad artiglio e uno che pende nella manica.
+    q = Quadro(34, 44, [(["cian_s", "blu_l"], 600)])
+    q.ell(16, 9, 8, 8, "acc"); q.ell(15, 8, 7, 7, "acc_l")                                   # cappuccio tondo
+    q.poli([(8, 12), (24, 12), (28, 20), (24, 24), (7, 24), (4, 20)], "acc")                  # spalle e mantello
+    q.poli([(8, 18), (23, 18), (21, 30), (18, 38), (22, 43), (14, 40), (12, 32), (9, 26)], "acc")   # il corpo si assottiglia in una coda
+    q.poli([(10, 20), (21, 20), (19, 30), (16, 37), (13, 31)], "acc_l")                       # luce sul davanti
+    q.ell(15, 11, 5, 5, "ombra"); q.disco(13, 11, 1.4, "cian"); q.disco(18, 11, 1.4, "cian"); q.set(13, 10, "bianco"); q.set(18, 10, "bianco")
+    q.linea(7, 22, 1, 29, "acc", 3); q.linea(7, 22, 1, 29, "acc_l", 1)                        # braccio teso
+    for i, (dx, dy) in enumerate(((-1, 3), (1, 4), (3, 4))): q.linea(1 + i, 29, 1 + i + dx, 29 + dy, "bianco", 1)   # dita
+    q.poli([(24, 20), (30, 27), (28, 33), (23, 28)], "acc_s"); q.poli([(25, 22), (29, 27), (27, 31)], "acc")   # manica che pende
+    r = random.Random(23)
+    for y in range(30, 44):
+        for x in range(34):
+            if q.p[y][x] is not None and r.random() > (43 - y) / 16.0: q.p[y][x] = None        # la coda si sfilaccia in nebbia
+    for x, y in ((11, 36), (22, 34), (25, 38)): q.set(x, y, "cian_s")
     return contorno(q, "blu_s")
 
 MOSTRI = {"rospo": rospo, "serpe": serpe, "fuoco": fuoco_fatuo, "scheletro": scheletro, "zombi": zombi, "spettro": spettro}

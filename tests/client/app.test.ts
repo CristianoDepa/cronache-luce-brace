@@ -178,10 +178,10 @@ describe("una giornata in città e nella foresta", () => {
     return app;
   }
 
-  it("si parte alla Porta San Pietro: uscita nella foresta, mappa, luogo e azioni rimaste a destra", async () => {
+  it("si parte alla Porta San Pietro: addentrarsi nella foresta, mappa, luogo e azioni rimaste a destra", async () => {
     const app = await giocatore();
     const s = app.schermata();
-    expect(tasti(s)).toEqual(["E", "L", "M", "I", "O"]); // il comando "Parla" non c'è dove non c'è nessuno
+    expect(tasti(s)).toEqual(["F", "L", "M", "I", "O"]); // F = Addentrati nella foresta; il comando "Parla" non c'è dove non c'è nessuno
     expect(testo(s)).toContain("Porta San Pietro");
     expect(testo(s)).toContain("Luogo: Porta San Pietro");
     expect(testo(s)).toContain("Azioni 50/50");
@@ -190,8 +190,7 @@ describe("una giornata in città e nella foresta", () => {
 
   it("il bestiario si apre a livelli: famiglie, mostri con il loro nome, scheda; i numeri portano avanti e 0 torna indietro di un livello", async () => {
     const app = await giocatore();
-    await app.premiTasto("E"); // foresta
-    await app.premiTasto("E"); // esplora: uno scontro (si può solo scoprire un mostro)
+    await app.premiTasto("F"); // esplora: uno scontro (si può solo scoprire un mostro)
     await app.premiTasto("T"); // combatti fino alla fine
     expect(app.stato().vista?.contestoForzato).toBeUndefined();
     await app.premiTasto("I");
@@ -213,16 +212,12 @@ describe("una giornata in città e nella foresta", () => {
     expect(app.stato().navigazione).toBe("info:bestiario");
   });
 
-  it("si esce nella foresta, si torna alla porta con R e si incontra un nemico", async () => {
+  it("dalla porta ci si addentra nella foresta (senza schermata intermedia) e si incontra un nemico", async () => {
     const app = await giocatore();
-    await app.premiTasto("e"); // le minuscole funzionano
-    expect(testo(app.schermata())).toContain("La Foresta");
-    expect(tasti(app.schermata())).toEqual(["E", "R", "I", "O"]);
-    await app.premiTasto("R"); // torna alla porta, gratis
+    expect(testo(app.schermata())).toContain("Addentrati nella foresta");
     expect(testo(app.schermata())).toContain("Luogo: Porta San Pietro");
     expect(testo(app.schermata())).toContain("Azioni 50/50");
-    await app.premiTasto("E");
-    await app.premiTasto("E");
+    await app.premiTasto("f"); // le minuscole funzionano
     const combattimento = app.schermata();
     expect(tasti(combattimento)).toEqual(["A", "T", "S", "F", "O"]); // T = combatti fino alla fine; la seconda abilità si vede solo dal livello 4
     expect(testo(combattimento)).toContain("Combattimento");
@@ -232,8 +227,7 @@ describe("una giornata in città e nella foresta", () => {
 
   it("combattendo fino alla fine si torna alla foresta con l'esito nel registro", async () => {
     const app = await giocatore();
-    await app.premiTasto("E");
-    await app.premiTasto("E");
+    await app.premiTasto("F"); // addentrati nella foresta (dalla porta)
     for (let i = 0; i < 40 && app.stato().vista?.contestoForzato === "combattimento"; i++) {
       await app.premiTasto("A");
     }
@@ -253,7 +247,7 @@ describe("una giornata in città e nella foresta", () => {
   it("l'interfaccia funziona anche in inglese", async () => {
     const app = await giocatore("en");
     expect(testo(app.schermata())).toContain("San Pietro Gate");
-    expect(testo(app.schermata())).toContain("Go out into the forest");
+    expect(testo(app.schermata())).toContain("Venture into the forest");
   });
 });
 
@@ -335,7 +329,7 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     const righe = testo(app.schermata()).split("\n");
     const iGioco = righe.findIndex((r) => r.startsWith("── GIOCO"));
     const iSettaggi = righe.findIndex((r) => r.startsWith("── SETTAGGI"));
-    const iForesta = righe.findIndex((r) => r.includes("[E]"));
+    const iForesta = righe.findIndex((r) => r.includes("[F]"));
     const iOpzioni = righe.findIndex((r) => r.includes("[O]"));
     expect(iGioco).toBeGreaterThanOrEqual(0);
     expect(iGioco).toBeLessThan(iForesta);
@@ -401,7 +395,7 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     const sinistra = s.sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n");
     const destra = s.destra.map((r) => r.map((x) => x.testo).join("")).join("\n");
     expect(sinistra).toContain("Porta San Pietro");
-    expect(sinistra).toContain("[E]");
+    expect(sinistra).toContain("[F]");
     expect(sinistra).not.toContain("Livello 1");
     expect(destra).toContain("Aldo");
     expect(destra).toContain("Livello 1");
@@ -459,11 +453,9 @@ describe("pulizia dello schermo e aggiornamento", () => {
   it("spostandosi in un altro luogo il registro degli eventi si svuota", async () => {
     const { app } = await giocatore();
     expect(app.stato().log.length).toBeGreaterThan(0); // "Hai scelto la classe"
-    await app.premiTasto("E"); // esce nella foresta: restano solo gli eventi dell'arrivo
+    await vai(app, "2", "1"); // ci si sposta (sulle mura): restano solo gli eventi dell'arrivo
     expect(app.stato().log).toHaveLength(1);
-    expect(app.stato().log[0]?.testo).toContain("Esci dalle mura");
-    await app.premiTasto("E");
-    expect(app.stato().log.length).toBeGreaterThan(0); // eventi del nuovo incontro
+    expect(app.stato().log[0]?.testo).toContain("Arrivi");
   });
 
   it("finita la creazione lo schermo riparte pulito, senza avvisi dei passaggi precedenti", async () => {
@@ -490,8 +482,7 @@ describe("pulizia dello schermo e aggiornamento", () => {
 
   it("scaduto il giorno, controllaNuovoGiorno lo applica senza ricaricare la pagina", async () => {
     const { amb, app } = await giocatore();
-    await app.premiTasto("E");
-    await app.premiTasto("E");
+    await app.premiTasto("F"); // addentrati nella foresta (dalla porta)
     const prima = app.stato().vista?.prossimoReset ?? 0;
     amb.orologio.avanza(DURATA_CICLO_MS - 60_000);
     await app.controllaNuovoGiorno();
@@ -505,11 +496,9 @@ describe("pulizia dello schermo e aggiornamento", () => {
   it("la chiave della schermata cambia con il contesto e non con le azioni dentro lo stesso", async () => {
     const { app } = await giocatore();
     const villaggio = app.schermata().chiave;
-    await app.premiTasto("E");
-    const foresta = app.schermata().chiave;
-    expect(foresta).not.toBe(villaggio);
-    await app.premiTasto("E");
+    await app.premiTasto("F"); // addentrati nella foresta: scontro
     const combattimento = app.schermata().chiave;
+    expect(combattimento).not.toBe(villaggio);
     await app.premiTasto("A");
     expect(app.schermata().chiave).toBe(combattimento);
   });
@@ -547,7 +536,11 @@ describe("schermate INFO: il personaggio e le statistiche incontri", () => {
     expect(s).toContain("HP massimi: 30 (base 20, bonus +10)");
     expect(s).toContain("Forza: 5 (base 5, bonus 0)");
     expect(s).toContain("Difesa: 4 (base 2, bonus +2)");
-    expect(s).toContain("Cavaliere: HP +10, forza 0, difesa +2, velocità -4, oro x1");
+    expect(s).toContain("Classe");
+    expect(s).toContain("  Cavaliere"); // solo il nome: i modificatori con i segni negativi fuorviavano
+    expect(s).not.toContain("velocità -4");
+    expect(s).toContain("Al prossimo livello:"); // cosa si guadagna salendo (dai dati di crescita della classe)
+    expect(s).toContain("HP massimi +5");
     expect(s).toContain("Arma: nessuna");
     expect(s).toContain("Armatura: nessuna");
     expect(s).toContain("Velocità: 6 (base 10, bonus -4)");
@@ -562,8 +555,7 @@ describe("schermate INFO: il personaggio e le statistiche incontri", () => {
     expect(sx(app.schermata())).toContain("Nessun nemico incontrato finora.");
     await app.premiTasto("0"); // all'elenco delle schede
     await app.premiTasto("0"); // al luogo da cui si è venuti
-    await app.premiTasto("E");
-    await app.premiTasto("E");
+    await app.premiTasto("F"); // addentrati nella foresta (dalla porta)
     for (let i = 0; i < 40 && app.stato().vista?.contestoForzato === "combattimento"; i++) await app.premiTasto("A");
     await app.premiTasto("I");
     await app.premiTasto("2");
@@ -609,8 +601,7 @@ describe("schermate INFO: il personaggio e le statistiche incontri", () => {
     await iniziaPartita(app, "Aldo");
     expect(tasti(app.schermata())).toEqual(["1", "2", "3", "D", "O"]); // creazione
     await app.premiTasto("1");
-    await app.premiTasto("E");
-    await app.premiTasto("E");
+    await app.premiTasto("F"); // addentrati nella foresta (dalla porta)
     expect(tasti(app.schermata())).toEqual(["A", "T", "S", "F", "O"]); // combattimento
   });
 
@@ -886,11 +877,11 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(sx(app.schermata())).toContain("[V] Comandi di prova");
     await app.premiTasto("V");
     expect(sx(app.schermata())).toContain("Comandi di prova");
-    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "0", "I", "O"]);
+    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "I", "O"]); // il 9 è "Avvia il torneo"
     // vai a un luogo: gratis, senza consumare azioni
     await app.premiTasto("4");
     await app.premiTasto("3"); // piazze e torre
-    await app.premiTasto("4"); // Torre Guinigi
+    await app.premiTasto("5"); // Torre Guinigi (dopo Via Fillungo)
     expect(app.schermata().chiave).toBe("gioco:citta:torre");
     expect(dx(app.schermata())).toContain("Luogo: Torre Guinigi");
     expect(dx(app.schermata())).toContain("Azioni 50/50");

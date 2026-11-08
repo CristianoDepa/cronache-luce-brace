@@ -60,8 +60,22 @@ export function trovaContestoForzato(stato: StatoGioco, ctx: Contesto): string |
   return undefined;
 }
 
+// Due pannelli con lo stesso titolo e gli stessi contesti diventano uno solo (le righe del secondo si accodano a quelle del primo):
+// così un modulo può aggiungere righe a un gruppo di un altro (es. il mana tra le Statistiche della scheda, senza un secondo titolo).
+function unisciPannelli(pannelli: readonly PannelloVista[]): readonly PannelloVista[] {
+  const risultato: PannelloVista[] = [];
+  for (const p of pannelli) {
+    const chiaveContesti = JSON.stringify(p.contesti ?? null);
+    const i = p.titoloChiave === undefined ? -1 : risultato.findIndex((q) => q.titoloChiave === p.titoloChiave && JSON.stringify(q.contesti ?? null) === chiaveContesti);
+    const esistente = risultato[i];
+    if (esistente) risultato[i] = { ...esistente, righe: [...esistente.righe, ...p.righe] };
+    else risultato.push(p);
+  }
+  return risultato;
+}
+
 export function raccogliPannelli(stato: StatoGioco, ctx: Contesto): readonly PannelloVista[] {
-  return ctx.registro.moduli.flatMap((m) => m.interfaccia?.pannelli?.(stato, ctx) ?? []);
+  return unisciPannelli(ctx.registro.moduli.flatMap((m) => m.interfaccia?.pannelli?.(stato, ctx) ?? []));
 }
 
 export function raccogliLaterale(stato: StatoGioco, ctx: Contesto): readonly VoceLaterale[] {

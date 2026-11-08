@@ -4,8 +4,9 @@ export const PARAMETRI_POZIONI = {
   bonusEffetto: 2,
   durataBase: 5,
   durataDado: 6,
-  // Scorta dello Speziale: ogni giorno ogni tipo è in vendita con questa probabilità, in quantità tra min e max.
-  probabilitaInVendita: 0.5,
+  // Scorta dello Speziale: ogni giorno ha da tipiMin a tipiMax pozioni DIVERSE (a caso tra le sei), ciascuna in quantità tra scortaMin e scortaMax.
+  tipiMin: 1,
+  tipiMax: 3,
   scortaMin: 1,
   scortaMax: 2,
   // Dopo ogni vittoria, probabilità di trovare una pozione a caso (con zaino pieno si lascia).
@@ -13,6 +14,8 @@ export const PARAMETRI_POZIONI = {
   // Le cure costano il doppio del Guaritore a pari HP medi: il Guaritore chiede il livello per HP, quindi leggera (3,5 HP medi) 7 x livello,
   // robusta (7 HP medi) 14 x livello.
   moltiplicatorePrezzoCura: 2,
+  // Lo Speziale ricompra le pozioni sigillate (quelle nello zaino) a questa quota del loro valore (il prezzo di acquisto al tuo livello).
+  quotaRiacquisto: 0.3,
   prezzoEffetto: 60,
   prezzoMana: 30,
 } as const;

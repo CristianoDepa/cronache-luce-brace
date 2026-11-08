@@ -1,5 +1,6 @@
 import type { Contesto, Id, Risultato, StatoGioco } from "../../core/indice";
 import {
+  applicaRegole,
   calcolaStatistiche,
   chiudi,
   comeOggetto,
@@ -11,6 +12,7 @@ import {
   numero,
   stringa,
 } from "../../core/indice";
+import { puntoIncontro } from "./punti";
 import { combattiFinoAllaFine, creaturaDisponibile, impostazioniAutomatico, iniziaScontro, tipoCreatura } from "../combattimento/indice";
 import type { FaseGiorno, Luogo } from "../luoghi/indice";
 import { calcolaPotenza, faseDelGiorno, pesiEffettivi, scegliConPesi, tipoLuogo } from "../luoghi/indice";
@@ -25,17 +27,28 @@ function validaLuogoId(dati: unknown): Risultato<{ readonly luogoId: Id }> {
 }
 
 // Sceglie una creatura tra quelle del luogo disponibili in questo momento, in proporzione ai loro pesi.
-function scegliCreatura(luogo: Luogo, stato: StatoGioco, ctx: Contesto, fase: FaseGiorno): Id | undefined {
-  // Di giorno non compaiono le creature "solo di notte"; di notte, se il luogo li ha, valgono i pesi notturni.
+// Le creature del luogo che possono comparire adesso (con peso positivo) e i loro pesi: di giorno non compaiono quelle "solo di notte";
+// di notte, se il luogo li ha, valgono i pesi notturni; alcune compaiono solo a personaggi abbastanza potenti.
+export function pesiIncontro(luogo: Luogo, stato: StatoGioco, ctx: Contesto, fase: FaseGiorno): { readonly candidate: readonly Id[]; readonly pesi: Readonly<Record<Id, number>> } {
   const candidate = luogo.creature.filter((id) => {
     const creatura = leggiContenuto(ctx.registro, tipoCreatura, id);
     return creatura !== undefined && creaturaDisponibile(creatura, ctx) && !(fase === "giorno" && luogo.soloNotte?.includes(id));
   });
-  if (candidate.length === 0) return undefined;
-  // Alcune creature compaiono solo a personaggi abbastanza potenti: i pesi dipendono dalla potenza attuale.
   const statistiche = calcolaStatistiche(stato, ctx);
   const pesiBase = fase === "notte" && luogo.pesiNotte ? luogo.pesiNotte : luogo.pesi;
-  const pesi = pesiEffettivi(pesiBase, candidate, calcolaPotenza(statistiche), statistiche.forza);
+  return { candidate, pesi: pesiEffettivi(pesiBase, candidate, calcolaPotenza(statistiche), statistiche.forza) };
+}
+
+// Le creature che possono comparire in un luogo in questo momento (peso positivo).
+export function creatureIncontrabili(luogo: Luogo, stato: StatoGioco, ctx: Contesto): readonly Id[] {
+  const { candidate, pesi } = pesiIncontro(luogo, stato, ctx, faseDelGiorno(ctx));
+  return candidate.filter((id) => (pesi[id] ?? 0) > 0);
+}
+
+// Sceglie una creatura tra quelle del luogo disponibili in questo momento, in proporzione ai loro pesi.
+function scegliCreatura(luogo: Luogo, stato: StatoGioco, ctx: Contesto, fase: FaseGiorno): Id | undefined {
+  const { candidate, pesi } = pesiIncontro(luogo, stato, ctx, fase);
+  if (candidate.length === 0) return undefined;
   return scegliConPesi(candidate, pesi, ctx.rng.prossimo());
 }
 
@@ -49,10 +62,13 @@ export const azioneEsploraForesta = definisciAzione("esploraForesta", validaLuog
   const creaturaId = scegliCreatura(luogo, stato, ctx, fase);
   if (creaturaId === undefined) return esitoErrore("foresta.errore.nessuna_creatura");
   const premio = fase === "notte" ? (luogo.premioNotte ?? 1) : 1;
-  const esito = iniziaScontro(stato, creaturaId, ctx, luogo.scenaId, premio);
+  // I moduli possono sostituire o potenziare la creatura (es. la preda con nome di un cacciatore di taglie).
+  const incontro = applicaRegole(ctx, puntoIncontro, { stato, luogoId: dati.luogoId, creaturaId, automatico: true, eventi: [] });
+  const esito = iniziaScontro(stato, incontro.creaturaId, ctx, luogo.scenaId, premio, incontro.potenziamento);
   if (!esito.ok) return esito;
   const consumato = consumaAzioni(esito.stato, 1) ?? esito.stato;
+  const eventi = [...incontro.eventi, ...esito.eventi];
   // Con il combattimento automatico acceso lo scontro si combatte da solo fino alla fine (o finché scatta il freno di sicurezza).
-  if (impostazioniAutomatico(consumato).automatico) return combattiFinoAllaFine(consumato, ctx, esito.eventi);
-  return esitoOk(consumato, esito.eventi);
+  if (incontro.automatico && impostazioniAutomatico(consumato).automatico) return combattiFinoAllaFine(consumato, ctx, eventi);
+  return esitoOk(consumato, eventi);
 });

@@ -17,3 +17,14 @@ export function faseDelGiorno(ctx: Pick<Contesto, "adesso" | "offsetFusoMinuti" 
   const ora = oraLocale(ctx);
   return ora >= ORA_INIZIO_NOTTE || ora < ORA_FINE_NOTTE ? "notte" : "giorno";
 }
+
+// I quattro momenti della giornata per i testi (alba 6-7, giorno 8-16, tramonto 17-19, notte 20-5), dall'ora locale (o forzata).
+export type MomentoGiornata = "alba" | "giorno" | "tramonto" | "notte";
+
+export function momentoDelGiorno(ctx: Pick<Contesto, "adesso" | "offsetFusoMinuti" | "oraForzata">): MomentoGiornata {
+  const ora = oraLocale(ctx);
+  if (ora >= ORA_INIZIO_NOTTE || ora < ORA_FINE_NOTTE) return "notte";
+  if (ora < 8) return "alba";
+  return ora < 17 ? "giorno" : "tramonto";
+}
+

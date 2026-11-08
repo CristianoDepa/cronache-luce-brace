@@ -29,12 +29,12 @@ describe("vista e menu", () => {
     expect(con("ladro").find((v) => v.tipo === "statistica")).toMatchObject({ valore: 15 });
   });
 
-  it("dopo la scelta della classe si è alla Porta San Pietro, liberi di uscire o di aprire la mappa", () => {
+  it("dopo la scelta della classe si è alla Porta San Pietro, liberi di addentrarsi nella foresta o di aprire la mappa", () => {
     const scelta = eseguiOk(statoDiProva(registro), { tipo: "scegliClasse", dati: { classeId: "ladro" } }, ctx);
     const vista = creaVistaPartita(scelta.stato, ctx);
     expect(vista.contestoForzato).toBeUndefined();
     expect(vista.contestoBase).toBe("citta:porta-s");
-    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["P", "E", "L", "M"]); // parla, esci, Locanda, mappa
+    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "E", "L", "M"]); // parla, addentrati nella foresta, esci (nascosta: la porta è aperta), Locanda, mappa
     expect(vista.pannelli.some((p) => p.contesti?.includes("citta:porta-s") && p.righe[0]?.chiave === "citta.pannello.descrizione")).toBe(true);
     expect(vista.pannelli.some((p) => p.titoloChiave === "classi.pannello.titolo")).toBe(false);
   });

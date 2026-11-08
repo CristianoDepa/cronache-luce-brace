@@ -56,7 +56,7 @@ def banca():
     return q
 
 def locanda():
-    q = Quadro(W, H, [CICLO_FUOCO, CICLO_FINESTRE], None)
+    q = Quadro(W, H, [CICLO_FUOCO, CICLO_FINESTRE, (["vap1", "vap2"], 700)], None)
     q.rett(0, 0, W - 1, 45, "legno_s")
     for x in range(0, W, 8): q.rett(x, 0, x, 45, "ombra")
     q.macchia(0, 0, W - 1, 45, "legno", 0.3)
@@ -68,17 +68,27 @@ def locanda():
     for y in range(12, 52, 6): q.rett(2, y, 36, y, "pietra_s")
     q.rett(0, 10, 38, 13, "pietra_l"); q.rett(0, 10, 38, 10, "pietra_c")
     q.rett(8, 24, 30, 52, "ombra"); q.poli([(8, 24), (30, 24), (19, 17)], "pietra")
-    q.rett(10, 47, 28, 50, "legno_s"); q.rett(10, 47, 28, 47, "legno")
-    fiamma(q, 13, 47, 16, 3); fiamma(q, 19, 47, 22, 4); fiamma(q, 25, 47, 14, 3)
-    # tavolo
-    q.rett(48, 34, 92, 38, "legno_l"); q.rett(48, 34, 92, 34, "pavim_l"); q.rett(50, 39, 53, 56, "legno"); q.rett(87, 39, 90, 56, "legno")
-    for bx in (54, 64, 74):
-        q.rett(bx, 26, bx + 6, 33, "acc"); q.rett(bx, 26, bx + 1, 33, "acc_l"); q.rett(bx, 26, bx + 6, 27, "bianco"); q.rect = None
-        q.rett(bx + 7, 28, bx + 8, 31, "acc"); 
-    q.rett(84, 24, 85, 33, "pelo_c"); fiamma(q, 84, 23, 4, 1)
-    # lanterna
-    q.rett(58, 9, 58, 14, "acc_s"); q.rett(54, 15, 62, 23, "oro_s"); q.rett(55, 16, 61, 22, "f3"); fiamma(q, 58, 22, 5, 1)
-    q.rett(54, 15, 62, 15, "acc"); q.rett(54, 23, 62, 23, "acc")
+    # un vero fuoco: letto di brace, due ceppi incrociati e una fiamma sola fatta di lingue sovrapposte (non tre punte come candeline)
+    q.rett(10, 47, 28, 50, "ombra"); q.rett(11, 48, 27, 49, "f2")
+    q.linea(11, 47, 27, 43, "legno", 2); q.linea(27, 47, 11, 43, "legno", 2); q.linea(11, 47, 27, 43, "legno_l", 1)
+    fiamma(q, 19, 45, 10, 8); fiamma(q, 16, 45, 13, 4); fiamma(q, 22, 45, 12, 4); fiamma(q, 19, 45, 18, 3)
+    for x in (12, 15, 20, 24, 26): q.set(x, 47, "f4")
+    # tavolo (più chiaro dello sfondo, con un contorno scuro che lo stacca dalla parete), un boccale e un piatto fumante
+    q.rett(47, 33, 93, 39, "ombra"); q.rett(48, 34, 92, 38, "legno_l"); q.rett(48, 34, 92, 34, "pavim_l"); q.rett(48, 38, 92, 38, "legno")
+    for lx in (50, 87):
+        q.rett(lx - 1, 39, lx + 4, 57, "ombra"); q.rett(lx, 39, lx + 3, 56, "legno_l"); q.rett(lx, 39, lx, 56, "pavim_l")
+    # il boccale: corpo di peltro con due cerchi, schiuma in cima e manico a destra
+    q.rett(55, 22, 64, 33, "acc"); q.rett(55, 22, 56, 33, "acc_l"); q.rett(63, 22, 64, 33, "acc_s"); q.rett(55, 26, 64, 26, "acc_s"); q.rett(55, 30, 64, 30, "acc_s")
+    q.rett(54, 20, 65, 22, "bianco"); q.rett(56, 19, 63, 20, "bianco"); q.rett(55, 33, 64, 33, "acc_s")
+    q.rett(65, 24, 68, 25, "acc_s"); q.rett(68, 24, 69, 31, "acc_s"); q.rett(65, 30, 68, 31, "acc_s")
+    # il piatto: scodella bianca con uno stufato fumante (il vapore tremola con un ciclo di colori)
+    q.ell(78, 33, 9, 2, "ombra"); q.ell(78, 32, 8, 2, "bianco"); q.ell(78, 31, 6, 1, "pietra_c"); q.ell(78, 30, 5, 2, "marr"); q.rett(74, 29, 76, 29, "marr_l"); q.rett(79, 29, 81, 30, "marr_l")
+    for i, (vx, vy) in enumerate(((75, 26), (78, 24), (81, 26), (77, 21), (80, 21), (78, 18))):
+        for k in range(3): q.set(vx + (1 if (k + i) % 2 else 0), vy - k, "vap1" if (k + i) % 2 == 0 else "vap2")
+    q.rett(89, 24, 90, 33, "pelo_c"); fiamma(q, 89, 23, 4, 1)
+    # lanterna (spostata a sinistra del boccale, sopra il bordo del tavolo)
+    q.rett(48, 9, 48, 14, "acc_s"); q.rett(44, 15, 52, 23, "oro_s"); q.rett(45, 16, 51, 22, "f3"); fiamma(q, 48, 22, 5, 1)
+    q.rett(44, 15, 52, 15, "acc"); q.rett(44, 23, 52, 23, "acc")
     # botte
     q.ell(74, 52, 9, 3, "ombra"); q.rett(66, 40, 82, 52, "legno"); q.rett(66, 40, 67, 52, "legno_l"); q.rett(80, 40, 82, 52, "legno_s"); q.rett(66, 44, 82, 45, "acc_s"); q.rett(66, 49, 82, 50, "acc_s")
     return q
@@ -329,3 +339,11 @@ def segno_meno():
     q = Quadro(5, 5); q.rett(0, 2, 4, 2, "rosso")   # rosso: uno svantaggio per te
     return q
 
+
+
+def stecche(n):
+    # Le stecche dei conti: n segni verticali (da 1 a 4) oppure il gruppo di cinque, con il segno obliquo che li barra.
+    q = Quadro(7, 7)
+    for i in range(min(n, 4)): q.rett(i * 2, 0, i * 2, 6, "marr_s")
+    if n >= 5: q.linea(0, 6, 6, 0, "marr_s", 1)
+    return q

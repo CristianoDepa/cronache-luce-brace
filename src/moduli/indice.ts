@@ -19,6 +19,11 @@ import { moduloLivelli } from "./livelli/indice";
 import { moduloPalude } from "./palude/indice";
 import { moduloInventario } from "./inventario/indice";
 import { moduloPozioni } from "./pozioni/indice";
+import { moduloTorre } from "./torre/indice";
+import { moduloCacciatore } from "./cacciatore/indice";
+import { moduloZara } from "./zara/indice";
+import { moduloCronache } from "./cronache/indice";
+import { moduloTorneo } from "./torneo/indice";
 
 // Elenco dei moduli attivi: aggiungere un modulo significa aggiungere una riga.
 export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
@@ -35,6 +40,11 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloGuaritore,
   moduloInventario,
   moduloPozioni,
+  moduloTorre,
+  moduloCacciatore,
+  moduloZara,
+  moduloCronache,
+  moduloTorneo,
   moduloBanca,
   moduloLocanda,
   moduloMura,

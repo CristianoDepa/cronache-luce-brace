@@ -162,6 +162,46 @@ describe("bestiario a tre livelli: famiglie, mostri, scheda", () => {
   });
 });
 
+describe("il tomo delle statistiche: il mostro più battuto e le stecche dei conti", () => {
+  const baseTomo = rasterizza(leggiContenuto(registro, tipoIllustrazione, "scena.tomo")!);
+  const colore = (r: typeof baseTomo, x: number, y: number): string | undefined => r.palette[r.pixel[y * r.larghezza + x] ?? -1];
+  const diversiDestra = (r: typeof baseTomo): number => {
+    let n = 0;
+    for (let y = 8; y < 52; y++) for (let x = 67; x < 121; x++) if (colore(r, x, y) !== colore(baseTomo, x, y)) n++;
+    return n;
+  };
+  const conVittorie = (vittorie: Record<string, number>): StatoGioco => {
+    const s = base();
+    const attuale = statoCombattimento.leggi(s);
+    const statistiche = Object.fromEntries(Object.entries(vittorie).map(([id, n], i) => [id, { incontri: n, sconfitti: n, morti: 0, perse: 0, fugheRiuscite: 0, fugheFallite: 0, dannoInflitto: 0, dannoSubito: 0, ultimoInflitto: 0, ordine: i + 1 }]));
+    return statoCombattimento.scrivi(s, { ...attuale, statistiche });
+  };
+  const immagine = (s: StatoGioco) => creaVistaPartita(s, ctx).illustrazioni["info:statistiche"]!;
+
+  it("senza vittorie il libro è vuoto; ogni gruppo di stecche in più lo riempie; a 100 vittorie la pagina è piena e non cresce oltre", () => {
+    expect([immagine(base()).larghezza, immagine(base()).altezza]).toEqual([128, 80]);
+    expect(diversiDestra(immagine(base()))).toBe(0);
+    const a = diversiDestra(immagine(conVittorie({ ratto: 3 })));
+    const b = diversiDestra(immagine(conVittorie({ ratto: 5 })));
+    const c = diversiDestra(immagine(conVittorie({ ratto: 25 })));
+    const pieno = diversiDestra(immagine(conVittorie({ ratto: 100 })));
+    expect(a).toBeGreaterThan(0);
+    expect(b).toBeGreaterThan(a);
+    expect(c).toBeGreaterThan(b);
+    expect(pieno).toBeGreaterThan(c);
+    expect(diversiDestra(immagine(conVittorie({ ratto: 400 })))).toBe(pieno); // oltre 100 non si disegna altro
+  });
+
+  it("a sinistra c'è il mostro battuto più volte, inciso; i duelli con i capigilda non contano nelle stecche", () => {
+    const solo = immagine(conVittorie({ ratto: 4, lupo: 9 }));
+    const altro = immagine(conVittorie({ ratto: 9, lupo: 4 }));
+    expect(solo.pixel.join(",")).not.toBe(altro.pixel.join(",")); // cambia il mostro a sinistra
+    expect(solo.palette.some((c) => c === "#2b1a0e")).toBe(true); // i toni dell'incisione
+    const conDuello = conVittorie({ ratto: 4, "capogilda-ladro-4": 50 });
+    expect(diversiDestra(immagine(conDuello))).toBe(diversiDestra(immagine(conVittorie({ ratto: 4 })))); // il capogilda non conta
+  });
+});
+
 describe("bestiario con molti mostri: pagine da 9", () => {
   const MOLTI = 12;
   const prova: DefinizioneModulo = {

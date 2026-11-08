@@ -110,16 +110,12 @@ export const interfacciaClassi: InterfacciaModulo = {
 function pannelloSchedaClasse(ctx: Contesto, scelta: string): readonly PannelloVista[] {
   const classe = leggiContenuto(ctx.registro, tipoClasse, scelta);
   if (!classe) return [];
-  const m = classe.modificatori;
   return [
     {
       titoloChiave: "classi.scheda.titolo",
       contesti: [CONTESTO_INFO_PERSONAGGIO],
       righe: [
-        {
-          chiave: "classi.scheda.riga",
-          parametri: { nomeChiave: classe.nomeChiave, hp: segno(m.hpMax), forza: segno(m.forza), difesa: segno(m.difesa), velocita: segno(m.velocita), oro: String(m.moltiplicatoreOro) },
-        },
+        { chiave: "classi.scheda.riga", parametri: { nomeChiave: classe.nomeChiave } },
       ],
     },
   ];

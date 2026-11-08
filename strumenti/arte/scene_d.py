@@ -15,7 +15,7 @@ def sulla_cinta(theta, rx=RX, ry=RY):
 # Porte con l'angolo (gradi da nord) e se sono aperte
 PORTE = {"porta-n": (0, False), "porta-ne": (50, False), "porta-e": (100, False), "porta-s": (180, True), "porta-so": (235, False), "porta-no": (305, False)}
 # Posizioni (x, y) dei luoghi interni
-INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "torre": (84, 31), "sartoria": (52, 34), "armeria": (80, 44),
+INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "fillungo": (65, 42), "stamperia": (73, 41), "torre": (84, 31), "sartoria": (52, 34), "armeria": (80, 44),
            "banca": (80, 54), "guaritore": (44, 64), "speziale": (53, 72), "locanda": (63, 78),
            "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65)}
 

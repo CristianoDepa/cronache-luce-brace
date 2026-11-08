@@ -4,7 +4,7 @@ import { statoClassi, ID_CLASSI, contestoClasse, tipoClasse } from "../classi/in
 import { ID_COMBATTIMENTO, puntoFineScontro, puntoVelocita, tipoCreatura } from "../combattimento/indice";
 import { ID_MANA, puntoManaMassimo, statoMana } from "../mana/indice";
 import type { Crescita, Guadagni } from "./calcolo";
-import { esperienzaPerSalire, guadagnoAlLivello, guadagniTotali, penalitaEsperienza, rettaPerLivello } from "./calcolo";
+import { NESSUN_GUADAGNO, esperienzaPerSalire, guadagnoAlLivello, guadagniTotali, penalitaEsperienza, rettaPerLivello } from "./calcolo";
 import { CRESCITA } from "./dati";
 import { PARAMETRI_LIVELLI } from "./parametri";
 import { ID_LIVELLI, statoLivelli } from "./tipi";
@@ -36,6 +36,19 @@ const GUADAGNI_ORDINATI = ["hp", "forza", "difesa", "velocita", "mana"] as const
 // Le righe "HP massimi +3", "Forza +1"... per i guadagni diversi da zero.
 export function righeGuadagni(g: Guadagni): RigaVista[] {
   return GUADAGNI_ORDINATI.filter((k) => g[k] !== 0).map((k): RigaVista => ({ chiave: `livelli.guadagno.${k}`, parametri: { n: g[k] } }));
+}
+
+// Nel gruppo Classe della scheda: cosa si guadagna al prossimo livello e i bonus dei livelli ancora più avanti (es. "Al livello 4: velocità +1").
+// Il pannello ha lo stesso titolo di quello della classe: i due si uniscono.
+function pannelloCrescitaClasse(stato: StatoGioco): readonly PannelloVista[] {
+  const p = stato.personaggio;
+  const crescita = crescitaDelGiocatore(stato);
+  if (!crescita || p.livello >= PARAMETRI_LIVELLI.livelloMax) return [];
+  const righe: RigaVista[] = [{ chiave: "livelli.scheda.prossimoGuadagno" }, ...righeGuadagni(guadagnoProssimoLivello(stato))];
+  for (const livello of Object.keys(crescita.bonus ?? {}).map(Number).filter((l) => l > p.livello + 1).sort((a, b) => a - b)) {
+    righe.push({ chiave: "livelli.scheda.alLivello", parametri: { livello } }, ...righeGuadagni({ ...NESSUN_GUADAGNO, ...(crescita.bonus?.[livello] ?? {}) }));
+  }
+  return [{ titoloChiave: "classi.scheda.titolo", contesti: [CONTESTO_INFO_PERSONAGGIO], righe }];
 }
 
 // I guadagni che darebbe il prossimo livello.
@@ -125,7 +138,7 @@ const interfacciaLivelli: InterfacciaModulo = {
       const c = CRESCITA[id];
       return c ? [{ titoloChiave: "livelli.classe.titolo", contesti: [contestoClasse(id)], righe: righeCrescita(c) }] : [];
     });
-    return [{ titoloChiave: "livelli.scheda.titolo", contesti: [CONTESTO_INFO_PERSONAGGIO], righe: [riga] }, ...crescite];
+    return [{ titoloChiave: "livelli.scheda.titolo", contesti: [CONTESTO_INFO_PERSONAGGIO], righe: [riga] }, ...crescite, ...pannelloCrescitaClasse(stato)];
   },
 };
 
@@ -152,6 +165,8 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.scheda.massimo": "Hai raggiunto il livello massimo per ora.",
       "livelli.salito": "Sali al livello {livello}!",
       "livelli.penalita": "Nella sconfitta perdi {punti} punti esperienza.",
+      "livelli.scheda.prossimoGuadagno": "Al prossimo livello:",
+      "livelli.scheda.alLivello": "Al livello {livello}:",
       "livelli.guadagno.hp": "HP massimi +{n}",
       "livelli.guadagno.forza": "Forza +{n}",
       "livelli.guadagno.difesa": "Difesa +{n}",
@@ -175,6 +190,8 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.scheda.massimo": "You have reached the highest level for now.",
       "livelli.salito": "You reach level {livello}!",
       "livelli.penalita": "In defeat you lose {punti} experience points.",
+      "livelli.scheda.prossimoGuadagno": "At the next level:",
+      "livelli.scheda.alLivello": "At level {livello}:",
       "livelli.guadagno.hp": "Max HP +{n}",
       "livelli.guadagno.forza": "Strength +{n}",
       "livelli.guadagno.difesa": "Defense +{n}",

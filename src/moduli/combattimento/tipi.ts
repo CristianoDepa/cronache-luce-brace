@@ -142,6 +142,13 @@ export function convalidaEffettoScontro(dati: unknown, errori: string[]): Effett
   };
 }
 
+// Potenziamento di uno scontro: HP e forza del nemico moltiplicati (es. la preda di un cacciatore di taglie), con un soprannome da mostrare.
+export interface Potenziamento {
+  readonly hp: number;
+  readonly forza: number;
+  readonly soprannomeChiave?: string;
+}
+
 export interface ScontroAttivo {
   readonly creaturaId: Id;
   readonly hpNemico: number;
@@ -153,6 +160,8 @@ export interface ScontroAttivo {
   readonly scenaId?: Id;
   // Moltiplicatore di monete ed esperienza della vittoria (es. di notte nel cimitero); se manca vale 1.
   readonly moltiplicatorePremio?: number;
+  // Nemico potenziato (HP e forza moltiplicati) e, se ha un nome proprio, il suo soprannome.
+  readonly potenziamento?: Potenziamento;
 }
 
 // Contatori degli scontri con un tipo di nemico, per la schermata "Statistiche incontri".
@@ -201,6 +210,17 @@ export interface SelezioneBestiario {
   readonly famiglia: string | null;
   readonly pagina: number;
   readonly mostro: string | null;
+}
+
+function convalidaPotenziamento(dati: unknown, errori: string[]): Potenziamento | undefined {
+  if (dati === undefined) return undefined;
+  const o = comeOggetto(dati);
+  if (!o) {
+    errori.push('campo "potenziamento": oggetto atteso');
+    return undefined;
+  }
+  const soprannome = stringaOpzionale(o, "soprannomeChiave", errori);
+  return { hp: numero(o, "hp", errori, { min: 0.1 }), forza: numero(o, "forza", errori, { min: 0.1 }), ...(soprannome !== undefined ? { soprannomeChiave: soprannome } : {}) };
 }
 
 function convalidaSelezione(dati: unknown): SelezioneBestiario {
@@ -279,6 +299,7 @@ function convalidaStato(dati: unknown): Risultato<StatoCombattimento> {
     usi: convalidaUsi(s["usi"], errori),
     ...(scenaId !== undefined ? { scenaId } : {}),
     ...(s["moltiplicatorePremio"] !== undefined ? { moltiplicatorePremio: numero(s, "moltiplicatorePremio", errori, { min: 0.1 }) } : {}),
+    ...(convalidaPotenziamento(s["potenziamento"], errori) ? { potenziamento: convalidaPotenziamento(s["potenziamento"], errori) as Potenziamento } : {}),
   };
   return chiudi(errori, { scontro, statistiche, automatico, soglia, bestiario });
 }

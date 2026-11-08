@@ -170,9 +170,10 @@ export const interfacciaCombattimento: InterfacciaModulo = {
         contesti: [CONTESTO_COMBATTIMENTO],
         righe: [
           {
-            chiave: "combattimento.pannello.nemico",
+            chiave: corrente.scontro.potenziamento?.soprannomeChiave ? "combattimento.pannello.nemicoNome" : "combattimento.pannello.nemico",
             parametri: {
               creaturaChiave: corrente.creatura.nomeChiave,
+              ...(corrente.scontro.potenziamento?.soprannomeChiave ? { soprannomeChiave: corrente.scontro.potenziamento.soprannomeChiave } : {}),
               hpNemico: corrente.scontro.hpNemico,
               hpMaxNemico: corrente.creatura.hp,
               round: corrente.scontro.round,

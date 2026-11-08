@@ -24,7 +24,8 @@ export function mostriNoti(stato: StatoGioco, ctx: Contesto): readonly MostroNot
   const statistiche = statoCombattimento.leggi(stato).statistiche;
   return elencaContenuti(ctx.registro, tipoCreatura).flatMap(({ id, dati }) => {
     const stat = statistiche[id] ?? STATISTICHE_VUOTE;
-    return dati.nonLetale || dati.famiglia === undefined || stat.incontri === 0 ? [] : [{ id, dati, stat }];
+    // Noto = incontrato almeno una volta, oppure scoperto in un altro modo (ordine di scoperta assegnato, es. un segreto della Torre).
+    return dati.nonLetale || dati.famiglia === undefined || (stat.incontri === 0 && stat.ordine === 0) ? [] : [{ id, dati, stat }];
   });
 }
 
@@ -206,6 +207,57 @@ export function illustrazioniBestiario(stato: StatoGioco, ctx: Contesto): Readon
     [CONTESTO_INFO_BESTIARIO]: libro(ctx, recenti[0], recenti[1]),
     [CONTESTO_BESTIARIO_FAMIGLIA]: libro(ctx, pagina[0], pagina[1]),
     [CONTESTO_BESTIARIO_SCHEDA]: libro(ctx, scheda, undefined, scheda),
+    [CONTESTO_STATISTICHE]: illustrazioneStatistiche(stato, ctx),
   };
   return Object.fromEntries(Object.entries(immagini).flatMap(([k, v]) => (v ? [[k, v]] : [])));
 }
+
+// Apre la scheda di un mostro nel bestiario senza averlo incontrato (es. un segreto della Torre). Non conta come incontro.
+export function scopriMostro(stato: StatoGioco, id: Id): StatoGioco {
+  const attuale = statoCombattimento.leggi(stato);
+  const stat = attuale.statistiche[id] ?? STATISTICHE_VUOTE;
+  if (stat.ordine > 0) return stato;
+  const ordine = 1 + Math.max(0, ...Object.values(attuale.statistiche).map((s) => s.ordine));
+  return statoCombattimento.scrivi(stato, { ...attuale, statistiche: { ...attuale.statistiche, [id]: { ...stat, ordine } } });
+}
+
+// I mostri uccisi almeno una volta (non i capigilda): serve a chi propone missioni.
+export function mostriUccisi(stato: StatoGioco, ctx: Contesto): readonly Id[] {
+  const statistiche = statoCombattimento.leggi(stato).statistiche;
+  return elencaContenuti(ctx.registro, tipoCreatura).filter(({ id, dati }) => !dati.nonLetale && dati.famiglia !== undefined && (statistiche[id]?.sconfitti ?? 0) > 0).map(({ id }) => id);
+}
+
+// ---- Il tomo degli incontri (statistiche): a sinistra il mostro che hai battuto più volte, a destra le stecche dei conti ----
+const CONTESTO_STATISTICHE = "info:statistiche";
+const STECCHE_X = 70;
+const STECCHE_Y = 12;
+const STECCHE_COLONNE = 5;
+const STECCHE_RIGHE = 4;
+const CELLA = 9;
+const STECCHE_PER_GRUPPO = 5;
+
+// (le vittorie sono quelle sui mostri del bestiario, i duelli con i capigilda non contano)
+// Una stecca per ogni vittoria, a gruppi di cinque (quattro segni barrati), fino a riempire la pagina (100 vittorie): poi basta.
+function conStecche(ctx: Contesto, pagina: Raster, vittorie: number): Raster {
+  const massimo = STECCHE_COLONNE * STECCHE_RIGHE * STECCHE_PER_GRUPPO;
+  const totale = Math.min(vittorie, massimo);
+  let corrente = pagina;
+  for (let g = 0; g * STECCHE_PER_GRUPPO < totale; g++) {
+    const segni = Math.min(STECCHE_PER_GRUPPO, totale - g * STECCHE_PER_GRUPPO);
+    const sprite = disegno(ctx, `stecche.${segni}`);
+    if (!sprite) continue;
+    corrente = sovrapponi(corrente, sprite, STECCHE_X + (g % STECCHE_COLONNE) * CELLA, STECCHE_Y + Math.floor(g / STECCHE_COLONNE) * CELLA);
+  }
+  return corrente;
+}
+
+export function illustrazioneStatistiche(stato: StatoGioco, ctx: Contesto): Raster | undefined {
+  const base = disegno(ctx, SCENA_TOMO);
+  if (!base) return undefined;
+  const noti = mostriNoti(stato, ctx);
+  const piuBattuti = [...noti].filter((m) => m.stat.sconfitti > 0).sort((a, b) => b.stat.sconfitti - a.stat.sconfitti);
+  const sinistra = conMostro(ctx, base, piuBattuti[0], 0);
+  const vittorie = noti.reduce((somma, m) => somma + m.stat.sconfitti, 0);
+  return conStecche(ctx, sinistra, vittorie);
+}
+

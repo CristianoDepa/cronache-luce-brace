@@ -44,6 +44,8 @@ export interface EventoGioco {
   // Suggerimento per l'interfaccia (es. colore): non cambia la logica di gioco.
   // "speciale" evidenzia i messaggi delle abilità (colore e ★ nel client).
   readonly tono?: "positivo" | "negativo" | "speciale" | "avviso";
+  // Messaggio da non perdere: il combattimento automatico lo conserva anche se scarta le righe dei round intermedi (es. "l'effetto è terminato").
+  readonly importante?: boolean;
 }
 
 // La chiave è anche la chiave del testo localizzato.

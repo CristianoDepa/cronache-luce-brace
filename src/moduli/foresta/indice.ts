@@ -10,8 +10,13 @@ import { TESTI_FORESTA } from "./testi";
 import { ID_FORESTA } from "./tipi";
 
 export { ID_FORESTA } from "./tipi";
+export { puntoIncontro } from "./punti";
+export type { CalcoloIncontro } from "./punti";
+export { creatureIncontrabili, pesiIncontro } from "./azioni";
 
+// L'esplorazione parte direttamente dalla Porta San Pietro (dalla 0.13.0 non c'è più una schermata "La Foresta" intermedia).
 const CONTESTO_LUOGO = "luogo:foresta";
+const CONTESTO_PORTA = "citta:porta-s";
 
 // Una riga rossa sotto la metà degli HP: entrare in una zona da feriti è la causa più comune delle morti.
 export function avvisoFerito(stato: StatoGioco, ctx: Contesto): readonly RigaVista[] {
@@ -23,15 +28,16 @@ export function avvisoFerito(stato: StatoGioco, ctx: Contesto): readonly RigaVis
 // Le azioni (incontri) che costa sono quelle del modulo azioni; il ritorno alla porta lo dichiara la città.
 const interfaccia: InterfacciaModulo = {
   // Una riga dice se è giorno o notte e cosa cambia nella foresta.
-  pannelli: (stato, ctx) => [{ contesti: [CONTESTO_LUOGO], righe: [{ chiave: `foresta.fase.${faseDelGiorno(ctx)}` }, ...avvisoFerito(stato, ctx)] }],
+  pannelli: (stato, ctx) => [{ contesti: [CONTESTO_PORTA], righe: [{ chiave: `foresta.fase.${faseDelGiorno(ctx)}` }, ...avvisoFerito(stato, ctx)] }],
   titoliContesto: { [CONTESTO_LUOGO]: "foresta.luogo.foresta" },
   illustrazioniContesto: { [CONTESTO_LUOGO]: "scena.foresta" },
   menu: [
     {
       id: "foresta.esplora",
-      contesto: CONTESTO_LUOGO,
+      contesto: CONTESTO_PORTA,
       etichettaChiave: "foresta.menu.esplora",
-      tasto: "E",
+      tasto: "F",
+      ordine: 5,
       comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "foresta" } } },
     },
   ],

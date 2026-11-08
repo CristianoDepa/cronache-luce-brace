@@ -111,7 +111,7 @@ describe("la città: dati", () => {
       expect(distanze.has(id), id).toBe(true);
       expect(distanzeCitta(registro, id).get("porta-s"), id).toBe(distanze.get(id));
     }
-    expect(elencaSiti(registro)).toHaveLength(27); // 25 luoghi della città (con le tre gilde e lo Speziale), la foresta e le paludi
+    expect(elencaSiti(registro)).toHaveLength(29); // 27 luoghi della città (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
   });
 
   it("distanze di riferimento dalla Porta San Pietro, dove si inizia", () => {
@@ -121,7 +121,9 @@ describe("la città: dati", () => {
     expect(d.get("piazza-c")).toBe(10);
     expect(d.get("banca")).toBe(12);
     expect(d.get("armeria")).toBe(16);
-    expect(d.get("torre")).toBe(16);
+    expect(d.get("torre")).toBe(14); // per Via Fillungo (dalla 0.13.0)
+    expect(d.get("fillungo")).toBe(12); // 6 + 4 + 2
+    expect(d.get("stamperia")).toBe(14);
     expect(d.get("porta-n")).toBe(19); // attraversando il centro
     expect(d.get("porta-e")).toBe(13); // sulle mura: 2 + 9 + 2
   });
@@ -294,14 +296,16 @@ describe("i contesti e le schermate della città", () => {
     (pannelloDi(stato, titolo, contesto)?.righe ?? []).map((r) => traduciEvento(registro, "it", r));
 
   it("ogni luogo ha la mappa; le porte anche l'uscita; i luoghi con NPC il comando per parlare; gli ospiti gli ingressi", () => {
-    expect(menu("citta:porta-s")).toEqual(["E", "L", "M", "P"]); // esci, Locanda, mappa, parla (elenco in ordine alfabetico)
-    for (const id of ["porta-n", "porta-ne", "porta-e", "porta-so", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(["E", "M", "P"]);
-    expect(menu("citta:piazza-n")).toEqual(["A", "G", "M", "P", "S"]); // Armeria, Sartoria, Gilda dei Cavalieri
-    expect(menu("citta:piazza-c")).toEqual(["B", "G", "M", "P"]); // Banca, Gilda dei Mistici
-    expect(menu("citta:piazza-s")).toEqual(["G", "M", "P", "S", "U"]); // Guaritore, Speziale, Gilda dei Ladri
-    expect(menu("citta:torre")).toEqual(["M"]); // la Torre non ospita NPC
-    for (const id of ["mura-n", "mura-ne", "mura-e", "mura-s", "mura-so", "mura-no"]) expect(menu(`citta:${id}`), id).toEqual(["M", "P"]);
-    expect(menu("luogo:foresta")).toEqual(["E", "R"]);
+    expect(menu("citta:porta-s")).toEqual(["E", "F", "L", "M", "N"]); // esci (nascosta se la porta è aperta), addentrati nella foresta, Locanda, mappa, parla (elenco in ordine alfabetico)
+    for (const id of ["porta-n", "porta-ne", "porta-e", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(["E", "M", "N"]);
+    expect(menu("citta:porta-so")).toEqual(["C", "E", "M", "N", "P"]); // palude e cimitero (dal livello 4; sotto, l'uscita racconta la porta chiusa)
+    expect(menu("citta:piazza-n")).toEqual(["A", "G", "M", "N", "S", "T"]); // Armeria, Sartoria, Gilda dei Cavalieri, il Torneo (T)
+    expect(menu("citta:piazza-c")).toEqual(["B", "G", "M", "N"]); // Banca, Gilda dei Mistici
+    expect(menu("citta:piazza-s")).toEqual(["G", "M", "N", "S", "U"]); // Guaritore, Speziale, Gilda dei Ladri
+    expect(menu("citta:fillungo")).toEqual(["M", "S"]); // la mappa e la Stamperia (la via non ospita NPC)
+    expect(menu("citta:torre")).toEqual(["1", "C", "M"]); // la Torre non ospita NPC mura: la salita (1), Castruccio (C) e la mappa
+    for (const id of ["mura-n", "mura-ne", "mura-e", "mura-s", "mura-so", "mura-no"]) expect(menu(`citta:${id}`), id).toEqual(["M", "N"]);
+    expect(menu("luogo:foresta")).toEqual(["R"]); // l'area esterna non ha più comandi: l'esplorazione parte dalla porta
     for (const c of ["luogo:armeria", "luogo:sartoria", "luogo:banca", "luogo:guaritore", "luogo:locanda"]) {
       expect(menu(c), c).toContain("M");
       expect(menu(c), c).toContain("E"); // esci dall'edificio
@@ -312,7 +316,7 @@ describe("i contesti e le schermate della città", () => {
     expect(menu("mappa")).toEqual(["1", "2", "3"]);
     expect(menu("mappa:porte")).toHaveLength(6);
     expect(menu("mappa:mura")).toHaveLength(6);
-    expect(menu("mappa:piazze")).toHaveLength(4); // tre piazze e la Torre
+    expect(menu("mappa:piazze")).toHaveLength(5); // tre piazze, Via Fillungo e la Torre
     expect(menu("mappa:edifici")).toHaveLength(0);
     for (const c of ["porte", "mura", "piazze"]) expect(registro.contestiPadre.get(`mappa:${c}`)).toBe("mappa");
     expect(registro.contestiPadre.get("mappa")).toBeUndefined(); // da "mappa" si torna al luogo
@@ -328,7 +332,8 @@ describe("i contesti e le schermate della città", () => {
     expect(mura).toContain("[1] Le Mura - Santa Maria (nord) - 21 movimenti, 2 azioni");
     const piazze = righe(partenza(), "citta.pannello.destinazioni", "mappa:piazze");
     expect(piazze).toContain("[1] Piazza dell'Anfiteatro - 13 movimenti, 1 azione"); // senza direzione
-    expect(piazze).toContain("[4] Torre Guinigi - 16 movimenti, 2 azioni");
+    expect(piazze).toContain("[4] Via Fillungo - 12 movimenti, 1 azione");
+    expect(piazze).toContain("[5] Torre Guinigi - 14 movimenti, 1 azione");
     // con 4 movimenti di resto un tragitto da 13 costa 2 azioni invece di 1
     expect(righe(inSito(partenza(), "porta-s", 4), "citta.pannello.destinazioni", "mappa:piazze")).toContain("[1] Piazza dell'Anfiteatro - 13 movimenti, 2 azioni");
     expect(traduci(registro, "en", "citta.sito.porta-so.mappa")).toBe("Sant'Anna Gate (south-west)");
@@ -437,9 +442,9 @@ describe("comandi di prova (?dev=1)", () => {
   });
 
   it("le schermate di prova hanno menu, titoli e testi nelle due lingue", () => {
-    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8"]);
+    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
     expect(vociMenu(registro, "sviluppo:vai").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]);
-    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(9);
+    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(10);
     expect(registro.contestiPadre.get("sviluppo:vai:porte")).toBe("sviluppo:vai");
     expect(registro.contestiPadre.get("sviluppo:vai")).toBe("sviluppo");
     expect(traduci(registro, "it", "sviluppo.menu.giorno")).toBe("Passa al giorno dopo");

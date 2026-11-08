@@ -1,3 +1,5 @@
+> **La roadmap vigente è in `docs/roadmap.md`** (documento vivo). Le roadmap più sotto in questo file sono storiche.
+
 # Todo
 
 Stato: **BOZZA, decisioni di dettaglio recepite**. Nessuna milestone parte senza GO esplicito.
@@ -80,14 +82,56 @@ Ogni milestone aggiorna:
 | 12 | **Orco: dato di bilanciamento dalla prova della 0.7.0** (Cavaliere, Lancia, forza 7, difesa 5, HP 30; morto al 4° orco su 15 incontri) | Probabilità dell'orco per incontro 8,1% (aver trovato 4 orchi su 15 era un caso del 3%). Combattendo sempre all'attacco: morte 11% a salute piena (HP medi rimasti 13), **42% con 20 HP** | Da valutare con il game designer: lasciare così (l'orco punisce chi combatte a metà salute) oppure alzare la soglia di potenza o abbassare il peso |
 | 13 | ✅ (0.7.1) **Goblin: orco depotenziato** (richiesta dal game designer dopo la prova della 0.7.0) | I mostri sono pochi (ratto, lupo, orco): l'orco si incontra spesso | **DECISO, da fare nella prossima versione**: nuovo mostro tra lupo e orco; comparendo, la quota dell'orco scende. Servono: statistiche (da tarare con simulazione), nome e testi nelle due lingue, disegno (sprite come ratto, lupo, orco), pesi di incontro per potenza |
 
-## Roadmap aggiornata (dopo la 0.11.1)
+## Roadmap precedente (SUPERATA dalla roadmap corrente in fondo)
 
 | Versione | Contenuto | Progettazione |
 |---|---|---|
-| **0.12.0** | **La Torre** (osservatorio, tre segreti: +3 HP permanenti alla prima salita, lo Spettro che si apre nel bestiario di notte, +1 mana massimo per il Mistico) e **Castruccio, il cacciatore di taglie** (prede di tipo A e B, soglia dei 4 mostri uccisi); ritocco al combattimento per le prede con nome e potenziate; scena della cima della Torre e il disegno di Castruccio | Completa (`game-design.md` §38) |
+| **0.12.0** | **La Torre** (osservatorio, tre segreti: +3 HP permanenti alla prima salita, lo Spettro che si apre nel bestiario di notte, +1 mana massimo per il Mistico) e **Castruccio, il cacciatore di taglie** (prede di tipo A e B, soglia dei 4 mostri uccisi); ritocco al combattimento per le prede con nome e potenziate; **scena della base della Torre** (oggi è un segnaposto sbagliato), scena della cima e il disegno di Castruccio | Completa (`game-design.md` §38) |
 | **0.13.0** | **Lapide** per zona, **spedizioni nel cimitero** (5 profondità, tutto al rischio, risalita gratuita), **tesori difficili** (forzieri alle profondità 3 e 5); scena della cripta | Completa nelle linee |
 | **0.14.0** | **Eventi casuali** (scippo del ladro in viaggio, incontri non di combattimento nelle zone) e **stati** (veleno, paura; l'antidoto è una pozione). Le chiacchiere della Locanda esistono già dalla 0.7.1 | Da dettagliare |
 | Poi | Livello 8 (capogilda, abilità, bivio di abilità, seconda zona e mostri 8+), **bottino magico** (reliquie e oggetti con proprietà), **Mondo vivo** (10 rivali, Fatti del giorno), livelli 9-12, **Drago** e rinascita | Da progettare |
 
 Decisioni ancora in attesa: boss finale (Drago), conferma dei valori delle classi, bozze delle Mura, riguardare il Ladro con i dati delle prove.
+
+Arte da fare (in lista): scene proprie per la Torre (0.12.0), le tre piazze e le sei porte; oggi tutti questi luoghi riusano la scena generica del villaggio.
+Piccole cose in lista (non urgenti): la schermata dell'**Inventario** mostra la scena della scelta della classe (i tre eroi): serve un'immagine propria (uno zaino con le pozioni); nello zaino le descrizioni delle pozioni di effetto vanno a capo: usare le versioni brevi dello Speziale ("+2 forza, 5+d6 turni").
+Arte da ritoccare: il **fuoco nel camino della Locanda** sembra una torta con le candeline (tre fiammelle a punta su una base rossa): ridisegnarlo come un vero fuoco (legna e fiamma unica che tremola).
+
+Nuove voci in lista: **Cronache della città con Via Fillungo e la Stamperia** (`game-design.md` §44, decisa) e **Tornei all'Anfiteatro** (§45, idea da progettare).
+
+## Roadmap corrente (dopo la 0.11.6)
+
+| Ordine | Versione | Contenuto | Verifica |
+|---|---|---|---|
+| 1 | **0.12.0** | Torre (salita, tre segreti) e Castruccio, il cacciatore di taglie (prede A e B); potenziamento dello scontro; arte: base e cima della Torre, Castruccio | Critica |
+| 2 | Cronache | **Cronache della città**, Via Fillungo e la Stamperia (geometria vera; la Torre a 2 movimenti da Via Fillungo); file delle 60 notizie prima | Critica (città) |
+| 3 | Tornei | **Tornei all'Anfiteatro** settimanali, 4 nomi a rotazione, 3 turni, albo nella scheda, comando di prova "Avvia torneo"; contatore dei giorni | Critica |
+| 4 | Lapide | Lapide, spedizioni nel cimitero (tutto al rischio), tesori difficili | Critica |
+| 5 | Eventi | Eventi casuali (scippo del ladro, incontri non di combattimento) e stati (veleno, paura, antidoto) | Critica |
+| 6+ | Dopo | Livello 8 (capogilda, abilità, bivio, seconda zona), bottino magico, Mondo vivo (10 rivali, Fatti del giorno), livelli 9-12, Drago | Da progettare |
+
+Arte in lista: scene proprie per le tre piazze e le sei porte, base e cima della Torre, Via Fillungo e Stamperia, arena dell'Anfiteatro, Castruccio, zaino, camino della Locanda da ridisegnare. Decisioni in attesa: Drago, valori delle classi, bozze delle Mura, il Ladro. Regole di verifica: `docs/processo-di-rilascio.md`.
+Correzioni in lista (0.12.x): nella cima della Torre la frase della vista compare due volte (nel pannello in alto e nel registro in basso): togliere la riga dal registro e tenerla solo nel pannello.
+Fatto nell'albero (da consegnare): camino della Locanda ridisegnato come un vero fuoco.
+
+Arte da fare alla prossima modifica (su richiesta del game designer, non ora): **scena della Locanda**, rifare il tavolo: **un solo boccale fatto bene** (oggi sono tre forme grigie poco leggibili), **un piatto fumante** (vapore a ciclo di palette), e il **tavolo con le zampe più chiari** perché il marrone si confonde con quello dello sfondo.
+
+Segnalazioni dalle prove della 0.12.1 (da sviluppare solo con il GO, per la prossima modifica):
+- **Castruccio ripetuto 3 volte** nella sua schermata: titolo del luogo, titolo del pannello e riga del registro ("Castruccio ti conta 180 monete"). Proposta: togliere il titolo del pannello, e nelle righe del registro dentro la sua schermata scrivere senza il nome ("Ti conta 180 monete: «Bene. Alla prossima.»"). Fuori dalla sua schermata il nome resta (promemoria, avanzamento).
+- **Nomi sbagliati fuori da Porta Sant'Anna:** "Esci nelle paludi" e "Le Paludi" quando fuori ci sono la palude e il cimitero; tornando da un combattimento nel cimitero si finisce su "Le Paludi". Idea del game designer: biforcazione direttamente dalla porta (`[P]` Addentrati nella palude, `[C]` Esplora il cimitero), luogo "fuori dalla Porta Sant'Anna". Ambito (a: solo Sant'Anna, b: entrambe le porte, c: solo testi) da decidere.
+- **Luna visibile di giorno** nelle scene all'aperto (scena della Torre di giorno): decidere se lasciarla, nasconderla o toglierla solo dalla Torre.
+- Tavolo della Locanda (boccale, piatto fumante, tavolo più chiaro), come già annotato.
+DECISO (game designer): uscita dalle porte con lo **stesso schema per entrambe le porte aperte** (opzione b): dalla Porta San Pietro `[F] Addentrati nella foresta`, dalla Porta Sant'Anna `[P] Addentrati nella palude` e `[C] Esplora il cimitero`, direttamente dalla porta; sparisce la schermata intermedia. In attesa del GO per svilupparlo.
+DECISO (game designer): **luna di giorno: opzione c**, nasconderla di giorno senza sole (cielo azzurro, forse qualche nuvola); il sole eventualmente più avanti con l'arte delle scene all'aperto. In attesa del GO per svilupparlo.
+DECISO (game designer): **Castruccio ripetuto: opzione a**, togliere il titolo del pannello e il nome dalle righe del registro dentro la sua schermata ("Ti conta 180 monete: «Bene. Alla prossima.»", "Ti squadra: ...", "Scrolla le spalle: ..."); il titolo del luogo resta e fuori dalla sua schermata il nome resta dove serve. In attesa del GO.
+DECISO (game designer): **probabilità nel menu della Zara: opzione b**, in percentuale (`Chiama 7 (7%, vinci 182 monete)`, `Chiama 10 (12,5%, vinci 94 monete)`). In attesa del GO.
+DECISO (game designer): **rilascio unico 0.13.0** con le correttive (uscita dalle porte, luna di giorno, testi di Castruccio, Zara, tavolo della Locanda) E le Cronache; niente 0.12.2. Prima si approva il file delle 60 notizie (`docs/cronache-notizie.md`); l'inglese si traduce a testo approvato.
+
+## Roadmap corrente (dopo la 0.13.0)
+Fatte: 0.12.0 Torre e Castruccio; 0.12.1 Zara e ritocchi; **0.13.0 Cronache, Via Fillungo, uscita dalle porte e correttive**. Prossime (design chiuso o quasi): **Tornei all'Anfiteatro** (settimanali, 4 nomi, albo nella scheda; §45; il contatore dei giorni c'è già), lapide e spedizioni nel cimitero, eventi casuali e stati; poi livello 8, bottino magico, Mondo vivo, livelli 9-12 e Drago. Arte in lista: piazze e porte (scena generica del villaggio con la croce dorata), zaino, sole di giorno.
+Approvato dal game designer (prove della 0.13.0): le nuove scene (Via Fillungo, Stamperia, tavolaccio della Zara, tavolo della Locanda). Zara: nessuna compensazione della sfortuna, resta com'è.
+Correzione in lista (dalle prove della 0.13.0, da sviluppare solo con il GO): **nella scheda del personaggio il mana va nel gruppo Statistiche, con la stessa tecnica di HP, forza e difesa (base e bonus)**, per i personaggi che ne hanno; sparisce la sezione "Mana" separata. Esempio di un Mistico alla Torre: `Mana massimo: 11 (base 0, bonus +11)` e il valore attuale (10/11) accanto o nelle risorse. Il bonus comprende la classe e il segreto della Torre, come il bonus degli HP comprende classe, equipaggiamento e Torre.
+DECISO (game designer): **riga della classe nella scheda del personaggio: opzione b**, al posto di "HP -2, forza +3, ..." (fuorviante per i negativi) si scrive **cosa si guadagna al prossimo livello**, dai dati di crescita delle classi (`livelli/dati.ts`): es. Mistico "Al prossimo livello: HP +3, difesa +1, mana +2 (al livello 4 anche velocità +1)"; Cavaliere HP +5, forza +1 (livello 4 difesa +1); Ladro HP +4, velocità +1 (livello 4 forza +1). Passato il livello 4 resta solo la prima parte. In attesa del GO, con la correzione del mana nelle Statistiche (base e bonus).
+Nuova voce in lista: **manuale di gioco** con una pagina per ogni skill che spiega le progressioni (requisito del game designer; vedi `idee.md`).
+Roadmap aggiornata: dopo la 0.13.0 e le due correzioni della scheda (mana nelle Statistiche, riga della classe) le versioni candidate sono **Tornei**, **Fortuna e amuleti** (design chiuso, valori da tarare), **lapide, spedizioni e tesori**, **eventi e stati**; in più il **manuale di gioco**.
 

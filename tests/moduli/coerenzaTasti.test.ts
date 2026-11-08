@@ -18,8 +18,8 @@ describe("coerenza dei tasti", () => {
     expect(voci(CONTESTO_INFO)[0]?.comando).toEqual({ tipo: "naviga", verso: CONTESTO_INFO_INDICE });
   });
 
-  it("la F vale solo Fuggi (in combattimento); l'uscita da porte ed edifici è sempre la E", () => {
-    for (const v of tutte.filter((x) => x.tasto === "F")) expect(v.contesto, v.id).toBe("combattimento");
+  it("la F vale Fuggi in combattimento e \"Addentrati nella foresta\" alla Porta San Pietro (mai insieme); l'uscita da porte ed edifici è sempre la E", () => {
+    for (const v of tutte.filter((x) => x.tasto === "F")) expect(["combattimento", "citta:porta-s"], v.id).toContain(v.contesto);
     for (const s of DEFINIZIONI_SITI.filter((x) => x.categoria === "porta" || x.categoria === "edificio")) {
       expect(voci(s.contesto).find((v) => v.id.startsWith("citta.esci"))?.tasto, s.id).toBe("E");
     }
@@ -53,14 +53,18 @@ describe("coerenza dei tasti", () => {
       if (!esiste(c)) continue;
       for (const v of voci(c)) expect(v.tasto, `${c} ${v.id}`).toMatch(/^[0-9]$/);
     }
-    expect(voci("luogo:paludi").map((v) => v.tasto).sort()).toEqual(["C", "P", "R"]);
-    expect(voci("luogo:foresta").map((v) => v.tasto).sort()).toEqual(["E", "R"]);
-    for (const v of tutte.filter((x) => x.id.startsWith("mura.parla."))) expect(v.tasto, v.id).toBe("P");
+    // Dalla 0.13.0 l'esplorazione parte dalle porte: F dalla Porta San Pietro, P (palude) e C (cimitero) da Sant'Anna.
+    expect(voci("luogo:paludi").map((v) => v.tasto).sort()).toEqual(["R"]);
+    expect(voci("luogo:foresta").map((v) => v.tasto).sort()).toEqual(["R"]);
+    expect(voci("citta:porta-s").some((v) => v.id === "foresta.esplora" && v.tasto === "F")).toBe(true);
+    expect(voci("citta:porta-so").filter((v) => v.id.startsWith("palude.esplora.")).map((v) => v.tasto).sort()).toEqual(["C", "P"]);
+    // "Parla" con un NPC è la N (la P serve alla palude).
+    for (const v of tutte.filter((x) => x.id.startsWith("mura.parla."))) expect(v.tasto, v.id).toBe("N");
   });
 
   it("le lettere P, N e C non sono più riservate al gruppo INFO e le voci dei luoghi le possono usare", () => {
     const riservate = new Set(voci(CONTESTO_INFO).map((v) => v.tasto));
     expect([...riservate]).toEqual(["I"]);
-    expect(voci("luogo:paludi").some((v) => v.tasto === "P" || v.tasto === "C")).toBe(true);
+    expect(voci("citta:porta-so").some((v) => v.tasto === "P" || v.tasto === "C")).toBe(true);
   });
 });

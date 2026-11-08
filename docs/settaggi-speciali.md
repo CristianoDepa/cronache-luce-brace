@@ -78,9 +78,20 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Pesi, creature solo notturne e premio di notte di ogni zona | `src/moduli/foresta/dati.ts`, `src/moduli/palude/dati.ts` → `pesi`, `pesiNotte`, `soloNotte`, `premioNotte` | vedi `game-design.md` §34.2 |
 | Soglie del pericolo per fase | `src/moduli/palude/dati.ts` → `SOGLIE_PERICOLO` | palude 44/40 e 46/40; cimitero 44/36 e 64/40 |
 | Inizio e fine della notte | `src/moduli/luoghi/fase.ts` | 20 e 6 |
-| Pozioni: bonus, durata, probabilità di vendita, scorta, bottino, prezzi | `src/moduli/pozioni/parametri.ts` | +2, 5 + d6, 50%, 1-2 pezzi, 2%, cure 2x Guaritore, effetto 60, mana 30 |
+| Pozioni: bonus, durata, tipi al giorno (min e max), scorta, bottino, prezzi | `src/moduli/pozioni/parametri.ts` | +2, 5 + d6, da 1 a 3 tipi, 1-2 pezzi, 2%, cure 2x Guaritore, effetto 60, mana 30 |
 | Pozioni: tipi, dadi e peso nel bottino | `src/moduli/pozioni/dati.ts` | sei pozioni |
 | Slot dello zaino | `src/moduli/inventario/parametri.ts` | 6 |
 | HP per livello e crescita delle classi | `src/moduli/livelli/dati.ts` | Cavaliere +5, Ladro +4, Mistico +3 |
 | Capigilda (HP, forza, difesa, velocità) | `src/moduli/gilde/dati.ts` | 117/16/6/7, 55/28/3/9, 48/27/3/14 |
 | Schivata e Parata (colpi, probabilità) | `src/moduli/abilita/dati.ts` | 2 colpi, −0,6; 2 colpi, ×0,5 |
+| Quota di riacquisto delle pozioni | `src/moduli/pozioni/parametri.ts` → `quotaRiacquisto` | 0,3 |
+| Torre: bonus HP, bonus mana, costo della salita, mostro dei segreti | `src/moduli/torre/parametri.ts` | 3, 1, 1 azione, Spettro |
+| Castruccio: mostri uccisi minimi, quantità, moltiplicatori, probabilità della preda e dell'incontro | `src/moduli/cacciatore/parametri.ts` | 4, fino a 3, ×2 e ×4, 50% e 10% |
+| Livelli di preda (HP, forza, compenso, pozioni, peso) | `src/moduli/cacciatore/parametri.ts` → `LIVELLI_PREDA` | debole, pari, pericolosa |
+| Soprannomi delle prede | `src/moduli/cacciatore/testi.ts` | 12 |
+| Zara: puntate, numeri chiamabili, quote | `src/moduli/zara/parametri.ts` | 2-5-10 per livello, 7-14, 12-8-7-6 |
+| Cronache: notizie al giorno | `src/moduli/cronache/selezione.ts` → `NOTIZIE_AL_GIORNO` | 3 (60 notizie in `dati.ts` e `testi.ts`) |
+| Tasti nuovi | Porta San Pietro `[F]`, Sant'Anna `[P]` e `[C]`, "Parla" `[N]`, Stamperia `[S]` | |
+| Tornei: iscrizione, premi, recupero, fattori dei turni, avversario | `src/moduli/torneo/parametri.ts` | 10/livello, 1,5×1,5×3, 30%, 0,8/1/1,2, 30+12L HP e 6+1,5L forza |
+| Comando di prova "Avvia il torneo" | `[O]` → `[V]` → `[9]` (con `?dev=1`) | passa alla settimana seguente |
+

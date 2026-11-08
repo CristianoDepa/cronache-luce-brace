@@ -88,14 +88,33 @@ def stelle(q, n, y0, y1, seed, x0=0, x1=None):
         if r.random() < 0.15:
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)): q.set(x + dx, y + dy, g)
 
+def _su_cielo(q, x, y, tono):
+    """Mette il tono della luna (di notte) e, di giorno, lo stesso colore del cielo che c'è sotto: la luna sparisce con la luce (0.13.0)."""
+    if not (0 <= x < q.w and 0 <= y < q.h): return
+    sotto = q.p[y][x]
+    if sotto is None or sotto not in COL: q.set(x, y, tono); return
+    # Per non superare i 62 colori per immagine, il cielo sotto la luna si riduce a 3 sfumature (alta, media, bassa).
+    reali = [int((COL[sotto][1] or COL[sotto][0])[i:i + 2], 16) for i in (1, 3, 5)]
+    rappresentanti = [COL["cielo1"][1], COL["cielo2"][1], COL["cielo5"][1]]
+    k = min(range(3), key=lambda j: sum((reali[i] - int(rappresentanti[j][1 + 2 * i:3 + 2 * i], 16)) ** 2 for i in range(3)))
+    nome = f"{tono}@{k}"
+    if nome not in COL: COL[nome] = (COL[tono][0], rappresentanti[k])
+    q.set(x, y, nome)
+
 def luna(q, cx, cy, r=7):
     for rad, col, d in ((r + 6, "alone2", 0.45), (r + 3, "alone1", 0.55)):
         for y in range(max(0, cy - rad), min(q.h, cy + rad + 1)):
             for x in range(max(0, cx - rad), min(q.w, cx + rad + 1)):
-                if (x - cx) ** 2 + (y - cy) ** 2 <= rad * rad and d > (BAYER[y % 4][x % 4] + .5) / 16: q.set(x, y, col)
-    q.disco(cx, cy, r, "luna")
-    q.macchia(cx - r + 1, cy - r + 1, cx + 1, cy + r - 1, "luna_o", 0.28)
-    for dx, dy in ((-3, 2), (3, -3), (2, 3)): q.disco(cx + dx, cy + dy, 1.2, "luna_c")
+                if (x - cx) ** 2 + (y - cy) ** 2 <= rad * rad and d > (BAYER[y % 4][x % 4] + .5) / 16: _su_cielo(q, x, y, col)
+    for y in range(cy - r, cy + r + 1):
+        for x in range(cx - r, cx + r + 1):
+            if (x - cx) ** 2 + (y - cy) ** 2 > r * r: continue
+            tono = "luna_o" if (x <= cx + 1 and y <= cy + r - 1 and 0.28 > (BAYER[y % 4][x % 4] + .5) / 16) else "luna"
+            _su_cielo(q, x, y, tono)
+    for dx, dy in ((-3, 2), (3, -3), (2, 3)):
+        for y in range(cy + dy - 1, cy + dy + 2):
+            for x in range(cx + dx - 1, cx + dx + 2):
+                if (x - cx - dx) ** 2 + (y - cy - dy) ** 2 <= 1.44: _su_cielo(q, x, y, "luna_c")
 
 def pino(q, cx, base, h, w, tiers=5):
     q.rett(cx - 2, base - 6, cx + 1, base, "tronco"); q.rett(cx + 1, base - 6, cx + 1, base, "tronco_l"); q.rett(cx - 2, base - 6, cx - 2, base, "tronco_s")

@@ -15,6 +15,8 @@ export const COORDINATE: Readonly<Record<string, { readonly x: number; readonly 
   "piazza-n": { x: 67, y: 36 },
   "piazza-c": { x: 64, y: 48 },
   "piazza-s": { x: 61, y: 62 },
+  "fillungo": { x: 65, y: 42 },
+  "stamperia": { x: 73, y: 41 },
   "torre": { x: 84, y: 31 },
   "sartoria": { x: 52, y: 34 },
   "armeria": { x: 80, y: 44 },

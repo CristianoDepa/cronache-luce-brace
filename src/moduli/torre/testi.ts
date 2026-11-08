@@ -1,0 +1,38 @@
+import type { DizionarioTesti } from "../../core/indice";
+
+export const TESTI_TORRE: DizionarioTesti = {
+  it: {
+    "torre.menu.sali": "Sali in cima alla Torre",
+    "torre.menu.saliAzione": "Sali in cima alla Torre (1 azione)",
+    "torre.menu.saliGratis": "Sali in cima alla Torre (gratis)",
+    "torre.cima.titolo": "La cima della Torre Guinigi",
+    "torre.salita": "Sali i gradini uno dopo l'altro, fino all'ultimo piano: sopra di te, tra le querce, c'è solo il cielo.",
+    "torre.vista.alba": "L'alba tinge di rosa i tetti di Lucca; sulle mura i primi carri si mettono in moto.",
+    "torre.vista.giorno": "Dalla cima la città è un mosaico di tetti rossi; oltre le mura si distinguono la foresta e, in lontananza, le paludi.",
+    "torre.vista.tramonto": "Il sole cala dietro i monti e le finestre della città si accendono una a una.",
+    "torre.vista.notte": "Sotto di te Lucca dorme, punteggiata di lumi; il vento fa mormorare le querce.",
+    "torre.segreto.storia": "Tra le radici delle querce trovi una vecchia targa: i Guinigi piantarono qui un giardino per ricordare che anche i potenti hanno bisogno di ombra. Respiri l'aria della città e ti senti più robusto: +{hp} HP massimi per sempre.",
+    "torre.segreto.stelle": "Nel buio, lontano sulle paludi, vedi una figura pallida che cammina sull'acqua senza bagnarsi: ti pare di conoscerla anche se non l'hai mai vista. Nel tuo bestiario compare una nuova pagina.",
+    "torre.segreto.concentrazione": "Tra le querce c'è un angolo dove il rumore della città non arriva. Ti siedi, chiudi gli occhi, e senti il tuo potere crescere: +{mana} mana massimo per sempre.",
+    "torre.ricordo.storia": "Ricordo: la targa dei Guinigi tra le querce.",
+    "torre.ricordo.stelle": "Ricordo: la figura pallida sulle paludi, di notte.",
+    "torre.ricordo.concentrazione": "Ricordo: l'angolo silenzioso dove ti sei concentrato.",
+  },
+  en: {
+    "torre.menu.sali": "Climb to the top of the Tower",
+    "torre.menu.saliAzione": "Climb to the top of the Tower (1 action)",
+    "torre.menu.saliGratis": "Climb to the top of the Tower (free)",
+    "torre.cima.titolo": "The top of the Guinigi Tower",
+    "torre.salita": "You climb the steps one after another, up to the last floor: above you, among the oaks, there is only the sky.",
+    "torre.vista.alba": "Dawn paints the roofs of Lucca pink; on the walls the first carts start to move.",
+    "torre.vista.giorno": "From the top the city is a mosaic of red roofs; beyond the walls you can make out the forest and, far away, the marshes.",
+    "torre.vista.tramonto": "The sun sets behind the mountains and the windows of the city light up one by one.",
+    "torre.vista.notte": "Below you Lucca sleeps, dotted with lights; the wind makes the oaks whisper.",
+    "torre.segreto.storia": "Among the roots of the oaks you find an old plaque: the Guinigi planted a garden here to remember that even the powerful need shade. You breathe the city air and feel sturdier: +{hp} maximum HP forever.",
+    "torre.segreto.stelle": "In the dark, far out on the marshes, you see a pale figure walking on the water without getting wet: you feel you know it even though you have never seen it. A new page appears in your bestiary.",
+    "torre.segreto.concentrazione": "Among the oaks there is a corner where the noise of the city does not reach. You sit down, close your eyes, and feel your power grow: +{mana} maximum mana forever.",
+    "torre.ricordo.storia": "Memory: the Guinigi plaque among the oaks.",
+    "torre.ricordo.stelle": "Memory: the pale figure on the marshes, at night.",
+    "torre.ricordo.concentrazione": "Memory: the quiet corner where you concentrated.",
+  },
+};
