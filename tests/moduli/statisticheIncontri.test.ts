@@ -114,15 +114,17 @@ describe("tabella delle statistiche", () => {
     expect(righe[0]).toMatch(/^Nemico\s+Inc\s+Vit\s+Mor\s+Per\s+Fug\s+Fal\s+Inf\s+Sub$/);
     expect(righe[1]).toMatch(/^Ratto gigante\s+2\s+2\s+0\s+0\s+0\s+0\s+\d+\s+\d+$/);
     expect(righe[2]).toMatch(/^Lupo famelico\s+1\s+1\s+0/);
-    expect(righe[3]).toMatch(/^Totale\s+3\s+3\s+0\s+0\s+0/);
-    expect(righe).toHaveLength(7); // intestazione, 2 nemici, totale, 3 righe di legenda
-    expect(righe[4]).toContain("Inc incontri");
+    expect(righe[3]).toMatch(/^─+$/); // una riga sottile prima dei totali
+    expect(righe[4]).toMatch(/^Totale\s+3\s+3\s+0\s+0\s+0/);
+    expect(righe[5]?.trim()).toBe(""); // una riga vuota prima della legenda
+    expect(righe).toHaveLength(9); // intestazione, 2 nemici, separatore, totale, riga vuota, 3 righe di legenda
+    expect(righe[6]).toContain("Inc incontri");
   });
 
   it("le colonne sono allineate: intestazione, righe e totale hanno la stessa lunghezza", () => {
     for (const lingua of ["it", "en"] as const) {
       const righe = tabella(lingua);
-      const lunghezze = righe.slice(0, 4).map((r) => r.length);
+      const lunghezze = righe.slice(0, 5).map((r) => r.length); // intestazione, righe, separatore e totale
       expect(new Set(lunghezze).size, lingua).toBe(1);
       expect(lunghezze[0], lingua).toBe(59);
     }
@@ -169,3 +171,21 @@ describe("colonne nei testi", () => {
 });
 
 void LUGLIO;
+
+describe("la tabella unisce i gladiatori in una riga (0.14.2)", () => {
+  it("i quattro aspetti e la voce dei salvataggi più vecchi diventano una sola riga \"Gladiatore\" con i valori sommati, al posto del primo", () => {
+    const vuota = { incontri: 0, sconfitti: 0, morti: 0, perse: 0, fugheRiuscite: 0, fugheFallite: 0, dannoInflitto: 0, dannoSubito: 0, ultimoInflitto: 0, ordine: 0 };
+    const s = (ordine: number, incontri: number, sconfitti: number, perse: number): typeof vuota => ({ ...vuota, ordine, incontri, sconfitti, perse, dannoInflitto: incontri * 10, dannoSubito: incontri * 5 });
+    const statistiche = { "ratto": s(1, 2, 2, 0), "gladiatore": s(2, 7, 5, 2), "gladiatore-secutor": s(3, 3, 2, 1), "gladiatore-retiario": s(4, 1, 1, 0) };
+    const ctx = creaContestoDiProva(registro, 11);
+    const base = statoDiProva(registro);
+    const st = statoCombattimento.scrivi(base, { ...statoCombattimento.leggi(base), statistiche });
+    const pannello = registro.moduli.flatMap((m) => m.interfaccia?.pannelli?.(st, ctx) ?? []).find((p) => p.contesti?.includes("info:statistiche"));
+    const righe = (pannello?.righe ?? []).map((r) => traduciEvento(registro, "it", r));
+    const gladiatori = righe.filter((r) => /Gladiatore|gladiatore/.test(r.split(/\s{2,}/)[0] ?? ""));
+    expect(gladiatori).toHaveLength(1);
+    expect(gladiatori[0]).toMatch(/^Gladiatore\s+11\s+8\s+0\s+3\s+0\s+0\s+110\s+55$/); // 7 + 3 + 1 incontri, 5 + 2 + 1 vinti, 2 + 1 persi
+    expect(righe.findIndex((r) => r.startsWith("Ratto"))).toBeLessThan(righe.findIndex((r) => r.startsWith("Gladiatore"))); // l'ordine è quello del primo incontro
+    expect(righe.some((r) => r.includes("[gladiatore]"))).toBe(false);
+  });
+});

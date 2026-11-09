@@ -253,8 +253,9 @@ function concludiVittoria(
     personaggio: { ...p, oro: p.oro + oro, esperienza: p.esperienza + esperienza },
   };
   const finale = registraStatistiche(impostaScontro(vinto, null), creaturaId, { sconfitti: 1 });
+  // Senza monete né esperienza (es. un duello del torneo, che ha i suoi premi) basta "Vittoria!".
   const evento: EventoGioco = {
-    chiave: "combattimento.vittoria",
+    chiave: oro === 0 && esperienza === 0 ? "combattimento.vittoriaSola" : "combattimento.vittoria",
     parametri: { oro, esperienza },
     tono: "positivo",
   };
@@ -270,7 +271,7 @@ function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id
     const vivo: StatoGioco = { ...stato, personaggio: { ...p, hp: 1 } };
     const registrato = registraStatistiche(impostaScontro(vivo, null), creaturaId, { perse: 1 });
     const fine = applicaRegole(ctx, puntoFineScontro, { stato: registrato, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato) });
-    return esitoOk(fine.stato, [...eventi, { chiave: "combattimento.sconfittaNonLetale", tono: "negativo" }, ...fine.eventi]);
+    return esitoOk(fine.stato, [...eventi, { chiave: creatura.messaggioSconfittaChiave ?? "combattimento.sconfittaNonLetale", tono: "negativo" }, ...fine.eventi]);
   }
   const oroPerso = calcolaOroPerso(p.oro, PARAMETRI_COMBATTIMENTO.penalitaOroMorte);
   const morto: StatoGioco = {

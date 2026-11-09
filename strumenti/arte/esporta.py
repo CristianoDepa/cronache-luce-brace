@@ -29,7 +29,7 @@ modulo("combattimento", "ILLUSTRAZIONI_COMBATTIMENTO", [scene_c.combattimento().
 modulo("equipaggiamento", "ILLUSTRAZIONI_EQUIPAGGIAMENTO", [scene_b.armeria().esporta("scena.armeria"), scene_b.sartoria().esporta("scena.sartoria")])
 modulo("guaritore", "ILLUSTRAZIONI_GUARITORE", [scene_c.guaritore().esporta("scena.guaritore")])
 modulo("pozioni", "ILLUSTRAZIONI_POZIONI", [scene_c.speziale().esporta("scena.speziale")])
-modulo("torneo", "ILLUSTRAZIONI_TORNEO", [scene_h.arena().esporta("scena.arena"), scene_h.trofeo().esporta("sprite.trofeo")])
+modulo("torneo", "ILLUSTRAZIONI_TORNEO", [*[scene_h.gladiatore(t).esporta(f"sprite.gladiatore.{t}") for t in ("retiario", "mirmillone", "trace", "secutor")], scene_h.arena().esporta("scena.arena"), scene_h.stanza_trofei().esporta("scena.trofei"), scene_h.targa().esporta("sprite.targa"), *[scene_h.coppa(n, True).esporta(f"coppa.{n}") for n in range(4)], *[scene_h.coppa(n, False).esporta(f"coppa.{n}.vuota") for n in range(4)], *[scene_h.cifra(n).esporta(f"cifra.{n}") for n in range(10)]])
 modulo("cronache", "ILLUSTRAZIONI_CRONACHE", [scene_h.stamperia().esporta("scena.stamperia")])
 modulo("zara", "ILLUSTRAZIONI_ZARA", [scene_h.tavolaccio().esporta("scena.zara"), *[scene_h.dado_grande(n).esporta(f"dadogrande.{n}") for n in range(1, 7)]])
 modulo("torre", "ILLUSTRAZIONI_TORRE", [scene_h.torre_base().esporta("scena.torre"), scene_h.torre_cima().esporta("scena.torre.cima")])

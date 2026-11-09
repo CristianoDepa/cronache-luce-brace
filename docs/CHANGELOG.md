@@ -1,5 +1,24 @@
 # Cronologia delle versioni
 
+## 0.14.2 - Rifiniture dei tornei
+- **Recupero tra i turni:** il **40%** degli HP persi (era un terzo); il mana resta al 50% del mancante.
+- **Titoli:** **un titolo per ogni torneo vinto** (ricavato dall'albo, con l'articolo giusto: "campione della Giostra del Serchio") e il titolo speciale **«Gran Campione di Lucca»** per chi li vince tutti e quattro. Tolto il vecchio titolo unico (l'ultimo vinto).
+- **Gladiatori:** mai lo **stesso aspetto** due turni di fila; soprannomi **«Il Tagliaerba»** e **«Il Muro»** al posto di quelli femminili («Marta la Spada», «La Sfinge»).
+- **Avviso prima di iscriversi:** "Una volta iscritto non puoi lasciare l'Anfiteatro: curati e fai scorta di pozioni prima."
+- **Statistiche incontri:** una sola riga **«Gladiatore»** (i quattro aspetti e la voce dei salvataggi vecchi si sommano); una **riga sottile** prima dei totali e una **riga vuota** prima della legenda.
+- **Comando di prova** `[O]` → `[V]` → `[3]`: ripristina **azioni, HP e mana** (senza il ciclo del giorno: non tocca il torneo, le missioni, le Cronache).
+- Interno: campo `gruppoStatistiche` sulle creature; stato del torneo con `aspetto` e senza `titolo`.
+
+## 0.14.1 - Tornei più severi, bacheca dei trofei e botteghe in Via Fillungo
+- **Il torneo è un blocco unico (anti-cheat):** dall'iscrizione fino alla fine (campione, eliminato o ritirato) **non si può viaggiare né entrare e uscire dai luoghi** ("Sei in gara: devi prima terminare i combattimenti... o ritirarti dal torneo!"). Nuova voce **`[3] Ritirati dal torneo`** (nessun rimborso, nessun'altra perdita, i premi già incassati restano). Se **passa il giorno** mentre si è in gara è un **ritiro d'ufficio** ("Hai lasciato l'Anfiteatro"). Nessun divieto sparso per il mondo: un solo controllo nel modulo del torneo, agganciato a un nuovo punto di regola sui movimenti della città.
+- **Recuperi tra i turni:** **un terzo** degli HP persi (era il 30%) e **metà del mana mancante** (per chi ha il mana).
+- **Quattro gladiatori** con aspetto diverso (retiario, mirmillone, trace, secutor), scelti a caso a ogni avversario.
+- **Bacheca dei trofei nella scheda del personaggio** (`[I]` → `[1]`): una stanza con due mensole; sulla prima **una coppa per ogni torneo** (Palio, Giostra, Coppa, Trofeo; sagoma scura se non vinto) con sotto una **targa col numero di vittorie**; la seconda mensola è libera per i riconoscimenti futuri. L'arena torna pulita.
+- **Luoghi:** **Armeria e Sartoria passano in Via Fillungo** (la strada delle botteghe), la **Stamperia a `[T]`**; il collegamento diretto Anfiteatro ↔ San Michele è di 4 (Via Fillungo è sulla strada). L'Anfiteatro ha la Gilda dei Cavalieri e il torneo.
+- **Mappa:** la scheda compatta ha una riga con livello e statistiche (`Livello 7 - Forza 22 - Difesa 20 - Velocità 3`).
+- **Testi:** articoli giusti per ogni torneo (il Palio, la **Giostra**, la **Coppa**, il Trofeo: "campione **della** Giostra"); «Vittoria!» senza "0 monete e 0 esperienza" (anche contro i capigilda); dopo una sconfitta nel torneo non c'è più "Potrai riprovare domani"; «Il Crea-vedove»; «Zita la ladruncola».
+- Interno: punto di regola `puntoMovimento` nella città; creature con `messaggioSconfittaChiave`; quattro creature gladiatore; stato del torneo con `ritirato`.
+
 ## 0.14.0 - I tornei dell'Anfiteatro
 - **Il torneo settimanale** (`[T]` dalla Piazza dell'Anfiteatro): un torneo ogni 7 giorni di gioco (dal contatore delle Cronache), con **quattro nomi a rotazione**: Palio della Libertas, Giostra del Serchio, Coppa della Torre, Trofeo dell'Anfiteatro. Resta aperto tutta la settimana; **una sola iscrizione a settimana**.
 - **Iscrizione** 10 monete per livello (non rimborsabile). **Tre duelli** non letali (quarti, semifinale, finale), 1 azione ciascuno, quando vuoi. Gli avversari sono **gladiatori con nome** (12 soprannomi) **scalati sul tuo livello**, non sul tuo equipaggiamento (quarti 80%, semifinale 100%, finale 120%, con ±10% a caso su HP e forza): chi è ben equipaggiato è avvantaggiato. Non si fugge.

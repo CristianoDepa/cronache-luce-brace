@@ -661,3 +661,9 @@ Come da §44 (Cronache, Via Fillungo, Stamperia), con questi dettagli: contatore
 ## 50. I tornei, realizzati (0.14.0)
 Come da §45. Avversario = (30 + 12 × livello) HP e (6 + 1,5 × livello) di forza, per il fattore del turno (0,8 / 1 / 1,2) e ±10% a caso; difesa 4 e velocità 9 fisse. Simulazione (120 prove per caso, attaccando sempre): un personaggio con l'equipaggiamento "naturale" per il livello vince il torneo circa 1 volta su 2 per il Cavaliere, meno per Mistico e Ladro (livello 4 con 12 punti per pezzo: 78% / 48% / 57%; livello 7 con 16 punti: 68% / 40% / 34%; livello 10 con 20 punti: 68% / 30% / 23%); con più punti per pezzo sale rapidamente, con meno scende. I quarti sono quasi sempre superati. Valori in `torneo/parametri.ts`.
 
+## 51. Il torneo come blocco unico (0.14.1)
+Dall'iscrizione alla fine il giocatore non si muove: o combatte fino in fondo (campione o eliminato) o si ritira (`[3]`); se passa il giorno è come aver abbandonato l'anfiteatro (ritiro d'ufficio). Si recupera **il 40% degli HP persi** (era un terzo dalla 0.14.1) e **metà del mana mancante** dopo ogni turno vinto; le pozioni restano ammesse. Nessuna cura alla Locanda o dal Guaritore, perché non ci si arriva. Vincere un torneo è come vincere un grande slam: difficile e facoltativo. Bacheca dei trofei nell'immagine della scheda: una coppa per torneo con la targa delle vittorie. Armeria e Sartoria stanno in Via Fillungo.
+
+## 52. Rifiniture dei tornei (0.14.2)
+Recupero tra i turni: 40% degli HP persi e 50% del mana mancante. Titoli: uno per ogni torneo vinto più **Gran Campione di Lucca** per chi li vince tutti e quattro (ricavati dall'albo). Gladiatori: aspetto sempre diverso da quello del turno prima. Avviso prima dell'iscrizione. Difficoltà confermata ("grande slam"): simulazione sul Mistico di livello 7 (HP 78, forza 14, difesa 15): senza cure tra i turni campione 7% attaccando soltanto e 37% con Concentrazione; con la finale a salute e mana pieni 56% e 92%.
+

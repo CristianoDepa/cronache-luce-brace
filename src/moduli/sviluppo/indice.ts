@@ -1,5 +1,5 @@
 import type { DefinizioneModulo, InterfacciaModulo, Risultato, VoceMenu } from "../../core/indice";
-import { VERSIONE_API, applicaGiorno, chiudi, elencaContenuti, leggiContenuto, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
+import { VERSIONE_API, applicaGiorno, calcolaStatistiche, chiudi, elencaContenuti, leggiContenuto, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
 import { ID_AZIONI, ripristinaAzioni } from "../azioni/indice";
 
 import { DEFINIZIONI_SITI, ID_CITTA, chiaveNome, spostaIn, statoCitta, tipoSito } from "../citta/indice";
@@ -59,7 +59,13 @@ const azioneOro = definisciAzione(
 const azioneRipristina = definisciAzione(
   "devRipristina",
   nessunDato,
-  (stato, _d, ctx) => esitoOk(ripristinaMana(ripristinaAzioni(stato), ctx), [{ chiave: "sviluppo.ripristinato", tono: "positivo" }]),
+  (stato, _d, ctx) => {
+    // Azioni, HP e (se ce l'ha) mana al massimo: NON è il giorno dopo, quindi niente ritiro dal torneo, missioni, Cronache o pasti.
+    const conAzioni = ripristinaMana(ripristinaAzioni(stato), ctx);
+    const hpMax = calcolaStatistiche(conAzioni, ctx).hpMax;
+    const curato = { ...conAzioni, personaggio: { ...conAzioni.personaggio, hp: hpMax } };
+    return esitoOk(curato, [{ chiave: "sviluppo.ripristinato", tono: "positivo" }]);
+  },
   consentite,
 );
 
@@ -169,7 +175,7 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.mostri.titolo": "Scegli il mostro",
       "sviluppo.menu.giorno": "Passa al giorno dopo",
       "sviluppo.menu.oro": "Dai 100 monete",
-      "sviluppo.menu.ripristina": "Ripristina azioni e mana",
+      "sviluppo.menu.ripristina": "Ripristina azioni, HP e mana",
       "sviluppo.menu.vai": "Vai a un luogo",
       "sviluppo.menu.mostro": "Scegli il mostro",
       "sviluppo.menu.npc": "Mostra dove sono gli NPC di oggi",
@@ -179,7 +185,7 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.npc": "Oggi {npcChiave} si trova qui: {luogoChiave} (comando di prova).",
       "sviluppo.npcFatto": "{npcChiave} è qui: {luogoChiave}, ma ci hai già parlato (comando di prova).",
       "sviluppo.oro": "Ricevi 100 monete (comando di prova).",
-      "sviluppo.ripristinato": "Azioni e mana ripristinati (comando di prova).",
+      "sviluppo.ripristinato": "Azioni, HP e mana ripristinati (comando di prova).",
       "sviluppo.teletrasporto": "Ti trovi altrove, senza spendere nulla (comando di prova).",
     },
     en: {
@@ -188,7 +194,7 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.mostri.titolo": "Choose the monster",
       "sviluppo.menu.giorno": "Go to the next day",
       "sviluppo.menu.oro": "Give 100 coins",
-      "sviluppo.menu.ripristina": "Restore actions and mana",
+      "sviluppo.menu.ripristina": "Restore actions, HP and mana",
       "sviluppo.menu.vai": "Go to a place",
       "sviluppo.menu.mostro": "Choose the monster",
       "sviluppo.menu.npc": "Show where today's NPCs are",
@@ -198,7 +204,7 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.npc": "Today {npcChiave} is at: {luogoChiave} (test command).",
       "sviluppo.npcFatto": "{npcChiave} is at: {luogoChiave}, but you already talked to them (test command).",
       "sviluppo.oro": "You receive 100 coins (test command).",
-      "sviluppo.ripristinato": "Actions and mana restored (test command).",
+      "sviluppo.ripristinato": "Actions, HP and mana restored (test command).",
       "sviluppo.teletrasporto": "You are somewhere else, at no cost (test command).",
     },
   },

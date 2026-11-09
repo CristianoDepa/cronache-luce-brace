@@ -177,3 +177,81 @@ def trofeo():
     q.rett(0, 0, 6, 1, "oro"); q.rett(1, 2, 5, 4, "oro"); q.rett(2, 5, 4, 5, "oro"); q.rett(3, 5, 3, 6, "oro_s")
     q.rett(1, 7, 5, 8, "oro_s"); q.rett(1, 2, 1, 4, "oro_l"); q.set(0, 1, "oro_s"); q.set(6, 1, "oro_s")
     return q
+
+
+def stanza_trofei():
+    # La stanza dei trofei (96 x 64): parete di pietra con due mensole di legno; sulla prima stanno le quattro coppe dei tornei (con la targa
+    # sotto), la seconda è libera per i riconoscimenti futuri (amuleti, reliquie...).
+    q = Quadro(W, H, [], None)
+    q.rett(0, 0, W - 1, H - 1, "pietra"); q.macchia(0, 0, W - 1, H - 1, "pietra_s", 0.28); q.macchia(0, 0, W - 1, H - 1, "pietra_l", 0.12)
+    for y in range(0, H, 8): q.rett(0, y, W - 1, y, "pietra_s")
+    r = random.Random(3)
+    for y in range(0, H, 8):
+        for x in range((y // 8) % 2 * 8, W, 16): q.rett(x, y, x, y + 7, "pietra_s")
+    for y in (24, 47):                                                                    # le due mensole di legno con le staffe
+        q.rett(2, y, W - 3, y + 3, "legno_l"); q.rett(2, y, W - 3, y, "pavim_l"); q.rett(2, y + 3, W - 3, y + 3, "legno")
+        for x in (8, 48, 88): q.poli([(x - 2, y + 4), (x + 2, y + 4), (x, y + 9)], "legno")
+    q.rett(0, 60, W - 1, H - 1, "legno_s")                                               # il pavimento
+    return q
+
+
+def coppa(n, vinta=True):
+    # La coppa del torneo n (0 Palio, 1 Giostra, 2 Coppa, 3 Trofeo): 13 x 15; se non è vinta è solo una sagoma scura.
+    q = Quadro(13, 15)
+    c, l, s = ("oro", "oro_l", "oro_s") if vinta else ("ombra", "ombra", "ombra")
+    if n == 0:     # calice con un gagliardetto in cima
+        q.poli([(2, 5), (10, 5), (9, 10), (3, 10)], c); q.rett(5, 10, 7, 12, s); q.rett(3, 13, 9, 14, s); q.rett(6, 0, 6, 5, s); q.poli([(7, 0), (11, 1), (7, 3)], l)
+    elif n == 1:   # anfora con due manici e il pomo sul coperchio
+        q.rett(3, 4, 9, 11, c); q.rett(4, 2, 8, 3, c); q.rett(5, 0, 7, 1, l); q.rett(1, 5, 2, 9, s); q.rett(10, 5, 11, 9, s); q.rett(4, 12, 8, 14, s)
+    elif n == 2:   # calice alto con i merli di una torre
+        q.rett(3, 2, 9, 10, c)
+        for x in (3, 5, 7, 9): q.rett(x, 0, x, 1, c)
+        q.rett(5, 11, 7, 12, s); q.rett(3, 13, 9, 14, s)
+    else:          # coppa larga su un piedistallo con un ramo d'alloro per lato
+        q.poli([(1, 4), (11, 4), (9, 10), (3, 10)], c); q.rett(5, 10, 7, 12, s); q.rett(2, 13, 10, 14, s)
+        for x, y in ((0, 6), (1, 8), (12, 6), (11, 8), (0, 9), (12, 9)): q.set(x, y, l)
+    if vinta and n in (0, 1, 2): q.rett(4, 6, 4, 8, "oro_l")
+    return q
+
+
+def targa():
+    # La targa di ottone sotto la coppa (14 x 9) dove si scrive il numero di vittorie.
+    q = Quadro(14, 9)
+    q.rett(0, 0, 13, 8, "oro_s"); q.rett(1, 1, 12, 7, "oro"); q.rett(0, 0, 13, 0, "oro_l"); q.set(1, 1, "oro_s"); q.set(12, 1, "oro_s"); q.set(1, 7, "oro_s"); q.set(12, 7, "oro_s")
+    return q
+
+
+CIFRE = {
+    0: ("111", "101", "101", "101", "111"), 1: ("010", "110", "010", "010", "111"), 2: ("111", "001", "111", "100", "111"),
+    3: ("111", "001", "111", "001", "111"), 4: ("101", "101", "111", "001", "001"), 5: ("111", "100", "111", "001", "111"),
+    6: ("111", "100", "111", "101", "111"), 7: ("111", "001", "010", "010", "010"), 8: ("111", "101", "111", "101", "111"), 9: ("111", "101", "111", "001", "111"),
+}
+
+
+def cifra(n):
+    # Una cifra a pixel 3 x 5 (nera) per le targhe.
+    q = Quadro(3, 5)
+    for y, riga in enumerate(CIFRE[n]):
+        for x, c in enumerate(riga):
+            if c == "1": q.set(x, y, "nero")
+    return q
+
+
+def gladiatore(tipo):
+    # I quattro gladiatori classici (20 x 34, con contorno 22 x 36): retiario, mirmillone, trace e secutor.
+    q = Quadro(20, 34, [], None)
+    if tipo == "retiario":      # torso scoperto, la rete a sinistra e il tridente a destra
+        persona(q, "marr_l", "pelle_l", "marr_s"); q.poli([(6, 12), (14, 12), (16, 22), (4, 22)], "pelle"); q.rett(4, 22, 16, 24, "marr_s")
+        for k in range(0, 14, 3): q.linea(0, 13 + k, 6, 13 + k + 3, "acc_l", 1); q.linea(6, 13 + k, 0, 13 + k + 3, "acc_l", 1)
+        q.linea(19, 3, 19, 32, "acc", 1); q.linea(17, 3, 17, 6, "acc_l", 1); q.linea(21, 3, 21, 6, "acc_l", 1); q.rett(17, 6, 21, 6, "acc_l")
+    elif tipo == "mirmillone":  # elmo con la cresta rossa, grande scudo rettangolare e gladio
+        persona(q, "marr", "marr_l", "marr_s"); q.rett(4, 1, 16, 3, "rosso"); q.poli([(5, 3), (15, 3), (14, 8), (6, 8)], "acc")
+        q.rett(0, 12, 7, 29, "rosso"); q.rett(0, 12, 7, 12, "oro"); q.rett(0, 29, 7, 29, "oro"); q.rett(3, 15, 4, 26, "oro")
+        q.linea(18, 15, 18, 30, "acc_l", 1); q.rett(16, 22, 20, 22, "oro")
+    elif tipo == "trace":       # elmo con la visiera, spada curva e piccolo scudo tondo
+        persona(q, "viola_s", "viola", "ombra"); q.poli([(5, 3), (15, 3), (16, 9), (4, 9)], "acc_s"); q.rett(6, 6, 14, 7, "nero")
+        q.disco(3, 21, 4.5, "oro_s"); q.disco(3, 21, 2.2, "oro"); q.linea(17, 14, 19, 22, "acc_l", 1); q.linea(19, 22, 17, 30, "acc_l", 1)
+    else:                       # secutor: elmo chiuso liscio, scudo ovale, gladio corto
+        persona(q, "marr_s", "marr", "ombra"); q.disco(10, 6, 5.5, "acc"); q.rett(6, 5, 14, 6, "nero"); q.rett(8, 1, 12, 2, "acc_l")
+        q.ell(3, 21, 3.5, 8, "blu"); q.ell(3, 21, 1.5, 6, "blu_l"); q.linea(18, 17, 18, 29, "acc_l", 1); q.rett(16, 23, 20, 23, "oro")
+    return contorno(q)

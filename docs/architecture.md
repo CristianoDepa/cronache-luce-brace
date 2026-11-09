@@ -750,3 +750,16 @@ Nessuna modifica al nucleo: due moduli nuovi e piccole estensioni additive in `c
 | Schermate | Contesto `luogo:torneo` (padre: Piazza dell'Anfiteatro, tasto `[T]`), pannello, albo nel contesto della scheda, annuncio unito al pannello del giornale della Stamperia, arena con le coppe (immagine dinamica) |
 | Verifica | Livello critico: suite completa e prova nel browser; simulazione di bilanciamento sulle tre classi |
 
+## 42. Anti-cheat del torneo, bacheca e gladiatori (0.14.1)
+
+| Aspetto | Scelta |
+|---|---|
+| Blocco | Punto di regola `puntoMovimento` della città (`citta/punti.ts`), applicato a viaggia, entra, esciEdificio, esci e rientra; il torneo registra una regola che vieta il movimento finché `inGara`. Estendibile: la lapide o le spedizioni potranno usare lo stesso punto |
+| Ritiro d'ufficio | Regola su `puntoInizioGiorno` (priorità 110, dopo il contatore delle Cronache) |
+| Creature | Quattro gladiatori (id `gladiatore-<tipo>`), campo nuovo `messaggioSconfittaChiave`; messaggio `vittoriaSola` quando una creatura non dà né monete né esperienza |
+| Bacheca | Immagine dinamica del contesto `info:personaggio` composta dal modulo torneo (stanza, coppe, targa, cifre a pixel); punto d'estensione generico rimandato al secondo modulo con riconoscimenti |
+| Verifica | Livello critico: suite completa (601 test), prova nel browser, delta su copia pulita |
+
+## 43. Rifiniture dei tornei (0.14.2)
+Titoli ricavati dall'albo (nessun campo `titolo` nello stato); `aspetto` nello stato per evitare lo stesso gladiatore due turni di fila; le creature possono dichiarare `gruppoStatistiche` e la tabella delle statistiche somma i membri del gruppo in una riga (anche per le voci vecchie con l'id del gruppo).
+

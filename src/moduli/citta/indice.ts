@@ -10,6 +10,8 @@ import { PARAMETRI_CITTA } from "./parametri";
 import { ID_CITTA, statoCitta, tipoSito } from "./tipi";
 
 export { ID_CITTA, statoCitta, tipoSito } from "./tipi";
+export { puntoMovimento } from "./punti";
+export type { CalcoloMovimento } from "./punti";
 export type { CategoriaSito, Sito } from "./tipi";
 export { DEFINIZIONI_SITI, chiaveDirezione, chiaveMappa, chiaveNome } from "./dati";
 export { PARAMETRI_CITTA } from "./parametri";

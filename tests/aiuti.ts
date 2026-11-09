@@ -51,7 +51,7 @@ export function combattiFinoAllaFine(stato: StatoGioco, ctx: Contesto, tipoAzion
     const r = eseguiOk(corrente, { tipo: tipoAzione }, ctx);
     corrente = r.stato;
     eventi.push(...r.eventi);
-    if (r.eventi.some((e) => e.chiave === "combattimento.vittoria" || e.chiave === "combattimento.sconfitta")) {
+    if (r.eventi.some((e) => e.chiave === "combattimento.vittoria" || e.chiave === "combattimento.vittoriaSola" || e.chiave === "combattimento.sconfitta")) {
       return { stato: corrente, eventi };
     }
   }

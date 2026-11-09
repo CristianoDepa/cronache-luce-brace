@@ -20,7 +20,7 @@ export function giorniAllaFine(stato: StatoGioco): number {
 // Lo stato del torneo di QUESTA settimana: se l'iscrizione è di una settimana passata si riparte da zero (l'albo resta).
 export function statoDiQuestaSettimana(stato: StatoGioco): StatoTorneo {
   const s = statoTorneo.leggi(stato);
-  return s.settimana === settimanaCorrente(stato) ? s : { ...s, settimana: settimanaCorrente(stato), iscritto: false, turni: 0, eliminato: false };
+  return s.settimana === settimanaCorrente(stato) ? s : { ...s, settimana: settimanaCorrente(stato), iscritto: false, turni: 0, eliminato: false, ritirato: false, aspetto: -1 };
 }
 
 export const quotaDiIscrizione = (livello: number): number => PARAMETRI_TORNEO.quotaIscrizione * livello;
@@ -37,4 +37,10 @@ export function statisticheAvversario(livello: number, turno: number, u1: number
   const f = PARAMETRI_TORNEO.fattoriTurno[turno] ?? 1;
   const v = PARAMETRI_TORNEO.variazione;
   return { hp: (a.hpBase + a.hpPerLivello * livello) * f * (1 + v * (2 * u1 - 1)), forza: (a.forzaBase + a.forzaPerLivello * livello) * f * (1 + v * (2 * u2 - 1)) };
+}
+
+// In gara: iscritti al torneo di questa settimana e non ancora finito (né campioni, né eliminati, né ritirati): non si può lasciare l'arena.
+export function inGara(stato: StatoGioco): boolean {
+  const s = statoDiQuestaSettimana(stato);
+  return s.iscritto && !s.eliminato && !s.ritirato && s.turni < PARAMETRI_TORNEO.turni;
 }

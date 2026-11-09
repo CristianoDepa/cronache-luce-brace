@@ -28,6 +28,10 @@ export interface Creatura {
   readonly fugaConsentita: boolean;
   // Se vero, perdere non uccide: si resta a 1 HP, senza perdere monete (es. il duello con un capogilda).
   readonly nonLetale: boolean;
+  // Messaggio mostrato quando si perde un duello non letale (se manca: il messaggio generico dei duelli con i capigilda).
+  readonly messaggioSconfittaChiave?: string;
+  // Le creature con lo stesso gruppo compaiono in una sola riga della tabella delle statistiche (es. i quattro aspetti del gladiatore).
+  readonly gruppoStatistiche?: string;
   // Id dell'illustrazione della creatura.
   readonly immagineId?: string;
   // Natura rispetto ai tipi di danno (solo i tipi diversi da 1).
@@ -78,6 +82,8 @@ export const tipoCreatura: TipoContenuto<Creatura> = {
       precisione: numero(o, "precisione", errori, { min: 0, max: 1, predefinito: PARAMETRI_COMBATTIMENTO.precisioneBase }),
       fugaConsentita: booleano(o, "fugaConsentita", errori, true),
       nonLetale: booleano(o, "nonLetale", errori, false),
+      ...(stringaOpzionale(o, "gruppoStatistiche", errori) !== undefined ? { gruppoStatistiche: stringaOpzionale(o, "gruppoStatistiche", errori) as string } : {}),
+      ...(stringaOpzionale(o, "messaggioSconfittaChiave", errori) !== undefined ? { messaggioSconfittaChiave: stringaOpzionale(o, "messaggioSconfittaChiave", errori) as string } : {}),
       ...(evento !== undefined ? { evento } : {}),
       ...(immagineId !== undefined ? { immagineId } : {}),
       ...(nomeBreveChiave !== undefined ? { nomeBreveChiave } : {}),

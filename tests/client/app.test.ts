@@ -71,7 +71,7 @@ async function vai(app: ReturnType<typeof creaApp>, categoria: string, luogo: st
 // Raggiunge un edificio: cammina fino al suo luogo ospite (dalla mappa) e vi entra con il tasto d'ingresso.
 // Armeria e Sartoria: Piazza dell'Anfiteatro (lettere A e S); Banca: San Michele (B); Guaritore: Napoleone (U); Locanda: Porta San Pietro (L).
 async function entraIn(app: ReturnType<typeof creaApp>, edificio: "armeria" | "sartoria" | "banca" | "guaritore" | "locanda"): Promise<void> {
-  const dove = { armeria: ["1", "A"], sartoria: ["1", "S"], banca: ["2", "B"], guaritore: ["3", "U"], locanda: [undefined, "L"] } as const;
+  const dove = { armeria: ["4", "A"], sartoria: ["4", "S"], banca: ["2", "B"], guaritore: ["3", "U"], locanda: [undefined, "L"] } as const;
   const [piazza, tasto] = dove[edificio];
   if (piazza !== undefined) await vai(app, "3", piazza);
   await app.premiTasto(tasto);
@@ -407,7 +407,7 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
 
   it("l'armeria elenca le armi con prezzi e si compra con i tasti numerici", async () => {
     const app = await giocatore();
-    await entraIn(app, "armeria"); // 13 movimenti fino alla piazza e 3 per entrare: 2 azioni
+    await entraIn(app, "armeria"); // 12 movimenti fino a Via Fillungo e 3 per entrare: 1 azione
     const s = app.schermata();
     expect(tasti(s)).toEqual(["1", "2", "3", "4", "5", "6", "M", "E", "I", "O"]); // 4 armi comuni, la tua, l'arma di riserva
     expect(testo(s)).toContain("[1] Spada liv. 1 (taglio)");
@@ -798,7 +798,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(sx(app.schermata())).toContain("Sei qui: Porta San Pietro");
     expect(tasti(app.schermata())).toEqual(["1", "2", "3", "0", "I", "O"]);
     await app.premiTasto("1");
-    expect(sx(app.schermata())).toContain("[1] Porta Santa Maria (nord) - 19 movimenti, 2 azioni"); // con la direzione
+    expect(sx(app.schermata())).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 2 azioni"); // con la direzione
     expect(sx(app.schermata())).toContain("[4] Porta San Pietro (sud): Locanda - sei qui"); // già visitata: mostra cosa contiene
     expect(haDisegno(app.schermata())).toBe(true);
     await app.premiTasto("0"); // dalla lista torna alla mappa
@@ -810,15 +810,15 @@ describe("mappa, viaggi e comandi di prova", () => {
 
   it("viaggiando si arriva nel nuovo luogo: registro con l'arrivo, luogo e azioni aggiornati a destra", async () => {
     const { app } = await giocatore();
-    await vai(app, "3", "1"); // Piazza dell'Anfiteatro: 13 movimenti, 1 azione
+    await vai(app, "3", "1"); // Piazza dell'Anfiteatro: 14 movimenti, 1 azione
     expect(app.schermata().chiave).toBe("gioco:citta:piazza-n");
-    expect(sx(app.schermata())).toContain("Arrivi in Piazza dell'Anfiteatro (13 movimenti, 1 azione).");
-    expect(sx(app.schermata())).toContain("[A] Armeria - 3 movimenti, 1 azione"); // (con il resto di 5) gli edifici si vedono nella piazza
-    await app.premiTasto("A"); // entra nell'Armeria: 3 movimenti, con il resto di 5 fa 1 azione
-    expect(app.schermata().chiave).toBe("gioco:luogo:armeria");
+    expect(sx(app.schermata())).toContain("Arrivi in Piazza dell'Anfiteatro (14 movimenti, 1 azione).");
+    expect(sx(app.schermata())).toContain("[G] Gilda dei Cavalieri - 2 movimenti, 1 azione"); // (con il resto di 6) gli edifici si vedono nella piazza
+    await app.premiTasto("G"); // entra nella Gilda dei Cavalieri: 2 movimenti, con il resto di 6 fa 1 azione
+    expect(app.schermata().chiave).toBe("gioco:luogo:gilda-cavaliere");
     expect(app.stato().log).toHaveLength(1);
-    expect(sx(app.schermata())).toContain("Arrivi all'Armeria (3 movimenti, 1 azione).");
-    expect(dx(app.schermata())).toContain("Luogo: Armeria");
+    expect(sx(app.schermata())).toContain("Arrivi alla Gilda dei Cavalieri (2 movimenti, 1 azione).");
+    expect(dx(app.schermata())).toContain("Luogo: Gilda dei Cavalieri");
     expect(dx(app.schermata())).toContain("Azioni 48/50");
     // uscire è gratis e riporta alla piazza
     await app.premiTasto("E");
@@ -904,8 +904,8 @@ describe("mappa, viaggi e comandi di prova", () => {
 
   it("il giorno dopo di prova ripristina le azioni spese camminando", async () => {
     const { app } = await giocatore(true);
-    await entraIn(app, "armeria"); // 48 azioni
-    expect(dx(app.schermata())).toContain("Azioni 48/50");
+    await entraIn(app, "armeria"); // 49 azioni
+    expect(dx(app.schermata())).toContain("Azioni 49/50");
     await app.premiTasto("O");
     await app.premiTasto("V");
     await app.premiTasto("1");

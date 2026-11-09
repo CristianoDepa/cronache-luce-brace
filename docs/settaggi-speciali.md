@@ -94,4 +94,5 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Tasti nuovi | Porta San Pietro `[F]`, Sant'Anna `[P]` e `[C]`, "Parla" `[N]`, Stamperia `[S]` | |
 | Tornei: iscrizione, premi, recupero, fattori dei turni, avversario | `src/moduli/torneo/parametri.ts` | 10/livello, 1,5×1,5×3, 30%, 0,8/1/1,2, 30+12L HP e 6+1,5L forza |
 | Comando di prova "Avvia il torneo" | `[O]` → `[V]` → `[9]` (con `?dev=1`) | passa alla settimana seguente |
+| Tornei dalla 0.14.1: recupero tra i turni (HP 40%, mana 50%) | `src/moduli/torneo/parametri.ts` | `recuperoHp: 0.4`, `recuperoMana: 0.5` |
 

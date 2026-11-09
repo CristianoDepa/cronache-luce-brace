@@ -1,14 +1,17 @@
 import type { VoceContenuto } from "../../core/indice";
-import { BASE_GLADIATORE } from "./parametri";
+import { BASE_GLADIATORE, PARAMETRI_TORNEO } from "./parametri";
 
-export const ID_GLADIATORE = "gladiatore";
+// I gladiatori sono creature non letali (non si può fuggire, perdere non uccide: si resta a 1 HP), senza oro né esperienza: i premi sono del torneo.
+// Hanno tutti gli stessi valori: HP e forza reali dipendono dal livello del giocatore e dal turno (potenziamento); cambia solo l'aspetto.
+export const ID_GLADIATORI: readonly string[] = PARAMETRI_TORNEO.gladiatori.map((t) => `gladiatore-${t}`);
 
-// Il combattente base del torneo: non si può fuggire e perdere non uccide (si resta a 1 HP), come nei duelli con i capigilda. HP e forza
-// reali dipendono dal livello del giocatore e dal turno (potenziamento), difesa e velocità sono fisse. Niente oro né esperienza: i premi sono del torneo.
-export const CREATURE_TORNEO: readonly VoceContenuto[] = [
-  {
-    tipo: "creatura",
-    id: ID_GLADIATORE,
-    dati: { nomeChiave: "torneo.gladiatore", nomeBreveChiave: "torneo.gladiatore.breve", hp: BASE_GLADIATORE.hp, forza: BASE_GLADIATORE.forza, difesa: 4, oro: 0, esperienza: 0, velocita: 9, fugaConsentita: false, nonLetale: true, immagineId: "sprite.capogilda.cavaliere" },
+export const eGladiatore = (id: string): boolean => ID_GLADIATORI.includes(id);
+
+export const CREATURE_TORNEO: readonly VoceContenuto[] = PARAMETRI_TORNEO.gladiatori.map((tipo): VoceContenuto => ({
+  tipo: "creatura",
+  id: `gladiatore-${tipo}`,
+  dati: {
+    nomeChiave: "torneo.gladiatore", nomeBreveChiave: "torneo.gladiatore.breve", hp: BASE_GLADIATORE.hp, forza: BASE_GLADIATORE.forza, difesa: 4, oro: 0, esperienza: 0,
+    velocita: 9, fugaConsentita: false, nonLetale: true, immagineId: `sprite.gladiatore.${tipo}`, messaggioSconfittaChiave: "torneo.sconfittaDuello", gruppoStatistiche: "gladiatore",
   },
-];
+}));

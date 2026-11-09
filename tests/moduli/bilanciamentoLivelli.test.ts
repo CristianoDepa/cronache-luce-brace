@@ -39,7 +39,7 @@ function vittorie(classe: string, punti: number): number {
       const r = eseguiOk(corrente, { tipo: "attacca" }, ctx);
       corrente = r.stato;
       if (r.eventi.some((e) => e.chiave === "combattimento.sconfittaNonLetale")) break;
-      if (r.eventi.some((e) => e.chiave === "combattimento.vittoria")) {
+      if (r.eventi.some((e) => e.chiave === "combattimento.vittoria" || e.chiave === "combattimento.vittoriaSola")) {
         vinte++;
         break;
       }

@@ -2,6 +2,7 @@ import type { Risultato } from "../../core/indice";
 import { chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
 import { consumaAzioni } from "../azioni/indice";
 import { PARAMETRI_CITTA } from "./parametri";
+import { movimentoVietato } from "./punti";
 import { calcolaCostoViaggio } from "./percorsi";
 import { statoCitta } from "./tipi";
 import { chiaveDove } from "./dati";
@@ -18,6 +19,8 @@ const nessunDato = (): Risultato<null> => ({ ok: true, valore: null });
 
 // Cammina fino a un altro luogo della città: costa movimenti (5-10 fanno un'azione, il resto si conserva).
 export const azioneViaggia = definisciAzione("viaggia", validaSito, (stato, dati, ctx) => {
+  const vietato = movimentoVietato(stato, ctx);
+  if (vietato) return esitoErrore(vietato);
   const dove = sitoCorrente(stato, ctx);
   const meta = leggiSito(ctx.registro, dati.sito);
   // Gli edifici non sono mete di viaggio: ci si entra dal loro luogo ospite (azione "entra").
@@ -37,6 +40,8 @@ export const azioneViaggia = definisciAzione("viaggia", validaSito, (stato, dati
 
 // Entra in un edificio dal luogo ospite: costa i movimenti del collegamento (come un tratto di viaggio).
 export const azioneEntra = definisciAzione("entra", validaSito, (stato, dati, ctx) => {
+  const vietato = movimentoVietato(stato, ctx);
+  if (vietato) return esitoErrore(vietato);
   const dove = sitoCorrente(stato, ctx);
   const meta = leggiSito(ctx.registro, dati.sito);
   if (!dove || !meta || meta.categoria !== "edificio") return esitoErrore("citta.errore.sito_inesistente");
@@ -54,6 +59,8 @@ export const azioneEntra = definisciAzione("entra", validaSito, (stato, dati, ct
 
 // Esce da un edificio tornando al luogo ospite (gratis).
 export const azioneEsciEdificio = definisciAzione("esciEdificio", nessunDato, (stato, _dati, ctx) => {
+  const vietato = movimentoVietato(stato, ctx);
+  if (vietato) return esitoErrore(vietato);
   const dove = sitoCorrente(stato, ctx);
   if (!dove || dove.sito.categoria !== "edificio" || dove.sito.ospite === undefined) return esitoErrore("citta.errore.non_in_edificio");
   const { movimenti } = statoCitta.leggi(stato);
@@ -64,6 +71,8 @@ export const azioneEsciEdificio = definisciAzione("esciEdificio", nessunDato, (s
 
 // Esce da una porta verso l'area che sta fuori (gratis); se la porta è chiusa spiega perché.
 export const azioneEsci = definisciAzione("esci", validaSito, (stato, dati, ctx) => {
+  const vietato = movimentoVietato(stato, ctx);
+  if (vietato) return esitoErrore(vietato);
   const dove = sitoCorrente(stato, ctx);
   if (!dove || dove.id !== dati.sito) return esitoErrore("citta.errore.non_qui");
   if (dove.sito.categoria !== "porta") return esitoErrore("citta.errore.nessuna_uscita");
@@ -79,6 +88,8 @@ export const azioneEsci = definisciAzione("esci", validaSito, (stato, dati, ctx)
 
 // Dall'area oltre una porta torna alla porta (gratis).
 export const azioneRientra = definisciAzione("rientra", nessunDato, (stato, _dati, ctx) => {
+  const vietato = movimentoVietato(stato, ctx);
+  if (vietato) return esitoErrore(vietato);
   const dove = sitoCorrente(stato, ctx);
   if (!dove || dove.sito.categoria !== "area") return esitoErrore("citta.errore.non_in_area");
   const porta = elencaSiti(ctx.registro).find((s) => s.dati.areaId === dove.id);

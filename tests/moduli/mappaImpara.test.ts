@@ -24,7 +24,7 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
     expect(statoCitta.leggi(partenza()).visitati).toEqual(["porta-s"]);
     expect(lista(partenza(), "porte")).toContain("[4] Porta San Pietro (sud): Locanda - sei qui");
     expect(lista(partenza(), "piazze")).toEqual([
-      "[1] Piazza dell'Anfiteatro - 13 movimenti, 1 azione",
+      "[1] Piazza dell'Anfiteatro - 14 movimenti, 1 azione",
       "[2] Piazza San Michele - 10 movimenti, 1 azione",
       "[3] Piazza Napoleone - 6 movimenti, 0 azioni",
       "[4] Via Fillungo - 12 movimenti, 1 azione",
@@ -34,10 +34,10 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
 
   it("dopo la prima visita la piazza mostra i suoi edifici, anche da lontano e in inglese", () => {
     const a = eseguiOk(partenza(), viaggia("piazza-n"), ctx).stato;
-    expect(lista(a, "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Armeria, Sartoria, Gilda dei Cavalieri - sei qui");
-    expect(lista(a, "piazze")[1]).toBe("[2] Piazza San Michele - 3 movimenti, 1 azione"); // non ancora visitata: solo il nome
+    expect(lista(a, "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Gilda dei Cavalieri - sei qui");
+    expect(lista(a, "piazze")[1]).toBe("[2] Piazza San Michele - 4 movimenti, 1 azione"); // non ancora visitata: solo il nome
     const b = eseguiOk(a, viaggia("piazza-c"), ctx).stato;
-    expect(lista(b, "piazze")[0]).toMatch(/^\[1\] Piazza dell'Anfiteatro: Armeria, Sartoria, Gilda dei Cavalieri - 3 movimenti/); // resta nota
+    expect(lista(b, "piazze")[0]).toMatch(/^\[1\] Piazza dell'Anfiteatro: Gilda dei Cavalieri - 4 movimenti/); // resta nota
     expect(lista(b, "piazze", "en")[1]).toBe("[2] San Michele Square: Bank, Mystics' Guild - you are here");
     expect(statoCitta.leggi(b).visitati).toEqual(["porta-s", "piazza-n", "piazza-c"]);
   });
@@ -66,7 +66,7 @@ describe("le frasi di arrivo e le etichette di uscita hanno le preposizioni gius
   const arrivo = (stato: StatoGioco, azione: { tipo: string; dati?: unknown }, lingua: "it" | "en" = "it"): string => traduciEvento(registro, lingua, eseguiOk(stato, azione, ctx).eventi[0]!);
 
   it("si arriva a una porta, sulle mura, in una piazza, alla Torre", () => {
-    expect(arrivo(partenza(), viaggia("porta-n"))).toBe("Arrivi a Porta Santa Maria (19 movimenti, 2 azioni).");
+    expect(arrivo(partenza(), viaggia("porta-n"))).toBe("Arrivi a Porta Santa Maria (20 movimenti, 2 azioni).");
     expect(arrivo(partenza(), viaggia("mura-s"))).toBe("Arrivi sulle Mura - San Pietro (2 movimenti, 0 azioni).");
     expect(arrivo(partenza(), viaggia("piazza-c"))).toBe("Arrivi in Piazza San Michele (10 movimenti, 1 azione).");
     expect(arrivo(partenza(), viaggia("torre"))).toBe("Arrivi alla Torre Guinigi (14 movimenti, 1 azione).");
@@ -75,8 +75,8 @@ describe("le frasi di arrivo e le etichette di uscita hanno le preposizioni gius
 
   it("si entra all'Armeria, alla Sartoria, in Banca, dal Guaritore, alla Locanda", () => {
     const da = (ospite: string, edificio: string) => eseguiOk(partenza(), viaggia(ospite), ctx).stato && arrivo(eseguiOk(partenza(), viaggia(ospite), ctx).stato, entra(edificio));
-    expect(da("piazza-n", "armeria")).toMatch(/^Arrivi all'Armeria/);
-    expect(da("piazza-n", "sartoria")).toMatch(/^Arrivi alla Sartoria/);
+    expect(da("fillungo", "armeria")).toMatch(/^Arrivi all'Armeria/);
+    expect(da("fillungo", "sartoria")).toMatch(/^Arrivi alla Sartoria/);
     expect(da("piazza-c", "banca")).toMatch(/^Arrivi in Banca/);
     expect(da("piazza-s", "guaritore")).toMatch(/^Arrivi dal Guaritore/);
     expect(arrivo(partenza(), entra("locanda"))).toMatch(/^Arrivi alla Locanda/);

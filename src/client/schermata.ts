@@ -260,8 +260,9 @@ function schedaPersonaggio(registro: Registro, lingua: Lingua, vista: VistaParti
     xp && xp.tipo === "esperienza"
       ? riga(t(p.esperienza >= xp.necessaria ? "interfaccia.scheda.livelloPronto" : "interfaccia.scheda.livelloProssimo", { livello: p.livello, esperienza: p.esperienza, necessaria: xp.necessaria }), p.esperienza >= xp.necessaria ? ANSI.giallo : ANSI.verdeChiaro)
       : riga(t("interfaccia.scheda.livello", { livello: p.livello, esperienza: p.esperienza }), ANSI.verdeChiaro);
-  // Scheda compatta (es. nella mappa): nome, barre, oro, luogo e azioni; livello, statistiche e conto alla rovescia restano in [P].
-  if (compatta) return [riga(p.nome, ANSI.bianco), ...barre.map((b) => rigaBarra(b, larghezza)), riga(t("interfaccia.scheda.oro", { oro: p.oro }), ANSI.giallo), ...righeLaterali];
+  // Scheda compatta (es. nella mappa): nome, barre, oro, una riga con livello e statistiche, luogo e azioni; l'esperienza e il conto alla rovescia restano nella scheda completa.
+  const livelloEStatistiche = `${t("interfaccia.scheda.livelloBreve", { livello: p.livello })} - ${statistiche}`;
+  if (compatta) return [riga(p.nome, ANSI.bianco), ...barre.map((b) => rigaBarra(b, larghezza)), riga(t("interfaccia.scheda.oro", { oro: p.oro }), ANSI.giallo), riga(livelloEStatistiche, ANSI.verde), ...righeLaterali];
   return [
     vuota,
     riga(p.nome, ANSI.bianco),

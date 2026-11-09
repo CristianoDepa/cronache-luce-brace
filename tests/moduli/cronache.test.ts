@@ -89,7 +89,7 @@ describe("le Cronache: il giornale della Stamperia", () => {
     const voci = registro.menu.get("luogo:stamperia") ?? [];
     expect(voci.some((v) => v.tasto === "E")).toBe(true); // esci in strada
     const fillungo = registro.menu.get("citta:fillungo") ?? [];
-    expect(fillungo.find((v) => v.id === "citta.entra.stamperia")?.tasto).toBe("S");
+    expect(fillungo.find((v) => v.id === "citta.entra.stamperia")?.tasto).toBe("T"); // la S è della Sartoria
     const vista = creaVistaPartita(statoCitta.scrivi(pg(), { sito: "fillungo", movimenti: 0, visitati: ["porta-s", "fillungo"] }), ctx);
     expect(vista.contestoBase).toBe("citta:fillungo");
     expect(Object.keys(vista.illustrazioni).length + 1).toBeGreaterThan(0);

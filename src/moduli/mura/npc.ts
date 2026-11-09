@@ -72,7 +72,7 @@ export const DEFINIZIONI_NPC: readonly DefinizioneNpc[] = [
   },
   {
     id: "zita",
-    nome: { it: "Zita la bambina ladra", en: "Zita the thief child" },
+    nome: { it: "Zita la ladruncola", en: "Zita the little thief" },
     descrizione: { it: "Piccola, svelta e con un sorriso che non promette niente di buono.", en: "Small, quick, and with a smile that promises nothing good." },
     incontri: [
       { it: "Ti sfila la borsa e scappa tra le merlature: perdi {oro} {oro#moneta|monete}.", en: "She picks your purse and runs off among the battlements: you lose {oro} {oro#coin|coins}.", tono: "negativo", effetti: [e("oro", -15)] },

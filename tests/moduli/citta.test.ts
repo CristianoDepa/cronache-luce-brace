@@ -120,11 +120,11 @@ describe("la città: dati", () => {
     expect(d.get("guaritore")).toBe(8);
     expect(d.get("piazza-c")).toBe(10);
     expect(d.get("banca")).toBe(12);
-    expect(d.get("armeria")).toBe(16);
+    expect(d.get("armeria")).toBe(15); // dalla 0.14.1 in Via Fillungo: 12 + 3
     expect(d.get("torre")).toBe(14); // per Via Fillungo (dalla 0.13.0)
     expect(d.get("fillungo")).toBe(12); // 6 + 4 + 2
     expect(d.get("stamperia")).toBe(14);
-    expect(d.get("porta-n")).toBe(19); // attraversando il centro
+    expect(d.get("porta-n")).toBe(20); // attraversando il centro
     expect(d.get("porta-e")).toBe(13); // sulle mura: 2 + 9 + 2
   });
 
@@ -162,15 +162,15 @@ describe("viaggiare", () => {
     expect(creaVistaPartita(r.stato, ctx).contestoBase).toBe("luogo:locanda");
   });
 
-  it("l'Armeria sta nella Piazza dell'Anfiteatro: 13 movimenti fino alla piazza, 3 per entrare, 2 azioni in tutto", () => {
-    const piazza = eseguiOk(partenza(), viaggia("piazza-n"), ctx);
-    expect(leggiAzioniResidue(piazza.stato)).toBe(49);
-    expect(statoCitta.leggi(piazza.stato).movimenti).toBe(5);
-    const dentro = eseguiOk(piazza.stato, entra("armeria"), ctx);
+  it("l'Armeria sta in Via Fillungo: 12 movimenti fino alla via, 3 per entrare, 1 azione in tutto (il resto di 7 si conserva)", () => {
+    const via = eseguiOk(partenza(), viaggia("fillungo"), ctx);
+    expect(leggiAzioniResidue(via.stato)).toBe(49);
+    expect(statoCitta.leggi(via.stato).movimenti).toBe(4);
+    const dentro = eseguiOk(via.stato, entra("armeria"), ctx);
     expect(sitoDi(dentro.stato)).toBe("armeria");
-    expect(leggiAzioniResidue(dentro.stato)).toBe(48);
-    expect(statoCitta.leggi(dentro.stato).movimenti).toBe(0);
-    expect(traduciEvento(registro, "it", dentro.eventi[0]!)).toBe("Arrivi all'Armeria (3 movimenti, 1 azione).");
+    expect(leggiAzioniResidue(dentro.stato)).toBe(49);
+    expect(statoCitta.leggi(dentro.stato).movimenti).toBe(7);
+    expect(traduciEvento(registro, "it", dentro.eventi[0]!)).toBe("Arrivi all'Armeria (3 movimenti, 0 azioni).");
   });
 
   it("il resto dei movimenti si conserva tra un tratto e l'altro, entrando e uscendo dagli edifici", () => {
@@ -299,10 +299,10 @@ describe("i contesti e le schermate della città", () => {
     expect(menu("citta:porta-s")).toEqual(["E", "F", "L", "M", "N"]); // esci (nascosta se la porta è aperta), addentrati nella foresta, Locanda, mappa, parla (elenco in ordine alfabetico)
     for (const id of ["porta-n", "porta-ne", "porta-e", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(["E", "M", "N"]);
     expect(menu("citta:porta-so")).toEqual(["C", "E", "M", "N", "P"]); // palude e cimitero (dal livello 4; sotto, l'uscita racconta la porta chiusa)
-    expect(menu("citta:piazza-n")).toEqual(["A", "G", "M", "N", "S", "T"]); // Armeria, Sartoria, Gilda dei Cavalieri, il Torneo (T)
+    expect(menu("citta:piazza-n")).toEqual(["G", "M", "N", "T"]); // Gilda dei Cavalieri e il Torneo (T): l'Armeria e la Sartoria sono in Via Fillungo
     expect(menu("citta:piazza-c")).toEqual(["B", "G", "M", "N"]); // Banca, Gilda dei Mistici
     expect(menu("citta:piazza-s")).toEqual(["G", "M", "N", "S", "U"]); // Guaritore, Speziale, Gilda dei Ladri
-    expect(menu("citta:fillungo")).toEqual(["M", "S"]); // la mappa e la Stamperia (la via non ospita NPC)
+    expect(menu("citta:fillungo")).toEqual(["A", "M", "S", "T"]); // Armeria, Sartoria, Stamperia (T) e la mappa (la via non ospita NPC)
     expect(menu("citta:torre")).toEqual(["1", "C", "M"]); // la Torre non ospita NPC mura: la salita (1), Castruccio (C) e la mappa
     for (const id of ["mura-n", "mura-ne", "mura-e", "mura-s", "mura-so", "mura-no"]) expect(menu(`citta:${id}`), id).toEqual(["M", "N"]);
     expect(menu("luogo:foresta")).toEqual(["R"]); // l'area esterna non ha più comandi: l'esplorazione parte dalla porta
@@ -325,17 +325,17 @@ describe("i contesti e le schermate della città", () => {
   it("la lista delle destinazioni mostra direzione, movimenti e azioni da dove si è", () => {
     const porte = righe(partenza(), "citta.pannello.destinazioni", "mappa:porte");
     expect(porte).toContain("[4] Porta San Pietro (sud): Locanda - sei qui");
-    expect(porte).toContain("[1] Porta Santa Maria (nord) - 19 movimenti, 2 azioni");
+    expect(porte).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 2 azioni");
     expect(porte).toContain("[2] Porta San Jacopo alla Tomba (nord-est) - 20 movimenti, 2 azioni");
     const mura = righe(partenza(), "citta.pannello.destinazioni", "mappa:mura");
     expect(mura).toContain("[4] Le Mura - San Pietro (sud) - 2 movimenti, 0 azioni");
     expect(mura).toContain("[1] Le Mura - Santa Maria (nord) - 21 movimenti, 2 azioni");
     const piazze = righe(partenza(), "citta.pannello.destinazioni", "mappa:piazze");
-    expect(piazze).toContain("[1] Piazza dell'Anfiteatro - 13 movimenti, 1 azione"); // senza direzione
+    expect(piazze).toContain("[1] Piazza dell'Anfiteatro - 14 movimenti, 1 azione"); // senza direzione
     expect(piazze).toContain("[4] Via Fillungo - 12 movimenti, 1 azione");
     expect(piazze).toContain("[5] Torre Guinigi - 14 movimenti, 1 azione");
     // con 4 movimenti di resto un tragitto da 13 costa 2 azioni invece di 1
-    expect(righe(inSito(partenza(), "porta-s", 4), "citta.pannello.destinazioni", "mappa:piazze")).toContain("[1] Piazza dell'Anfiteatro - 13 movimenti, 2 azioni");
+    expect(righe(inSito(partenza(), "porta-s", 4), "citta.pannello.destinazioni", "mappa:piazze")).toContain("[1] Piazza dell'Anfiteatro - 14 movimenti, 2 azioni");
     expect(traduci(registro, "en", "citta.sito.porta-so.mappa")).toBe("Sant'Anna Gate (south-west)");
   });
 
@@ -345,16 +345,17 @@ describe("i contesti e le schermate della città", () => {
   });
 
   it("gli edifici si vedono nel luogo ospite con tasto d'ingresso e costo", () => {
-    expect(righe(inSito(partenza(), "piazza-n"), "citta.pannello.edifici", "citta:piazza-n")).toEqual([
+    expect(righe(inSito(partenza(), "piazza-n"), "citta.pannello.edifici", "citta:piazza-n")).toEqual(["[G] Gilda dei Cavalieri - 2 movimenti, 0 azioni"]);
+    expect(righe(inSito(partenza(), "fillungo"), "citta.pannello.edifici", "citta:fillungo")).toEqual([
       "[A] Armeria - 3 movimenti, 0 azioni",
       "[S] Sartoria - 2 movimenti, 0 azioni",
-      "[G] Gilda dei Cavalieri - 2 movimenti, 0 azioni",
+      "[T] Stamperia - 2 movimenti, 0 azioni",
     ]);
     expect(righe(partenza(), "citta.pannello.edifici", "citta:porta-s")).toEqual(["[L] Locanda - 2 movimenti, 0 azioni"]);
     expect(righe(inSito(partenza(), "piazza-s", 6), "citta.pannello.edifici", "citta:piazza-s")).toEqual(["[U] Guaritore - 2 movimenti, 1 azione", "[S] Speziale - 2 movimenti, 1 azione", "[G] Gilda dei Ladri - 2 movimenti, 1 azione"]);
     const voce = (c: string, t: string) => vociMenu(registro, c).find((v) => v.tasto === t);
-    expect(voce("citta:piazza-n", "A")?.comando).toEqual({ tipo: "azione", azione: { tipo: "entra", dati: { sito: "armeria" } } });
-    expect(traduci(registro, "it", voce("citta:piazza-n", "A")!.etichettaChiave)).toBe("Entra nell'Armeria");
+    expect(voce("citta:fillungo", "A")?.comando).toEqual({ tipo: "azione", azione: { tipo: "entra", dati: { sito: "armeria" } } });
+    expect(traduci(registro, "it", voce("citta:fillungo", "A")!.etichettaChiave)).toBe("Entra nell'Armeria");
     expect(traduci(registro, "en", voce("citta:piazza-c", "B")!.etichettaChiave)).toBe("Enter the Bank");
   });
 

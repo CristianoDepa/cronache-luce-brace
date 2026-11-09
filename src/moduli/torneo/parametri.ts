@@ -9,18 +9,19 @@ export const PARAMETRI_TORNEO = {
   quotaIscrizione: 10,
   // Premio a ogni turno vinto, in multipli dell'iscrizione: i totali sono 1,5x, 3x e 6x (campione).
   premiPerTurno: [1.5, 1.5, 3],
-  // Tra un turno e l'altro si recupera questa quota degli HP persi.
-  recuperoHp: 0.3,
+  // Tra un turno e l'altro si recupera questa quota degli HP persi (il 40%) e del mana mancante (la metà).
+  recuperoHp: 0.4,
+  recuperoMana: 0.5,
   // Costo in azioni di ogni duello.
   costoAzioni: 1,
   // Gli avversari scalano sul LIVELLO del personaggio (non sul suo equipaggiamento): quarti, semifinale, finale; con questa variazione casuale.
   fattoriTurno: [0.8, 1, 1.2],
   variazione: 0.1,
   avversario: { hpBase: 30, hpPerLivello: 12, forzaBase: 6, forzaPerLivello: 1.5 },
+  // I quattro tipi di gladiatore (uno a caso per ogni avversario): retiario, mirmillone, trace e secutor.
+  gladiatori: ["retiario", "mirmillone", "trace", "secutor"],
   // Quanti soprannomi hanno gli avversari (testi: torneo.avversario.0 ...).
   soprannomi: 12,
-  // Quante coppe stanno sulla mensola dei trofei.
-  coppeMax: 12,
 } as const;
 
 // I valori della creatura "gladiatore" (in dati.ts): HP e forza si moltiplicano con il potenziamento.

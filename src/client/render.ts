@@ -87,7 +87,7 @@ const MARGINE_VERTICALE = 24;
 // Righe riservate alla scheda del personaggio sotto l'immagine (completa e compatta): la scala dell'immagine dipende da queste e non
 // dalle righe che ci sono davvero, così non cambia quando compare o sparisce una riga (es. la barra del mana).
 const RIGHE_SCHEDA_COMPLETA = 11;
-const RIGHE_SCHEDA_COMPATTA = 5;
+const RIGHE_SCHEDA_COMPATTA = 6;
 
 // Ingrandisce l'immagine alla scala intera più grande che sta nella colonna e, a due colonne, anche nell'altezza dello schermo
 // insieme allo spazio riservato alla scheda del personaggio (così immagine e scheda restano in vista). Con una colonna sola

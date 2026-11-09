@@ -1,5 +1,5 @@
 import type { Contesto, InterfacciaModulo, PannelloVista, Raster, RigaVista, StatoGioco } from "../../core/indice";
-import { CONTESTO_INFO_INDICE, leggiContenuto, posizioneSprite, rasterizza, sovrapponi, tipoIllustrazione } from "../../core/indice";
+import { CONTESTO_INFO_INDICE, elencaContenuti, leggiContenuto, posizioneSprite, rasterizza, sovrapponi, tipoIllustrazione } from "../../core/indice";
 import { CONTESTO_BESTIARIO_FAMIGLIA, CONTESTO_BESTIARIO_SCHEDA, CONTESTO_INFO_BESTIARIO, etichetteBestiario, illustrazioniBestiario, pannelliBestiario, vociBestiario, vociNascosteBestiario } from "./bestiario";
 import { impostazioniAutomatico } from "./automatico";
 import { chiaveInsiemeTipi } from "./natura";
@@ -38,11 +38,19 @@ function pannelloStatistiche(stato: StatoGioco, ctx: Contesto): PannelloVista {
     righe.push({ chiave: "combattimento.stat.vuoto" });
   } else {
     righe.push({ chiave: "combattimento.stat.intestazione" });
+    // Una riga per nemico; le creature dello stesso gruppo (e le voci di salvataggi più vecchi con l'id del gruppo) si sommano in una sola.
+    const gruppi = new Map<string, { nomeChiave: string; stat: Record<string, StatisticheNemico>; ordine: number }>();
     for (const [id, s] of incontrate) {
       const creatura = leggiContenuto(ctx.registro, tipoCreatura, id);
-      righe.push(riga(s, creatura?.nomeBreveChiave ?? creatura?.nomeChiave ?? id));
+      const gruppo = creatura?.gruppoStatistiche ?? id;
+      const membro = creatura ?? elencaContenuti(ctx.registro, tipoCreatura).map((c) => leggiContenuto(ctx.registro, tipoCreatura, c.id)).find((c) => c?.gruppoStatistiche === gruppo);
+      const nomeChiave = membro?.nomeBreveChiave ?? membro?.nomeChiave ?? id;
+      const esistente = gruppi.get(gruppo);
+      gruppi.set(gruppo, { nomeChiave: esistente?.nomeChiave ?? nomeChiave, stat: { ...(esistente?.stat ?? {}), [id]: s }, ordine: Math.min(esistente?.ordine ?? s.ordine, s.ordine) });
     }
-    righe.push(riga(sommaStatistiche(tutte), "combattimento.stat.totale"));
+    for (const g of [...gruppi.values()].sort((a, b) => a.ordine - b.ordine)) righe.push(riga(sommaStatistiche(g.stat), g.nomeChiave));
+    // Una riga sottile prima dei totali e una riga vuota prima della legenda.
+    righe.push({ chiave: "combattimento.stat.separatore" }, riga(sommaStatistiche(tutte), "combattimento.stat.totale"), { chiave: "combattimento.stat.vuota" });
     righe.push({ chiave: "combattimento.stat.legenda1" }, { chiave: "combattimento.stat.legenda2" }, { chiave: "combattimento.stat.legenda3" });
   }
   return { titoloChiave: "combattimento.stat.pannello", contesti: [CONTESTO_INFO_STATISTICHE], righe };
