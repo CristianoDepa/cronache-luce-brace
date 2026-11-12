@@ -12,6 +12,10 @@ export interface ModificatoriClasse {
   readonly velocita: number;
   // Si somma al mana massimo (0 per le classi che non usano il mana).
   readonly mana: number;
+  // Si somma alla Fortuna di base (agisce su bottino e scoperte).
+  readonly fortuna: number;
+  // Il tetto della probabilità di aprire un forziere (la Fortuna non la porta oltre): Cavaliere 70%, Mistico 75%, Ladro 85%.
+  readonly tettoForziere: number;
   // Si moltiplica all'oro ottenuto dai mostri.
   readonly moltiplicatoreOro: number;
 }
@@ -30,6 +34,8 @@ function convalidaModificatori(dati: unknown, errori: string[]): ModificatoriCla
     difesa: numero(o, "difesa", errori, { predefinito: 0 }),
     velocita: numero(o, "velocita", errori, { predefinito: 0 }),
     mana: numero(o, "mana", errori, { predefinito: 0 }),
+    fortuna: numero(o, "fortuna", errori, { predefinito: 0 }),
+    tettoForziere: numero(o, "tettoForziere", errori, { predefinito: 0.9 }),
     moltiplicatoreOro: numero(o, "moltiplicatoreOro", errori, { predefinito: 1, min: 0 }),
   };
 }

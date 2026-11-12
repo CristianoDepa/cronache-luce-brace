@@ -3,6 +3,7 @@ import { leggiContenuto, regola } from "../../core/indice";
 import { puntoFineScontro, tipoCreatura } from "../combattimento/indice";
 import type { CalcoloIncontro } from "../foresta/indice";
 import { puntoIncontro } from "../foresta/indice";
+import { probabilitaConFortuna } from "../fortuna/indice";
 import { LIVELLI_PREDA, PARAMETRI_CACCIATORE } from "./parametri";
 import { missioneAttiva, statoCacciatore } from "./tipi";
 
@@ -24,12 +25,12 @@ export const regolaProgressoMissione = regola(puntoFineScontro, 60, (calcolo) =>
   return { ...calcolo, stato, eventi: [...calcolo.eventi, evento] };
 });
 
-// La preda: nella zona giusta, con una piccola probabilità, prende il posto di un incontro normale (potenziata, con il suo soprannome);
+// La preda: nella zona giusta, con una piccola probabilità (che la Fortuna alza), prende il posto di un incontro normale (potenziata, con il suo soprannome);
 // in quel caso il combattimento automatico non parte da solo.
 export const regolaPreda = regola(puntoIncontro, 60, (calcolo, ctx) => {
   const m = missioneAttiva(calcolo.stato);
   if (!m || m.tipo !== "preda" || m.completata || m.luogoId !== calcolo.luogoId || m.livello === undefined || m.soprannome === undefined) return calcolo;
-  if (ctx.rng.prossimo() >= PARAMETRI_CACCIATORE.probabilitaIncontro || leggiContenuto(ctx.registro, tipoCreatura, m.creaturaId) === undefined) return calcolo;
+  if (ctx.rng.prossimo() >= probabilitaConFortuna(calcolo.stato, ctx, PARAMETRI_CACCIATORE.probabilitaIncontro) || leggiContenuto(ctx.registro, tipoCreatura, m.creaturaId) === undefined) return calcolo;
   const l = LIVELLI_PREDA[m.livello];
   const soprannomeChiave = `cacciatore.soprannome.${m.soprannome}`;
   const trovata: EventoGioco = { chiave: "cacciatore.predaTrovata", parametri: { soprannomeChiave }, tono: "avviso", importante: true };

@@ -102,7 +102,7 @@ describe("gateway locale", () => {
     const testo = contenitore.dati.get("clb.partita") ?? "";
     const letto = JSON.parse(testo) as { stato: StatoGioco };
     expect(letto.stato.personaggio.nome).toBe("Aldo");
-    expect(Object.keys(letto.stato.moduli).sort()).toEqual(["azioni", "banca", "cacciatore", "citta", "classi", "combattimento", "cronache", "equipaggiamento", "inventario", "livelli", "locanda", "mana", "mura", "pozioni", "torneo", "torre", "zara"]);
+    expect(Object.keys(letto.stato.moduli).sort()).toEqual(["amuleti", "azioni", "banca", "cacciatore", "citta", "classi", "combattimento", "cronache", "equipaggiamento", "forziere", "inventario", "lapide", "livelli", "locanda", "mana", "mura", "pozioni", "scoperta", "sviluppo", "torneo", "torre", "zara"]);
   });
 
   it("un'azione dopo la scadenza del giorno applica prima il nuovo giorno", async () => {

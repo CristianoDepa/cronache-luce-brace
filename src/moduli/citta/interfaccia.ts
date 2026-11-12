@@ -14,8 +14,8 @@ const ID_SCENA_MAPPA = "scena.mappa";
 const ID_MARCATORE = "sprite.marcatore";
 const ID_PORTA_APERTA = "sprite.porta_aperta";
 const SCENA_PER_CATEGORIA: Record<string, string> = { porta: "scena.villaggio", mura: "scena.mura", piazza: "scena.villaggio" };
-// Alcuni luoghi hanno una scena propria invece di quella della loro categoria (es. la base della Torre Guinigi).
-const SCENA_PER_SITO: Record<string, string> = { torre: "scena.torre", fillungo: "scena.fillungo" };
+// Alcuni luoghi hanno una scena propria invece di quella della loro categoria (es. la base della Torre Guinigi; dalla 0.16.2 ciascuna delle sei porte).
+const SCENA_PER_SITO: Record<string, string> = { torre: "scena.torre", fillungo: "scena.fillungo", "porta-s": "scena.porta-s", "porta-so": "scena.porta-so", "porta-ne": "scena.porta-ne", "porta-e": "scena.porta-e", "porta-n": "scena.porta-n", "porta-no": "scena.porta-no" };
 
 // Le categorie della mappa: la destinazione si sceglie in due passi (categoria, poi luogo).
 const CATEGORIE: readonly { readonly id: string; readonly categoria: CategoriaSito }[] = [

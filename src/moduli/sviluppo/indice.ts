@@ -9,6 +9,10 @@ import { ID_MANA, ripristinaMana } from "../mana/indice";
 import { ID_PALUDE } from "../palude/indice";
 import { ID_LIVELLI, PARAMETRI_LIVELLI, esperienzaPerSalire, salitaDiLivello } from "../livelli/indice";
 import { ID_MURA, presenzeOggi, tipoNpc } from "../mura/indice";
+import { ID_AMULETI } from "../amuleti/indice";
+import { ID_FORTUNA } from "../fortuna/indice";
+import { ID_FORZIERE } from "../forziere/indice";
+import { AZIONI_PROVA, CONTESTI_PROVA, PADRI_PROVA, TESTI_PROVA, TITOLI_PROVA, regolaFortunaProva, statoSviluppo, vociMenuProva } from "./prove016";
 
 export const ID_SVILUPPO = "sviluppo";
 
@@ -142,23 +146,25 @@ function menu(): readonly VoceMenu[] {
   MOSTRI.forEach(({ id, modulo }, i) => {
     voci.push({ id: `sviluppo.mostro.${id}`, contesto: CONTESTO_MOSTRI, etichettaChiave: `${modulo}.creatura.${id}.breve`, tasto: TASTI_MOSTRI[i] ?? "A", ordine: i + 1, comando: { tipo: "azione", azione: { tipo: "iniziaCombattimento", dati: { creaturaId: id } } } });
   });
-  return voci;
+  return [...voci, ...vociMenuProva()];
 }
 
 const interfaccia: InterfacciaModulo = {
   // Da morti restano usabili i comandi di prova ("Passa al giorno dopo" serve proprio a rialzarsi).
-  contestiDaMorto: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`)],
+  contestiDaMorto: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
   menu: menu(),
   titoliContesto: {
     [CONTESTO]: "sviluppo.titolo",
     [CONTESTO_VAI]: "sviluppo.vai.titolo",
     [CONTESTO_MOSTRI]: "sviluppo.mostri.titolo",
+    ...TITOLI_PROVA,
     ...Object.fromEntries(CATEGORIE.map((c) => [`${CONTESTO_VAI}:${c.id}`, `sviluppo.vai.titolo`])),
   },
-  illustrazioniContesto: Object.fromEntries([CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`)].map((c) => [c, "scena.opzioni"])),
+  illustrazioniContesto: Object.fromEntries([CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA].map((c) => [c, "scena.opzioni"])),
   contestiPadre: {
     [CONTESTO_VAI]: CONTESTO,
     [CONTESTO_MOSTRI]: CONTESTO,
+    ...PADRI_PROVA,
     ...Object.fromEntries(CATEGORIE.map((c) => [`${CONTESTO_VAI}:${c.id}`, CONTESTO_VAI])),
   },
 };
@@ -166,10 +172,13 @@ const interfaccia: InterfacciaModulo = {
 export const moduloSviluppo: DefinizioneModulo = {
   id: ID_SVILUPPO,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AZIONI, ID_CITTA, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LIVELLI, ID_PALUDE],
-  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneDaiEsperienza, azioneSaliLivello],
+  dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LIVELLI, ID_PALUDE],
+  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneDaiEsperienza, azioneSaliLivello, ...AZIONI_PROVA],
+  regole: [regolaFortunaProva],
+  stato: statoSviluppo,
   testi: {
     it: {
+      ...TESTI_PROVA.it,
       "sviluppo.titolo": "Comandi di prova",
       "sviluppo.vai.titolo": "Vai a un luogo (gratis)",
       "sviluppo.mostri.titolo": "Scegli il mostro",
@@ -189,6 +198,7 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.teletrasporto": "Ti trovi altrove, senza spendere nulla (comando di prova).",
     },
     en: {
+      ...TESTI_PROVA.en,
       "sviluppo.titolo": "Test commands",
       "sviluppo.vai.titolo": "Go to a place (free)",
       "sviluppo.mostri.titolo": "Choose the monster",

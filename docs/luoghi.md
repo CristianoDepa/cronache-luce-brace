@@ -81,3 +81,15 @@ nord → nord-est 7 mov → est 7 → sud 9 → sud-ovest 6 → nord-ovest 5 →
 ## Ancora da creare (roadmap)
 
 Le quattro porte chiuse con le loro aree; la lapide e le spedizioni del cimitero; gli eventi; le altre botteghe di Via Fillungo; un luogo dove vendere gli amuleti (se serve).
+
+## Forziere (0.15.0)
+Il forziere trovato dopo una vittoria si apre con `[T]` dalla porta della zona: **Porta San Pietro** (foresta) e **Porta Sant'Anna** (palude e cimitero). La voce compare solo quando c'è un forziere da aprire.
+
+## Lapide e registro dei caduti (0.16.1)
+Morendo in una zona (foresta, palude, cimitero) l'oro perso resta in **una sola lapide** (quella dell'ultima morte). La si **trova esplorando** la zona (25%, Fortuna, al posto dell'incontro). Il **registro dei caduti** sta a **Piazza Napoleone** (`[R]`, 2 movimenti): dice se c'è una lapide a tuo nome, dove e da quanti giorni, mai l'importo. Si sposterà in una nuova zona di Lucca.
+
+## Le scene delle porte (0.16.2)
+Ogni porta ha la sua scena: **San Pietro** (foresta, vessilli verdi), **Sant'Anna** (paludi, viola), **San Jacopo alla Tomba** (valle del Serchio, blu), **Elisa** (colline, rosso), **Santa Maria** (campi, oro), **San Donato** (bosco scuro, grigio). Le ultime quattro sono proposte provvisorie finché le porte restano chiuse.
+
+## Le porte e la schermata di scoperta (0.16.3)
+Ogni porta ha una sua architettura: **San Pietro** (arco tondo, mattone rosso), **Sant'Anna** (sesto acuto, pietra scura), **San Jacopo alla Tomba** (doppia cornice, pietra chiara), **Elisa** (architrave con colonne, frontone), **Santa Maria** (arco ribassato, mattone chiaro), **San Donato** (doppio arco, pietra grigia). Le architetture sono proposte, non storiche. Trovare la lapide o un forziere in una zona mostra la schermata di scoperta con `[C]` Continua.

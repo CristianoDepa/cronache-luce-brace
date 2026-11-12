@@ -63,6 +63,11 @@ export function tipoDannoGiocatore(stato: StatoGioco, effetti: readonly EffettoS
 }
 
 // Il potenziamento dello scontro in corso, nella forma che serve alla regola di fine scontro (vuoto se non c'è).
+function scenaDi(stato: StatoGioco): { readonly scenaId?: Id } {
+  const s = statoCombattimento.leggi(stato).scontro?.scenaId;
+  return s === undefined ? {} : { scenaId: s };
+}
+
 function potenziamentoDi(stato: StatoGioco): { readonly potenziamento?: Potenziamento } {
   const p = statoCombattimento.leggi(stato).scontro?.potenziamento;
   return p ? { potenziamento: p } : {};
@@ -259,7 +264,7 @@ function concludiVittoria(
     parametri: { oro, esperienza },
     tono: "positivo",
   };
-  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "vittoria", eventi: [], ...potenziamentoDi(stato) });
+  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "vittoria", eventi: [], ...potenziamentoDi(stato), ...scenaDi(stato) });
   return esitoOk(fine.stato, [...eventi, evento, ...fine.eventi]);
 }
 
@@ -279,6 +284,6 @@ function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id
     personaggio: { ...p, hp: 0, morto: true, oro: p.oro - oroPerso },
   };
   const finale = registraStatistiche(impostaScontro(morto, null), creaturaId, { morti: 1 });
-  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato) });
+  const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato), ...scenaDi(stato), oroPerso });
   return esitoOk(fine.stato, [...eventi, { chiave: "combattimento.sconfitta", parametri: { oroPerso }, tono: "negativo" }, ...fine.eventi]);
 }

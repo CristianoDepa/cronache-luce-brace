@@ -1,18 +1,20 @@
 import type { Contesto, EventoGioco, StatoGioco } from "../../core/indice";
 import { leggiContenuto, puntoInizioGiorno, puntoStatistiche, regola } from "../../core/indice";
 import { puntoFineRound, puntoFineScontro, puntoVelocita, tipoCreatura } from "../combattimento/indice";
+import { probabilitaConFortuna, puntoFortunaBonus } from "../fortuna/indice";
 import { aggiungiOggetto } from "../inventario/indice";
 import { manaMassimo } from "../mana/indice";
-import { POZIONI, idPozione } from "./dati";
+import { POZIONI, bonusPozione, idPozione } from "./dati";
+import type { Statistica } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
 import { statoPozioni } from "./tipi";
 
-// Il bonus di una pozione di effetto attiva (forza, destrezza o corazza), se c'è e non è scaduta.
-function bonusAttivo(stato: StatoGioco, statistica: "forza" | "velocita" | "difesa"): number {
+// Il bonus di una pozione di effetto attiva (forza, destrezza, corazza o fortuna), se c'è e non è scaduta.
+function bonusAttivo(stato: StatoGioco, statistica: Statistica): number {
   const e = statoPozioni.leggi(stato).effetto;
   if (!e || e.restanti <= 0) return 0;
   const def = POZIONI.find((p) => p.tipo === e.tipo);
-  return def?.effetto.genere === "statistica" && def.effetto.statistica === statistica ? PARAMETRI_POZIONI.bonusEffetto : 0;
+  return def?.effetto.genere === "statistica" && def.effetto.statistica === statistica ? bonusPozione(e.tipo) : 0;
 }
 
 export const regolaStatistichePozioni = regola(puntoStatistiche, 70, (calcolo) => ({
@@ -21,6 +23,9 @@ export const regolaStatistichePozioni = regola(puntoStatistiche, 70, (calcolo) =
 }));
 
 export const regolaVelocitaPozioni = regola(puntoVelocita, 70, (calcolo) => ({ ...calcolo, velocita: calcolo.velocita + bonusAttivo(calcolo.stato, "velocita") }));
+
+// La pozione della fortuna alza il bonus della Fortuna (bottino e scoperte), non il combattimento.
+export const regolaFortunaPozioni = regola(puntoFortunaBonus, 70, (calcolo) => ({ ...calcolo, fortuna: calcolo.fortuna + bonusAttivo(calcolo.stato, "fortuna") }));
 
 // Ogni turno di combattimento (anche l'ultimo, anche una fuga fallita) scala di uno la durata dell'effetto; a zero finisce.
 export const regolaTurnoPozioni = regola(puntoFineRound, 50, (calcolo) => {
@@ -48,7 +53,7 @@ export function pozioneCasuale(stato: StatoGioco, ctx: Contesto): (typeof POZION
 export const regolaBottinoPozioni = regola(puntoFineScontro, 90, (calcolo, ctx: Contesto) => {
   const creatura = leggiContenuto(ctx.registro, tipoCreatura, calcolo.creaturaId);
   if (calcolo.esito !== "vittoria" || creatura?.nonLetale) return calcolo;
-  if (ctx.rng.prossimo() >= PARAMETRI_POZIONI.probabilitaBottino) return calcolo;
+  if (ctx.rng.prossimo() >= probabilitaConFortuna(calcolo.stato, ctx, PARAMETRI_POZIONI.probabilitaBottino)) return calcolo;
   const scelta = pozioneCasuale(calcolo.stato, ctx);
   const nomeChiave = `pozioni.nome.${scelta.tipo}`;
   const con = aggiungiOggetto(calcolo.stato, idPozione(scelta.tipo));

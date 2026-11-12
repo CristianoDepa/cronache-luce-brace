@@ -10,7 +10,7 @@ export const CLASSI: readonly VoceContenuto[] = [
     dati: {
       nomeChiave: "classi.classe.cavaliere",
       descrizioneChiave: "classi.classe.cavaliere.descrizione",
-      modificatori: { hpMax: 10, difesa: 2, velocita: -4 },
+      modificatori: { hpMax: 10, difesa: 2, velocita: -4, fortuna: 2, tettoForziere: 0.7 },
     },
   },
   {
@@ -19,7 +19,7 @@ export const CLASSI: readonly VoceContenuto[] = [
     dati: {
       nomeChiave: "classi.classe.mistico",
       descrizioneChiave: "classi.classe.mistico.descrizione",
-      modificatori: { hpMax: -2, forza: 3, mana: 10 },
+      modificatori: { hpMax: -2, forza: 3, mana: 10, fortuna: 3, tettoForziere: 0.75 },
     },
   },
   {
@@ -28,7 +28,7 @@ export const CLASSI: readonly VoceContenuto[] = [
     dati: {
       nomeChiave: "classi.classe.ladro",
       descrizioneChiave: "classi.classe.ladro.descrizione",
-      modificatori: { hpMax: 4, velocita: 5, moltiplicatoreOro: 1.25 },
+      modificatori: { hpMax: 4, velocita: 5, moltiplicatoreOro: 1.25, fortuna: 5, tettoForziere: 0.85 },
     },
   },
 ];

@@ -1,5 +1,6 @@
 import type { DefinizioneModulo } from "../core/indice";
 import { moduloAbilita } from "./abilita/indice";
+import { moduloAmuleti } from "./amuleti/indice";
 import { moduloAzioni } from "./azioni/indice";
 import { moduloCitta } from "./citta/indice";
 import { moduloClassi } from "./classi/indice";
@@ -13,6 +14,11 @@ import { moduloMura } from "./mura/indice";
 import { moduloSviluppo } from "./sviluppo/indice";
 import { moduloInterfaccia } from "./interfaccia/indice";
 import { moduloLuoghi } from "./luoghi/indice";
+import { moduloForziere } from "./forziere/indice";
+import { moduloLapide } from "./lapide/indice";
+import { moduloRegistro } from "./registro/indice";
+import { moduloScoperta } from "./scoperta/indice";
+import { moduloFortuna } from "./fortuna/indice";
 import { moduloMana } from "./mana/indice";
 import { moduloGilde } from "./gilde/indice";
 import { moduloLivelli } from "./livelli/indice";
@@ -30,6 +36,7 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloInterfaccia,
   moduloCombattimento,
   moduloMana,
+  moduloFortuna,
   moduloClassi,
   moduloAbilita,
   moduloLuoghi,
@@ -42,6 +49,11 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloPozioni,
   moduloTorre,
   moduloCacciatore,
+  moduloForziere,
+  moduloLapide,
+  moduloRegistro,
+  moduloScoperta,
+  moduloAmuleti,
   moduloZara,
   moduloCronache,
   moduloTorneo,

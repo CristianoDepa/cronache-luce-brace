@@ -40,9 +40,9 @@ describe("livelli: calcoli puri", () => {
   });
 
   it("crescita per classe fino al 4° livello (tre salite)", () => {
-    expect(guadagniTotali(CRESCITA["cavaliere"], 4)).toEqual({ hp: 15, forza: 3, difesa: 1, velocita: 0, mana: 0 }); // Cavaliere +5 HP a livello
-    expect(guadagniTotali(CRESCITA["mistico"], 4)).toEqual({ hp: 9, forza: 0, difesa: 3, velocita: 1, mana: 6 }); // mana +2 a ogni livello
-    expect(guadagniTotali(CRESCITA["ladro"], 4)).toEqual({ hp: 12, forza: 1, difesa: 0, velocita: 3, mana: 0 });
+    expect(guadagniTotali(CRESCITA["cavaliere"], 4)).toEqual({ hp: 15, forza: 3, difesa: 1, velocita: 0, mana: 0, fortuna: 2, scasso: 0 }); // Cavaliere +5 HP a livello
+    expect(guadagniTotali(CRESCITA["mistico"], 4)).toEqual({ hp: 9, forza: 0, difesa: 3, velocita: 1, mana: 6, fortuna: 2, scasso: 0 }); // mana +2 a ogni livello
+    expect(guadagniTotali(CRESCITA["ladro"], 4)).toEqual({ hp: 12, forza: 1, difesa: 0, velocita: 3, mana: 0, fortuna: 2, scasso: 3 });
     expect([2, 3, 4, 5].map((l) => guadagnoAlLivello(CRESCITA["mistico"], l).mana)).toEqual([2, 2, 2, 2]); // +2 fisso a ogni livello
     expect(guadagnoAlLivello(undefined, 3)).toEqual(NESSUN_GUADAGNO);
     expect(guadagnoAlLivello(CRESCITA["cavaliere"], 1)).toEqual(NESSUN_GUADAGNO);
@@ -109,7 +109,7 @@ describe("la salita di livello in gilda (livelli senza duello)", () => {
     expect(r.stato.personaggio.oro).toBe(40); // retta di 60
     expect(r.stato.personaggio.hp).toBe(prima.personaggio.hp + 3);
     expect(manaMassimo(r.stato, ctx)).toBe(12);
-    expect(chiavi(r.eventi)).toEqual(["gilde.retta", "livelli.salito", "livelli.guadagno.hp", "livelli.guadagno.difesa", "livelli.guadagno.mana"]);
+    expect(chiavi(r.eventi)).toEqual(["gilde.retta", "livelli.salito", "livelli.guadagno.hp", "livelli.guadagno.difesa", "livelli.guadagno.mana", "livelli.guadagno.fortuna"]);
     expect(traduciEvento(registro, "it", r.eventi[0]!)).toBe("Paghi la retta: 60 monete.");
     expect(eseguiOk(pg("ladro", 2, 300, gildaDi("ladro"), 150), sali, ctx).stato.personaggio.oro).toBe(0); // retta di 150 al livello 3
   });

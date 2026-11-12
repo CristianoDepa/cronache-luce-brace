@@ -2,6 +2,8 @@
 export const PARAMETRI_POZIONI = {
   // Pozioni di effetto (forza, destrezza, corazza): +bonus alla statistica per durataBase + d(durataDado) turni di combattimento.
   bonusEffetto: 2,
+  // La pozione della fortuna dà un bonus più alto (la Fortuna è una statistica piccola: classe 2-5, +1 ogni 2 livelli).
+  bonusFortuna: 5,
   durataBase: 5,
   durataDado: 6,
   // Scorta dello Speziale: ogni giorno ha da tipiMin a tipiMax pozioni DIVERSE (a caso tra le sei), ciascuna in quantità tra scortaMin e scortaMax.

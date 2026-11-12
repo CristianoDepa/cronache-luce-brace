@@ -15,3 +15,14 @@ export interface CalcoloIncontro {
 }
 
 export const puntoIncontro = definisciPuntoRegola<CalcoloIncontro>("foresta.incontro");
+
+// Punto di estensione: PRIMA di scegliere la creatura, un'esplorazione può finire con una scoperta al posto dell'incontro (es. la lapide).
+// Chi trova qualcosa mette trovato = true e cambia lo stato: l'esplorazione costa comunque 1 azione e non parte nessuno scontro.
+export interface CalcoloScoperta {
+  readonly stato: StatoGioco;
+  readonly luogoId: Id;
+  readonly trovato: boolean;
+  readonly eventi: readonly EventoGioco[];
+}
+
+export const puntoScoperta = definisciPuntoRegola<CalcoloScoperta>("foresta.scoperta");

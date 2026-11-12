@@ -44,6 +44,10 @@ export interface CalcoloFineScontro {
   readonly eventi: readonly EventoGioco[];
   // Se lo scontro era potenziato (es. una preda con nome): serve a chi conta le missioni.
   readonly potenziamento?: Potenziamento;
+  // La scena del luogo dove si è combattuto (es. "scena.palude"): serve a chi dà bottino diverso per zona. Nelle vittorie e nelle morti.
+  readonly scenaId?: Id;
+  // Le monete perse morendo (solo nelle sconfitte letali): serve alla lapide che le custodisce.
+  readonly oroPerso?: number;
 }
 
 // Fine di ogni round (anche l'ultimo, anche una fuga fallita): serve a contare i turni di combattimento (es. gli effetti delle pozioni).

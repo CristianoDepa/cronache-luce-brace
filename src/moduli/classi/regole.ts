@@ -1,6 +1,7 @@
 import type { Contesto, StatoGioco } from "../../core/indice";
 import { leggiContenuto, puntoStatistiche, regola } from "../../core/indice";
 import { puntoOro, puntoVelocita } from "../combattimento/indice";
+import { puntoFortunaBase } from "../fortuna/indice";
 import { puntoManaMassimo } from "../mana/indice";
 import type { Classe } from "./tipi";
 import { statoClassi, tipoClasse } from "./tipi";
@@ -36,6 +37,12 @@ export const regolaManaClasse = regola(puntoManaMassimo, 100, (calcolo, ctx) => 
   const classe = classeDelGiocatore(calcolo.stato, ctx);
   if (!classe) return calcolo;
   return { ...calcolo, mana: calcolo.mana + classe.modificatori.mana };
+});
+
+// Fortuna di base: quella della classe (la crescita con i livelli la aggiunge il modulo livelli, dai suoi dati).
+export const regolaFortunaClasse = regola(puntoFortunaBase, 100, (calcolo, ctx) => {
+  const classe = classeDelGiocatore(calcolo.stato, ctx);
+  return classe ? { ...calcolo, fortuna: calcolo.fortuna + classe.modificatori.fortuna } : calcolo;
 });
 
 export const regolaOroClasse = regola(puntoOro, 100, (calcolo, ctx) => {

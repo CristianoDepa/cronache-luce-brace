@@ -95,4 +95,17 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Tornei: iscrizione, premi, recupero, fattori dei turni, avversario | `src/moduli/torneo/parametri.ts` | 10/livello, 1,5×1,5×3, 30%, 0,8/1/1,2, 30+12L HP e 6+1,5L forza |
 | Comando di prova "Avvia il torneo" | `[O]` → `[V]` → `[9]` (con `?dev=1`) | passa alla settimana seguente |
 | Tornei dalla 0.14.1: recupero tra i turni (HP 40%, mana 50%) | `src/moduli/torneo/parametri.ts` | `recuperoHp: 0.4`, `recuperoMana: 0.5` |
+| Fortuna: peso per punto e tetto | `src/moduli/fortuna/parametri.ts` | 0,03 (+3%), 0,9 |
+| Fortuna di base per classe | `src/moduli/classi/dati.ts` (`fortuna`) | 2 / 3 / 5 |
+| Fortuna: crescita con i livelli (ritmo a rotazione, uguale per tutte le classi) | `src/moduli/livelli/dati.ts` (`fortuna`) | `[1, 0]` = +1 ai livelli pari |
+| Lapide: quota recuperata (base e tetto), probabilità di trovarla esplorando, scena delle zone | `src/moduli/lapide/parametri.ts` | 50%, 75%, 25% (provvisoria) |
+| Comandi di prova nuovi (`?dev=1` → `[O]` → `[V]`) | `[A]` amuleto, `[B]` forziere, `[C]` Fortuna 20 | acceso/spento |
+| Tasto nuovo: registro dei caduti `[R]` a Piazza Napoleone | `src/moduli/citta/dati.ts` (luogo `registro`) | sempre visibile; la lapide NON ha più tasti |
+| Pozione della fortuna: bonus (durata come le altre) | `src/moduli/pozioni/parametri.ts` → `bonusFortuna` | +5 |
+| Forziere: probabilità, oro e porta per zona; apertura base; probabilità di pozione | `src/moduli/forziere/parametri.ts` | 1/2/3%, oro 20-50, 50-120, 90-200; 60%; 30% |
+| Scasso del Ladro (punti percentuali per livello, a rotazione) | `src/moduli/livelli/dati.ts` (`scasso`) | `[1]` = +1 per livello |
+| Tetto di Fortuna per l'apertura del forziere, per classe | `src/moduli/classi/dati.ts` (`tettoForziere`) | 0,70 / 0,75 / 0,85 |
+| Amuleti: bonus per qualità, moltiplicatore HP, probabilità di bottino, qualità delle fonti, compenso a zaino pieno | `src/moduli/amuleti/parametri.ts` | +2/+4/+6, x3, 0,5%, bronzo/argento/oro, 60/150/400 |
+| Manuale di gioco (genera `docs/manuale.md`) | `CLB_MANUALE=1 npx vitest run strumenti/manuale` | |
+| Tasto nuovo | Forziere `[T]` alle porte di San Pietro e Sant'Anna (solo se c'è un forziere) | |
 

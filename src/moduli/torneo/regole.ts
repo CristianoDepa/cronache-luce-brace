@@ -1,5 +1,6 @@
 import { calcolaStatistiche, puntoInizioGiorno, regola } from "../../core/indice";
 import type { EventoGioco } from "../../core/indice";
+import { PARAMETRI_AMULETI, consegnaAmuleto } from "../amuleti/indice";
 import { puntoMovimento } from "../citta/indice";
 import { puntoFineScontro } from "../combattimento/indice";
 import { aggiungiMana, manaAttuale, manaMassimo } from "../mana/indice";
@@ -39,8 +40,9 @@ export const regolaFineDuelloTorneo = regola(puntoFineScontro, 70, (calcolo, ctx
   if (turno === PARAMETRI_TORNEO.turni - 1) {
     nuovo = conVoceAlbo(nuovo, torneo, (v) => ({ ...v, vittorie: v.vittorie + 1 }));
     const pozione = consegnaPozioni(stato, ctx, 1);
-    stato = pozione.stato;
-    eventi.push({ chiave: "torneo.campione", parametri: { delChiave: `torneo.del.${torneo}` }, tono: "speciale", importante: true }, ...pozione.eventi);
+    const amuleto = consegnaAmuleto(pozione.stato, ctx, PARAMETRI_AMULETI.fonti.torneoCampione);
+    stato = amuleto.stato;
+    eventi.push({ chiave: "torneo.campione", parametri: { delChiave: `torneo.del.${torneo}` }, tono: "speciale", importante: true }, ...pozione.eventi, ...amuleto.eventi);
   }
   return { ...calcolo, stato: statoTorneo.scrivi(stato, nuovo), eventi: [...calcolo.eventi, ...eventi] };
 });

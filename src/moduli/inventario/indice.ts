@@ -1,5 +1,6 @@
 import type { DefinizioneModulo } from "../../core/indice";
 import { VERSIONE_API } from "../../core/indice";
+import { ILLUSTRAZIONI_INVENTARIO } from "./grafica";
 import { interfacciaInventario } from "./interfaccia";
 import { TESTI_INVENTARIO } from "./testi";
 import { ID_INVENTARIO, statoInventario, tipoOggettoInventario } from "./tipi";
@@ -16,6 +17,7 @@ export const moduloInventario: DefinizioneModulo = {
   versioneApi: VERSIONE_API,
   dipende: [],
   tipiContenuto: [tipoOggettoInventario],
+  contenuti: ILLUSTRAZIONI_INVENTARIO,
   testi: TESTI_INVENTARIO,
   stato: statoInventario,
   interfaccia: interfacciaInventario,

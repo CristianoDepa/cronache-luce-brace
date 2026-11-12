@@ -96,7 +96,7 @@ describe("scorta dello Speziale", () => {
       }
       for (const t of TIPI.filter((x) => !oggi.includes(x))) expect(scortaDelGiorno(s, t, ctx)).toBe(0);
     }
-    expect(visti.size).toBe(5); // il Cavaliere non ha mana: prima o poi compaiono tutte le altre cinque
+    expect(visti.size).toBe(6); // il Cavaliere non ha mana: prima o poi compaiono tutte le altre sei
     expect(visti.has("mana")).toBe(false); // ma mai la pozione di mana
     for (const n of [1, 2, 3]) expect((conteggio[n] ?? 0) / GIORNI, `${n} tipi`).toBeGreaterThan(0.25); // le tre quantità di tipi sono tutte frequenti
     expect(pezzi / tipi).toBeGreaterThan(1.35);
@@ -386,7 +386,7 @@ describe("effetti delle pozioni: turni nascosti, messaggio di fine, mana solo pe
     expect(visteDa("cavaliere").has("mana")).toBe(false);
     expect(visteDa("ladro").has("mana")).toBe(false);
     expect(visteDa("mistico").has("mana")).toBe(true);
-    expect(visteDa("mistico").size).toBe(6);
+    expect(visteDa("mistico").size).toBe(7);
   });
 });
 

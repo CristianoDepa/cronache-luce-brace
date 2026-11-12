@@ -10,8 +10,8 @@ import { TESTI_FORESTA } from "./testi";
 import { ID_FORESTA } from "./tipi";
 
 export { ID_FORESTA } from "./tipi";
-export { puntoIncontro } from "./punti";
-export type { CalcoloIncontro } from "./punti";
+export { puntoIncontro, puntoScoperta } from "./punti";
+export type { CalcoloIncontro, CalcoloScoperta } from "./punti";
 export { creatureIncontrabili, pesiIncontro } from "./azioni";
 
 // L'esplorazione parte direttamente dalla Porta San Pietro (dalla 0.13.0 non c'è più una schermata "La Foresta" intermedia).

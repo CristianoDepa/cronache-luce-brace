@@ -2,6 +2,7 @@ import type { Contesto, DefinizioneModulo, EventoGioco, InterfacciaModulo, Panne
 import { VERSIONE_API, calcolaStatistiche, elencaContenuti, leggiContenuto, puntoInizioGiorno, puntoStatistiche, regola } from "../../core/indice";
 import { statoClassi, ID_CLASSI, contestoClasse, tipoClasse } from "../classi/indice";
 import { ID_COMBATTIMENTO, puntoFineScontro, puntoVelocita, tipoCreatura } from "../combattimento/indice";
+import { ID_FORTUNA, puntoFortunaBase } from "../fortuna/indice";
 import { ID_MANA, puntoManaMassimo, statoMana } from "../mana/indice";
 import type { Crescita, Guadagni } from "./calcolo";
 import { NESSUN_GUADAGNO, esperienzaPerSalire, guadagnoAlLivello, guadagniTotali, penalitaEsperienza, rettaPerLivello } from "./calcolo";
@@ -31,7 +32,7 @@ export function puoSalire(stato: StatoGioco): boolean {
   return p.livello < PARAMETRI_LIVELLI.livelloMax && p.esperienza >= esperienzaPerSalire(p.livello);
 }
 
-const GUADAGNI_ORDINATI = ["hp", "forza", "difesa", "velocita", "mana"] as const;
+const GUADAGNI_ORDINATI = ["hp", "forza", "difesa", "velocita", "mana", "fortuna", "scasso"] as const;
 
 // Le righe "HP massimi +3", "Forza +1"... per i guadagni diversi da zero.
 export function righeGuadagni(g: Guadagni): RigaVista[] {
@@ -91,6 +92,8 @@ const regolaStatisticheLivello = regola(puntoStatistiche, 90, (calcolo) => {
 });
 const regolaVelocitaLivello = regola(puntoVelocita, 90, (calcolo) => ({ ...calcolo, velocita: calcolo.velocita + guadagniDelGiocatore(calcolo.stato).velocita }));
 const regolaManaLivello = regola(puntoManaMassimo, 90, (calcolo) => ({ ...calcolo, mana: calcolo.mana + guadagniDelGiocatore(calcolo.stato).mana }));
+// La Fortuna di base cresce con i livelli (+1 ogni due): si calcola come gli altri guadagni, dal livello e dalla classe.
+const regolaFortunaLivello = regola(puntoFortunaBase, 90, (calcolo) => ({ ...calcolo, fortuna: calcolo.fortuna + guadagniDelGiocatore(calcolo.stato).fortuna }));
 // Morire contro una creatura (non un duello non letale) costa una parte dell'esperienza, mai sotto la soglia del livello attuale.
 const regolaPenalitaMorte = regola(puntoFineScontro, 80, (calcolo, ctx) => {
   const creatura = leggiContenuto(ctx.registro, tipoCreatura, calcolo.creaturaId);
@@ -116,7 +119,11 @@ function righeCrescita(crescita: Crescita): RigaVista[] {
   const bonus = Object.entries(crescita.bonus ?? {}).flatMap(([livello, g]): RigaVista[] =>
     STATISTICHE_CRESCITA.flatMap((k): RigaVista[] => (g[k] ? [{ chiave: `livelli.classe.bonus.${k}`, parametri: { livello: Number(livello), n: g[k] ?? 0 } }] : [])),
   );
-  return [...ogni, ...mana, ...bonus];
+  const sommaF = (crescita.fortuna ?? []).reduce((s, n) => s + n, 0);
+  const sommaS = (crescita.scasso ?? []).reduce((s, n) => s + n, 0);
+  const scasso: RigaVista[] = sommaS > 0 ? [{ chiave: "livelli.classe.scasso", parametri: { n: sommaS, ogni: crescita.scasso?.length ?? 1 } }] : [];
+  const fortuna: RigaVista[] = sommaF > 0 ? [{ chiave: "livelli.classe.fortuna", parametri: { n: sommaF, ogni: crescita.fortuna?.length ?? 1 } }] : [];
+  return [...ogni, ...mana, ...fortuna, ...scasso, ...bonus];
 }
 
 const interfacciaLivelli: InterfacciaModulo = {
@@ -138,15 +145,19 @@ const interfacciaLivelli: InterfacciaModulo = {
       const c = CRESCITA[id];
       return c ? [{ titoloChiave: "livelli.classe.titolo", contesti: [contestoClasse(id)], righe: righeCrescita(c) }] : [];
     });
-    return [{ titoloChiave: "livelli.scheda.titolo", contesti: [CONTESTO_INFO_PERSONAGGIO], righe: [riga] }, ...crescite, ...pannelloCrescitaClasse(stato)];
+    // Il Ladro ha anche una skill di scasso nelle Statistiche (si somma alla probabilità di aprire i forzieri).
+    const scasso: PannelloVista[] = crescitaDelGiocatore(stato)?.scasso
+      ? [{ titoloChiave: "interfaccia.scheda.statistiche", contesti: [CONTESTO_INFO_PERSONAGGIO], righe: [{ chiave: "livelli.scheda.scasso", parametri: { n: guadagniDelGiocatore(stato).scasso } }] }]
+      : [];
+    return [{ titoloChiave: "livelli.scheda.titolo", contesti: [CONTESTO_INFO_PERSONAGGIO], righe: [riga] }, ...crescite, ...pannelloCrescitaClasse(stato), ...scasso];
   },
 };
 
 export const moduloLivelli: DefinizioneModulo = {
   id: ID_LIVELLI,
   versioneApi: VERSIONE_API,
-  dipende: [ID_CLASSI, ID_MANA, ID_COMBATTIMENTO],
-  regole: [regolaStatisticheLivello, regolaVelocitaLivello, regolaManaLivello, regolaPenalitaMorte, regolaNuovoGiorno],
+  dipende: [ID_CLASSI, ID_FORTUNA, ID_MANA, ID_COMBATTIMENTO],
+  regole: [regolaStatisticheLivello, regolaVelocitaLivello, regolaManaLivello, regolaFortunaLivello, regolaPenalitaMorte, regolaNuovoGiorno],
   testi: {
     it: {
       "livelli.scheda.titolo": "Livello",
@@ -157,6 +168,9 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.classe.ogni.velocita": "Ogni livello: velocità +{n}",
       "livelli.classe.mana": "Mana: +{a} e +{b} a livelli alterni",
       "livelli.classe.manaFisso": "Ogni livello: mana +{a}",
+      "livelli.classe.fortuna": "Fortuna: +{n} ogni {ogni} livelli",
+      "livelli.classe.scasso": "Scasso: +{n}% ogni livello",
+      "livelli.scheda.scasso": "Scasso: +{n}%",
       "livelli.classe.bonus.hp": "Al livello {livello}: HP massimi +{n}",
       "livelli.classe.bonus.forza": "Al livello {livello}: forza +{n}",
       "livelli.classe.bonus.difesa": "Al livello {livello}: difesa +{n}",
@@ -172,6 +186,8 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.guadagno.difesa": "Difesa +{n}",
       "livelli.guadagno.velocita": "Velocità +{n}",
       "livelli.guadagno.mana": "Mana +{n}",
+      "livelli.guadagno.fortuna": "Fortuna +{n}",
+      "livelli.guadagno.scasso": "Scasso +{n}%",
     },
     en: {
       "livelli.scheda.titolo": "Level",
@@ -182,6 +198,9 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.classe.ogni.velocita": "Every level: speed +{n}",
       "livelli.classe.mana": "Mana: +{a} and +{b} on alternate levels",
       "livelli.classe.manaFisso": "Every level: mana +{a}",
+      "livelli.classe.fortuna": "Luck: +{n} every {ogni} levels",
+      "livelli.classe.scasso": "Lockpicking: +{n}% every level",
+      "livelli.scheda.scasso": "Lockpicking: +{n}%",
       "livelli.classe.bonus.hp": "At level {livello}: max HP +{n}",
       "livelli.classe.bonus.forza": "At level {livello}: strength +{n}",
       "livelli.classe.bonus.difesa": "At level {livello}: defense +{n}",
@@ -197,6 +216,8 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.guadagno.difesa": "Defense +{n}",
       "livelli.guadagno.velocita": "Speed +{n}",
       "livelli.guadagno.mana": "Mana +{n}",
+      "livelli.guadagno.fortuna": "Luck +{n}",
+      "livelli.guadagno.scasso": "Lockpicking +{n}%",
     },
   },
   stato: statoLivelli,

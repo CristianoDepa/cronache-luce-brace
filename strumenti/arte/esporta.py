@@ -2,7 +2,7 @@ import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from quadro import *
-import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i
 
 SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
 INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
@@ -28,6 +28,9 @@ lp = scene_c.lupo(); rt = scene_c.ratto()
 modulo("combattimento", "ILLUSTRAZIONI_COMBATTIMENTO", [scene_c.combattimento().esporta("scena.combattimento"), scene_c.tomo().esporta("scena.tomo"), scene_c.icona_taglio().esporta("icona.taglio"), scene_c.icona_contundente().esporta("icona.contundente"), scene_c.icona_perforante().esporta("icona.perforante"), scene_c.icona_magico().esporta("icona.magico"), scene_c.segno_piu().esporta("segno.piu"), scene_c.segno_meno().esporta("segno.meno"), *[scene_c.stecche(n).esporta(f"stecche.{n}") for n in range(1, 6)], rt.esporta("sprite.ratto"), lp.esporta("sprite.lupo"), scene_c.orco().esporta("sprite.orco"), scene_c.goblin().esporta("sprite.goblin")])
 modulo("equipaggiamento", "ILLUSTRAZIONI_EQUIPAGGIAMENTO", [scene_b.armeria().esporta("scena.armeria"), scene_b.sartoria().esporta("scena.sartoria")])
 modulo("guaritore", "ILLUSTRAZIONI_GUARITORE", [scene_c.guaritore().esporta("scena.guaritore")])
+modulo("scoperta", "ILLUSTRAZIONI_SCOPERTA", [scene_i.lapide().esporta("sprite.lapide"), scene_i.forziere().esporta("sprite.forziere")])
+modulo("registro", "ILLUSTRAZIONI_REGISTRO", [scene_h.registro().esporta("scena.registro")])
+modulo("inventario", "ILLUSTRAZIONI_INVENTARIO", [scene_h.zaino().esporta("scena.zaino")])
 modulo("pozioni", "ILLUSTRAZIONI_POZIONI", [scene_c.speziale().esporta("scena.speziale")])
 modulo("torneo", "ILLUSTRAZIONI_TORNEO", [*[scene_h.gladiatore(t).esporta(f"sprite.gladiatore.{t}") for t in ("retiario", "mirmillone", "trace", "secutor")], scene_h.arena().esporta("scena.arena"), scene_h.stanza_trofei().esporta("scena.trofei"), scene_h.targa().esporta("sprite.targa"), *[scene_h.coppa(n, True).esporta(f"coppa.{n}") for n in range(4)], *[scene_h.coppa(n, False).esporta(f"coppa.{n}.vuota") for n in range(4)], *[scene_h.cifra(n).esporta(f"cifra.{n}") for n in range(10)]])
 modulo("cronache", "ILLUSTRAZIONI_CRONACHE", [scene_h.stamperia().esporta("scena.stamperia")])
@@ -38,7 +41,7 @@ modulo("banca", "ILLUSTRAZIONI_BANCA", [scene_c.banca().esporta("scena.banca")])
 modulo("locanda", "ILLUSTRAZIONI_LOCANDA", [scene_c.locanda().esporta("scena.locanda")])
 npc = scene_c.npc()
 modulo("mura", "ILLUSTRAZIONI_MURA", [mura.esporta("scena.mura")] + [npc[n].esporta(f"sprite.npc.{n}") for n in ["beatrice", "anselmo", "ginevra", "tobia", "lorenzo", "zita"]])
-modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")])
+modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")] + [scene_i.porta(n).esporta("scena.porta-" + s) for n, s in (("san-pietro", "s"), ("sant-anna", "so"), ("san-jacopo", "ne"), ("elisa", "e"), ("santa-maria", "n"), ("san-donato", "no"))])
 cg = scene_e.capogilda()
 modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")])
 modulo("palude", "ILLUSTRAZIONI_PALUDE", [scene_f.palude().esporta("scena.palude"), scene_f.cimitero().esporta("scena.cimitero")] + [f().esporta(f"sprite.{n}") for n, f in scene_f.MOSTRI.items()])

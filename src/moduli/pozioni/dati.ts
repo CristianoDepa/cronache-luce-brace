@@ -1,8 +1,8 @@
 import type { VoceContenuto } from "../../core/indice";
 import { PARAMETRI_POZIONI } from "./parametri";
 
-export type TipoPozione = "forza" | "destrezza" | "corazza" | "mana" | "curaLeggera" | "curaRobusta";
-export type Statistica = "forza" | "velocita" | "difesa";
+export type TipoPozione = "forza" | "destrezza" | "corazza" | "fortuna" | "mana" | "curaLeggera" | "curaRobusta";
+export type Statistica = "forza" | "velocita" | "difesa" | "fortuna";
 
 // Una pozione: cosa fa e quanto pesa nel bottino. Il prezzo delle cure dipende dal livello (vedi prezzoPozione).
 export interface DefinizionePozione {
@@ -20,6 +20,7 @@ export const POZIONI: readonly DefinizionePozione[] = [
   { tipo: "forza", effetto: { genere: "statistica", statistica: "forza" }, pesoBottino: 10 },
   { tipo: "destrezza", effetto: { genere: "statistica", statistica: "velocita" }, pesoBottino: 10 },
   { tipo: "corazza", effetto: { genere: "statistica", statistica: "difesa" }, pesoBottino: 10 },
+  { tipo: "fortuna", effetto: { genere: "statistica", statistica: "fortuna" }, pesoBottino: 10 },
 ];
 
 export const FACCE_CURA = 6;
@@ -34,6 +35,13 @@ export function prezzoPozione(tipo: TipoPozione, livello: number): number {
   const p = definizione(tipo);
   if (p.effetto.genere === "cura") return Math.round(livello * p.effetto.dadi * ((FACCE_CURA + 1) / 2) * PARAMETRI_POZIONI.moltiplicatorePrezzoCura);
   return p.effetto.genere === "mana" ? PARAMETRI_POZIONI.prezzoMana : PARAMETRI_POZIONI.prezzoEffetto;
+}
+
+// Il bonus di una pozione di effetto (0 per cure e mana): +2 forza, destrezza e corazza, +5 la fortuna. Un solo posto per i due usi: statistiche e riquadro.
+export function bonusPozione(tipo: TipoPozione): number {
+  const e = definizione(tipo).effetto;
+  if (e.genere !== "statistica") return 0;
+  return e.statistica === "fortuna" ? PARAMETRI_POZIONI.bonusFortuna : PARAMETRI_POZIONI.bonusEffetto;
 }
 
 // Le pozioni sono oggetti dello zaino: nome e descrizione nei testi.

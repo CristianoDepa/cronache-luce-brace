@@ -763,3 +763,42 @@ Nessuna modifica al nucleo: due moduli nuovi e piccole estensioni additive in `c
 ## 43. Rifiniture dei tornei (0.14.2)
 Titoli ricavati dall'albo (nessun campo `titolo` nello stato); `aspetto` nello stato per evitare lo stesso gladiatore due turni di fila; le creature possono dichiarare `gruppoStatistiche` e la tabella delle statistiche somma i membri del gruppo in una riga (anche per le voci vecchie con l'id del gruppo).
 
+## 44. Fortuna, forziere e amuleti (0.15.0)
+- **`fortuna`** (dipende solo dal nucleo): punti di regola `puntoFortunaBase` (classe, livelli) e `puntoFortunaBonus` (pozioni, amuleti); `fortunaTotale`, `conFortuna(p, f)` (funzione pura: +3% per punto, tetto 90%, non scende mai) e `probabilitaConFortuna(stato, ctx, p)`. Pannello nella scheda. Nessuno stato.
+- **`classi`** aggancia la Fortuna di base (modificatore `fortuna`; dalla 0.16.0 la crescita con i livelli la aggiunge `livelli`, vedi §45); nuovo modificatore `scasso` (bonus di apertura, Ladro 0,25).
+- **`pozioni`**: settima pozione `fortuna` (statistica `fortuna`, `bonusFortuna` 5) con regola su `puntoFortunaBonus`; la probabilità del bottino passa da `probabilitaConFortuna`; l'interfaccia dello zaino ignora gli slot che non contengono pozioni (`tipoDaId`); le voci `pozioni.usa.N` sono alternative (`zaino.N`) alle voci `amuleti.indossa.N`.
+- **`combattimento`**: `CalcoloFineScontro.scenaId` (solo nelle vittorie) permette di dare bottino diverso per zona senza che il modulo conosca le zone.
+- **`forziere`** (dipende da classi, combattimento, fortuna, inventario, pozioni): stato `{ zona }` (forziere non ancora aperto), regola di fine scontro (comparsa per zona), azione `apriForziere`, voci di menu `T` per ogni porta (nascoste se il forziere non è di quella porta), pannello promemoria.
+- **`amuleti`** (dipende da combattimento, fortuna, inventario, mana): 18 oggetti dello zaino (`amuleto.<tipo>.<qualita>`), stato `{ indossato }`, azione `indossaAmuleto`, regole su statistiche, velocità, mana massimo, `puntoFortunaBonus` e bottino dei mostri; `consegnaAmuleto(stato, ctx, qualita)` usata da `cacciatore` (prede pericolose) e `torneo` (campione).
+- **Strumenti:** scena `scena.zaino` in `strumenti/arte/scene_h.py` (esportata in `inventario/grafica.ts`); manuale generato da `strumenti/manuale/genera.ts` (puro; scrive `docs/manuale.md` solo con `CLB_MANUALE=1`); test in `tests/moduli/manuale.test.ts`.
+- **Test:** 26 nuovi (`fortuna`, `forziere`, `amuleti`, `manuale`) più le aspettative aggiornate (sette pozioni, riga Fortuna nella scheda, tasto `T` nelle porte, stato `amuleti` e `forziere` nel salvataggio).
+
+## 45. Lapide e rifiniture (0.16.0; la lapide è stata ridisegnata nella 0.16.1, vedi §46)
+- **`lapide`** (dipende da azioni, combattimento, fortuna): stato `{ oro: { zona: monete } }` (una lapide per zona; l'importo non esce mai nell'interfaccia), regola di fine scontro (priorità 91: nella sconfitta letale somma `oroPerso` alla zona riconosciuta da `scenaId`), azione `visitaLapide { zona }` (1 azione, quota = `conFortuna(0,5, Fortuna, 0,75)`), voci di menu per zona alla porta (`V` foresta, `V` palude, `W` cimitero; nascoste senza lapide) e pannello «ti aspetta una lapide». La tabella delle zone (scena e porta) è la stessa di `forziere`: un test verifica che coincidano.
+- **`combattimento`**: `CalcoloFineScontro` ha `scenaId` (vittorie e morti) e `oroPerso` (morti letali).
+- **`fortuna`**: `conFortuna(p, f, tetto?)` accetta un tetto diverso dal 90%; la voce `laterale` mette la Fortuna dopo la velocità (ordine 20).
+- **`livelli`**: `Guadagni.fortuna` e `Crescita.fortuna` (ritmo a rotazione `[1, 0]` per ogni classe, in `livelli/dati.ts`); la regola della Fortuna di base con i livelli sta qui (prima in `classi`, che ora aggiunge solo il modificatore di classe); messaggi, «Al prossimo livello» e pagina della classe leggono gli stessi dati.
+- **`pozioni`**: `bonusPozione(tipo)` unico per statistiche e riquadro dell'effetto.
+- **`sviluppo`**: nuovo stato `{ fortuna }` (Fortuna forzata), regola di priorità 200 sul bonus (porta il totale al valore forzato), azioni `devAmuleto`, `devForziere`, `devFortuna`, contesti `sviluppo:amuleto[:qualità]` e `sviluppo:forziere` (file `prove016.ts`).
+- **Test:** 653 (nuovi: `voci016`, `lapide`; aggiornati menu, schede e crescita).
+
+## 46. Lapide unica, registro, tetti e scasso (0.16.1)
+- **`lapide`** (dipende da combattimento, foresta, fortuna): stato `{ zona, oro, eta }` (una sola lapide; `eta` = giorni di gioco, +1 a ogni `puntoInizioGiorno`). Regole: alla morte letale in una zona riconosciuta da `scenaId` sostituisce la lapide con il solo `oroPerso` (evento `lapide.persa` se ne esisteva una con oro); su `puntoScoperta` (priorità 100) trova la lapide con probabilità `conFortuna(0,25, Fortuna)` e la recupera (`recuperaLapide`, quota `conFortuna(0,5, Fortuna, 0,75)`). Nessuna azione né voce di menu.
+- **`foresta`**: nuovo punto di regola `puntoScoperta` (`CalcoloScoperta { stato, luogoId, trovato, eventi }`), applicato da `esploraForesta` PRIMA di scegliere la creatura: se `trovato`, l'esplorazione costa 1 azione e non parte nessuno scontro. L'id della zona coincide con l'id del luogo esplorato (foresta, palude, cimitero).
+- **`registro`** (dipende da lapide): contesto `luogo:registro`, titolo, scena `scena.registro` (`strumenti/arte/scene_h.py` → `registro()`), pannello con tre frasi (oggi / ieri / giorni) o «nessuna lapide». Il luogo sta in `citta/dati.ts` (id `registro`, tasto `R`, ospite `piazza-s`) e in `citta/coordinate.ts`.
+- **`livelli`**: `Guadagni.scasso` e `Crescita.scasso` (ritmo a rotazione `[1]` per il Ladro, in `livelli/dati.ts`); riga «Scasso» nella scheda per chi ce l'ha; `penalitaEsperienza` mai negativa.
+- **`classi`**: il modificatore `scasso` è sostituito da `tettoForziere` (0,70 / 0,75 / 0,85); **`forziere`** (ora dipende anche da `livelli`) calcola l'apertura con `conFortuna(0,6 + scasso, Fortuna, tettoForziere)`.
+- **`combattimento`**: nessuna modifica (`scenaId` e `oroPerso` c'erano dalla 0.16.0).
+- **Test:** 661 (nuovi: `registro`, riscritto `lapide`; aggiornati menu, città, forziere, crescita).
+
+## 47. Nuove grafiche (0.16.2)
+- **Scene delle porte:** `strumenti/arte/scene_i.py` → `porta(nome)` disegna l'arco comune e chiama `fuori_<porta>()` per l'ambiente di fuori; sei scene `scena.porta-<id>` (id dei luoghi: `porta-s`, `porta-so`, `porta-ne`, `porta-e`, `porta-n`, `porta-no`) esportate in `citta/grafica.ts`; `citta/interfaccia.ts` (`SCENA_PER_SITO`) le associa. Piazze e mura usano ancora `scena.villaggio`/`scena.mura`.
+- **Zaino e Via Fillungo:** `scene_h.py` (`zaino()`, `fillungo()`); Via Fillungo è costruita in prospettiva (punto di fuga fisso, pareti come quadrilateri proiettati) con notte e giorno.
+- **Attenzione, strumenti d'arte:** `python3 esporta.py` rigenera **tutti** i `grafica.ts` e anche `citta/coordinate.ts` (dai dati di `scene_d.py`, funzione `coordinate()`): un luogo nuovo va aggiunto lì, non solo a mano in `coordinate.ts`, altrimenti la prossima esportazione lo cancella.
+- **Test:** 664 (nuovo `scene0162`: ogni porta ha la sua scena, tutte diverse; scene di zaino, Via Fillungo e registro).
+
+## 48. Schermata di scoperta, porte e zaino (0.16.3)
+- **`scoperta`** (nessuna dipendenza): stato `{ tipo: "lapide" | "forziere" | null, zona }`; `contestoForzato` «scoperta» finché `tipo` non è null; `illustrazioni` compone lo sfondo della zona (`scena.foresta/palude/cimitero`) con lo sprite (`sprite.lapide` o `sprite.forziere`) con `posizioneSprite` e `sovrapponi`, come il combattimento; menu `[C]` Continua → azione `chiudiScoperta`. Chi trova qualcosa chiama `impostaScoperta(stato, tipo, zona)`: `lapide` (regola su `puntoScoperta`) e `forziere` (regola di fine scontro). Il comando di prova `devForziere` non la imposta.
+- **Porte:** `scene_i.py` → `porta(nome)` ora usa `apertura(nome, s)` (predicato della forma, ingrandibile per le cornici), `MATERIALI` (colori delle mura) e una tabella `PORTE` (ambiente, vessilli, seme, materiale, cornici, merli). Il paesaggio si disegna in un rettangolo largo (x 20-75); la parete lo copre tranne l'apertura.
+- **Zaino:** `scene_h.py` → `zaino()` con lo scrigno aperto.
+- **Test:** 670 (nuovo `scoperta`; aggiornato lo stato nel salvataggio).

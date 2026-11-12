@@ -23,6 +23,7 @@ export const COORDINATE: Readonly<Record<string, { readonly x: number; readonly 
   "banca": { x: 80, y: 54 },
   "guaritore": { x: 44, y: 64 },
   "speziale": { x: 53, y: 72 },
+  "registro": { x: 70, y: 70 },
   "locanda": { x: 63, y: 78 },
   "gilda-cavaliere": { x: 51, y: 43 },
   "gilda-mistico": { x: 47, y: 53 },

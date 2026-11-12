@@ -107,28 +107,64 @@ def dado_grande(n):
 
 
 def fillungo():
-    # Via Fillungo: una stradina stretta tra case alte e, in fondo, la Torre delle Ore (96 x 64, con notte e giorno).
+    # Via Fillungo (96 x 64), rifatta sulla strada vera: stretta, con le due pareti alte che convergono in prospettiva verso il punto di fuga (48, 34),
+    # solo una striscia di cielo, muri misti di mattone e grandi conci di pietra, archi a tutto sesto al piano terra, finestre piccole con persiane verdi,
+    # gronde di legno e il selciato scuro; in fondo la Torre delle Ore. Con notte e giorno (finestre accese di notte).
     q = Quadro(W, H, CICLI_STELLE + [CICLO_FINESTRE], None)
-    cielo(q, 0, 46); stelle(q, 30, 0, 24, 6)
-    for x in range(W): q.rett(x, int(36 + 3 * math.sin(x / 8.0)), x, 51, "monte2")
-    # la torre delle ore in fondo alla via
-    q.rett(42, 14, 54, 48, "pietra"); q.macchia(42, 14, 54, 48, "pietra_s", 0.3); q.rett(42, 14, 42, 48, "pietra_l")
-    q.poli([(41, 14), (55, 14), (48, 7)], "tetto"); q.disco(48, 22, 3.5, "bianco"); q.disco(48, 22, 2.5, "oro"); q.set(48, 22, "nero")   # l'orologio
-    # le case alte ai due lati (prospettiva: più larghe in primo piano)
-    r = random.Random(5)
-    for lato in (0, 1):
-        for i, (x0, x1, top) in enumerate(((0, 14, 4), (14, 26, 14), (26, 36, 22))):
-            if lato: x0, x1 = W - 1 - x1, W - 1 - x0
-            col = "pietra" if (i + lato) % 2 == 0 else "tetto"
-            q.rett(x0, top, x1, 56, col); q.macchia(x0, top, x1, 56, "pietra_s", 0.25)
-            for fy in range(top + 5, 50, 9):
-                for fx in range(x0 + 3, x1 - 3, 6): q.rett(fx, fy, fx + 2, fy + 4, "fin")
-            q.rett(x0, top, x1, top + 1, "tetto_s")
-    q.rett(0, 52, W - 1, H - 1, "pietra_s")                                              # il selciato
-    for y in range(52, H, 4):
-        for x in range((y // 4) % 2 * 5, W, 10): q.rett(x, y, x + 7, y + 1, r.choice(["pietra", "pietra_l", "pietra"]))
-    q.poli([(36, 52), (60, 52), (66, H - 1), (30, H - 1)], "pietra")                      # la strada al centro
-    for k in range(4): q.rett(44 + k * 2 - 2, 53 + k * 3, 50 + k * 2 - 2, 54 + k * 3, "pietra_l")
+    VX, VY = 48.0, 34.0
+    cielo(q, 0, 40); stelle(q, 26, 0, 22, 6, 30, 66)
+    q.rett(0, 38, W - 1, H - 1, "pavim_s")                  # lo sfondo del basso: nessun pixel resta vuoto
+    r = random.Random(11)
+    # in fondo alla via: case basse e la Torre delle Ore
+    for x0, x1, top in ((38, 44, 30), (44, 53, 29), (53, 58, 31)): q.rett(x0, top, x1, 38, "tetto_s" if top % 2 else "pietra_s")
+    q.rett(44, 15, 52, 38, "pietra"); q.rett(44, 15, 44, 38, "pietra_l"); q.macchia(44, 15, 52, 38, "pietra_s", 0.25)
+    q.poli([(43, 15), (53, 15), (48, 8)], "tetto"); q.disco(48, 21, 2.8, "bianco"); q.disco(48, 21, 1.9, "oro"); q.set(48, 21, "nero")
+    q.rett(46, 27, 47, 31, "fin"); q.rett(49, 27, 50, 31, "fin")
+    f = lambda x: abs(x - VX) / VX                       # la scala della parete a quella colonna (1 vicino, 0 lontano)
+    def Y(x, yw): return VY + yw * f(x)                  # il pixel verticale di una quota (yw = distanza dall'occhio, positiva in basso)
+    def quad(xa, xb, y1, y2, col):
+        q.poli([(xa, Y(xa, y1)), (xb, Y(xb, y1)), (xb, Y(xb, y2)), (xa, Y(xa, y2))], col)
+    def parete(lato):
+        a, b = (0, 38) if lato == 0 else (95, 58)       # dal bordo vicino alla fine della parete
+        xs = lambda u: a + (b - a) * u
+        # i materiali a fasce: pietra e mattone cambiano con i piani
+        fasce = ((-110, -46, "mattone" if lato == 0 else "pietra"), (-46, -6, "pietra" if lato == 0 else "mattone"), (-6, 30, "pietra" if lato == 0 else "pietra_s"))
+        for y1, y2, col in fasce:
+            quad(a, b, y1, y2, col)
+        for y in range(-104, 30, 6):                       # i corsi dei blocchi
+            ya, yb = Y(a, y), Y(b, y)
+            q.linea(a, ya, b, yb, "pietra_s" if (y // 6) % 2 else "mattone_s", 1)
+        for k in range(190):                               # macchie: il muro non è a tinta unita
+            x = r.randint(min(a, b), max(a, b)); y = r.randint(-100, 26)
+            if abs(x - VX) > 10: q.set(x, int(Y(x, y)), r.choice(["mattone_s", "mattone_l", "pietra_l", "pietra_s"]))
+        # gronda di legno sporgente in cima
+        q.poli([(a, Y(a, -112)), (b, Y(b, -112)), (b, Y(b, -104)), (a, Y(a, -104))], "legno")
+        # le finestre piccole, con persiane verdi, su tre piani (non allineate)
+        for piano, yw in enumerate((-80, -56, -30)):
+            for u0 in (0.05, 0.36, 0.66):
+                u = u0 + (0.08 if (piano + lato) % 2 else 0.0)
+                xa, xb = xs(u), xs(u + 0.12)
+                alta = 12 if piano == 1 else 9
+                quad(xa, xb, yw, yw + alta, "ombra"); quad(xa + 0.7 * (xb > xa) - 0.7 * (xb < xa), xb - 0.7 * (xb > xa) + 0.7 * (xb < xa), yw + 1, yw + alta - 1, "fin")
+                quad(xa, xa + (xb - xa) * 0.25, yw, yw + alta, "ver_s"); quad(xb - (xb - xa) * 0.25, xb, yw, yw + alta, "ver_s")
+        # archi a tutto sesto al piano terra (portali e botteghe)
+        for u0 in (0.10, 0.50):
+            xa, xb = xs(u0), xs(u0 + 0.28)
+            xm = (xa + xb) / 2
+            q.poli([(xa, Y(xa, 30)), (xa, Y(xa, 6)), (xm, Y(xm, -2)), (xb, Y(xb, 6)), (xb, Y(xb, 30))], "pietra_l")
+            xa2, xb2 = xa + (xb - xa) * 0.1, xb - (xb - xa) * 0.1
+            xm2 = (xa2 + xb2) / 2
+            q.poli([(xa2, Y(xa2, 30)), (xa2, Y(xa2, 8)), (xm2, Y(xm2, 1)), (xb2, Y(xb2, 8)), (xb2, Y(xb2, 30))], "ombra")
+            q.rett(int(xm2), int(Y(xm2, 14)), int(xm2) + 1, int(Y(xm2, 18)), "fin_o")
+    parete(0); parete(1)
+    # una lampada di ferro a braccio sulla parete destra
+    q.linea(76, 30, 70, 30, "acc_s", 1); q.rett(68, 30, 70, 33, "acc"); q.set(69, 34, "oro_l")
+    # il selciato scuro, a ciottoli irregolari che convergono
+    q.poli([(0, 63), (95, 63), (58, 38), (38, 38)], "pavim_s")
+    for y in range(40, 64, 2):
+        s = f(0) * 0 + (y - 38) / 25.0
+        for x in range(int(48 - 10 - 38 * s), int(48 + 10 + 38 * s), max(3, int(2 + 6 * s))):
+            if r.random() < 0.8: q.rett(x, y, x + max(1, int(1 + 3 * s)), y, r.choice(["pavim", "pavim_l", "pavim", "pietra_s"]))
     return q
 
 
@@ -255,3 +291,65 @@ def gladiatore(tipo):
         persona(q, "marr_s", "marr", "ombra"); q.disco(10, 6, 5.5, "acc"); q.rett(6, 5, 14, 6, "nero"); q.rett(8, 1, 12, 2, "acc_l")
         q.ell(3, 21, 3.5, 8, "blu"); q.ell(3, 21, 1.5, 6, "blu_l"); q.linea(18, 17, 18, 29, "acc_l", 1); q.rett(16, 23, 20, 23, "oro")
     return contorno(q)
+
+
+def zaino():
+    # Lo zaino (96 x 64), rifatto: un tavolo davanti a una parete calda; a sinistra uno zaino di cuoio a cupola con la patta chiusa da due cinghie,
+    # le bretelle ai lati e una coperta arrotolata sopra, due pozioni sul tavolo; a destra uno scrigno aperto con l'interno di velluto, vuoto
+    # (il posto degli oggetti magici).
+    q = Quadro(W, H, [], None)
+    q.rett(0, 0, W - 1, H - 1, "muro"); q.macchia(0, 0, W - 1, 43, "muro_s", 0.22); q.macchia(0, 0, W - 1, 43, "muro_l", 0.07)
+    for y in range(7, 44, 9): q.rett(0, y, W - 1, y, "muro_s")                              # le assi della parete
+    q.rett(0, 44, W - 1, 51, "legno_l"); q.rett(0, 44, W - 1, 44, "pavim_l"); q.rett(0, 51, W - 1, 51, "legno")   # il piano del tavolo
+    q.rett(0, 52, W - 1, H - 1, "legno_s"); q.macchia(0, 52, W - 1, H - 1, "legno", 0.18)                          # il fronte del tavolo
+    # le bretelle (dietro il corpo) e l'ombra sul tavolo
+    q.poli([(14, 30), (10, 34), (7, 49), (11, 51), (14, 42)], "marr_s"); q.poli([(46, 30), (50, 34), (53, 49), (49, 51), (46, 42)], "marr_s")
+    q.rett(6, 51, 54, 52, "ombra")
+    # il corpo a cupola e la patta
+    q.rett(13, 30, 47, 51, "marr"); q.ell(30, 30, 17, 11, "marr"); 
+    q.rett(13, 30, 16, 51, "marr_s"); q.rett(44, 30, 47, 51, "marr_s")
+    q.ell(30, 31, 16, 9, "marr_l"); q.rett(14, 31, 46, 38, "marr_l"); q.rett(14, 38, 46, 38, "marr_s")   # la patta
+    q.rett(19, 38, 22, 50, "marr_s"); q.rett(38, 38, 41, 50, "marr_s")                                  # le cinghie
+    for cx in (19, 38): q.rett(cx, 41, cx + 3, 43, "oro"); q.rett(cx + 1, 42, cx + 2, 42, "oro_s")      # le fibbie
+    q.rett(25, 43, 35, 50, "marr_l"); q.rett(25, 43, 35, 43, "marr_s"); q.set(30, 45, "oro")            # la tasca davanti
+    # la coperta arrotolata sopra la cupola
+    q.rett(15, 17, 45, 24, "rosso"); q.rett(15, 17, 45, 18, "rosso_l"); q.rett(15, 24, 45, 24, "rosso_s")
+    q.ell(15, 20.5, 2.6, 3.6, "rosso_s"); q.ell(45, 20.5, 2.6, 3.6, "rosso_s"); q.ell(15, 20.5, 1.4, 2, "perg"); q.ell(45, 20.5, 1.4, 2, "perg")
+    for x in (24, 36): q.rett(x, 17, x + 1, 24, "perg_s")                                                # le strisce della coperta
+    # due pozioni sul tavolo
+    for x, col in ((57, "rosso_l"), (63, "blu_l")):
+        q.rett(x, 40, x + 4, 50, col); q.rett(x + 1, 36, x + 3, 39, "perg"); q.rett(x + 1, 34, x + 3, 35, "marr_l"); q.rett(x, 40, x, 50, "bianco")
+    # lo scrigno aperto, con l'interno di velluto e vuoto: il posto degli oggetti magici (oggi l'amuleto, domani anche altro)
+    q.rett(63, 51, 93, 52, "ombra")
+    q.rett(66, 22, 90, 35, "marr_s"); q.rett(66, 22, 90, 23, "marr_l"); q.rett(68, 25, 88, 34, "rosso")        # il coperchio alzato, con l'interno di velluto
+    q.rett(66, 22, 67, 35, "marr"); q.rett(89, 22, 90, 35, "marr"); q.set(70, 29, "oro_l"); q.set(86, 29, "oro_l")
+    q.rett(65, 38, 91, 50, "marr"); q.rett(65, 38, 91, 39, "marr_l"); q.rett(65, 49, 91, 50, "marr_s")         # il corpo dello scrigno
+    q.rett(65, 38, 66, 50, "marr_s"); q.rett(90, 38, 91, 50, "marr_s"); q.rett(65, 43, 91, 44, "acc_s")
+    q.rett(67, 35, 89, 38, "rosso"); q.rett(69, 36, 87, 37, "rosso_s")                                        # l'imbottitura vuota, in vista
+    q.rett(76, 43, 80, 47, "oro"); q.set(78, 45, "nero"); q.rett(76, 43, 80, 43, "oro_l")                     # la serratura
+    return q
+
+
+def registro():
+    # Il registro dei caduti (96 x 64): una grande lapide di marmo bianco incastonata in una parete di pietra, con una croce in alto e righe di nomi
+    # incisi; sul selciato due ceri accesi. Provvisoria quanto basta: si sposterà in una nuova zona di Lucca.
+    q = Quadro(W, H, [], None)
+    q.rett(0, 0, W - 1, H - 1, "pietra"); q.macchia(0, 0, W - 1, 51, "pietra_s", 0.18); q.macchia(0, 0, W - 1, 51, "pietra_l", 0.08)
+    for y in range(7, 52, 9):                                                                   # i corsi dei blocchi di pietra, sfalsati
+        q.rett(0, y, W - 1, y, "pietra_s")
+        for x in range(((y // 9) % 2) * 8 + 3, W, 16): q.rett(x, y - 8, x, y - 1, "pietra_s")
+    q.rett(0, 52, W - 1, H - 1, "pavim"); q.rett(0, 52, W - 1, 52, "pavim_l"); q.macchia(0, 53, W - 1, H - 1, "pavim_s", 0.2)   # il selciato
+    for x in range(0, W, 12): q.rett(x, 56, x + 6, 56, "pavim_s")
+    q.rett(17, 5, 78, 50, "pietra_s"); q.rett(18, 6, 77, 49, "pietra_l")                         # la cornice di pietra della lapide
+    q.rett(20, 8, 75, 47, "bianco"); q.macchia(20, 8, 75, 47, "pietra_l", 0.07); q.rett(20, 8, 75, 8, "perg_l")   # il marmo
+    q.rett(20, 47, 75, 47, "grigio"); q.rett(75, 8, 75, 47, "grigio")                            # l'ombra del marmo
+    q.rett(47, 11, 48, 19, "pietra_s"); q.rett(43, 14, 52, 15, "pietra_s")                       # la croce
+    q.rett(30, 21, 65, 21, "pietra_l")
+    righe = ((25, 43), (48, 69), (25, 36), (40, 69), (25, 50), (55, 70), (25, 45), (50, 70), (25, 38), (44, 69))
+    for k, (x0, x1) in enumerate(righe):                                                         # i nomi incisi, una riga ogni quattro pixel
+        y = 24 + (k // 2) * 4 if k % 2 == 0 else 24 + (k // 2) * 4
+        q.rett(x0 if k % 2 == 0 else x0, y, x1 if k % 2 == 1 else min(x1, 46), y, "pietra_s")
+    for cx in (9, 86):                                                                          # due ceri accesi sul selciato
+        q.rett(cx, 46, cx + 2, 54, "perg"); q.rett(cx, 46, cx, 54, "perg_l"); q.set(cx + 1, 44, "oro_l"); q.set(cx + 1, 43, "oro")
+        q.rett(cx - 1, 55, cx + 3, 55, "ombra")
+    return q

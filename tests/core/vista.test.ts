@@ -20,11 +20,14 @@ describe("vista e menu", () => {
   it("i moduli dichiarano le voci della colonna di destra: velocità per tutti, barra del mana solo per chi ha mana", () => {
     const con = (classeId: string) => creaVistaPartita(eseguiOk(statoDiProva(registro), { tipo: "scegliClasse", dati: { classeId } }, ctx).stato, ctx).laterale;
     const mistico = con("mistico");
-    expect(mistico.map((v) => v.tipo)).toEqual(["esperienza", "statistica", "barra", "riga", "riga"]); // esperienza, velocità, mana, luogo, azioni
+    expect(mistico.map((v) => v.tipo)).toEqual(["esperienza", "statistica", "barra", "statistica", "riga", "riga"]); // esperienza, velocità, mana, fortuna, luogo, azioni
     expect(mistico[0]).toMatchObject({ tipo: "esperienza", necessaria: 150 });
     expect(mistico[1]).toMatchObject({ etichettaChiave: "combattimento.laterale.velocita", valore: 10 });
     expect(mistico[2]).toMatchObject({ stile: "mana", attuale: 10, massimo: 10 });
-    expect(con("cavaliere").filter((v) => v.tipo === "statistica")).toEqual([{ tipo: "statistica", etichettaChiave: "combattimento.laterale.velocita", valore: 6, ordine: 10 }]);
+    expect(con("cavaliere").filter((v) => v.tipo === "statistica")).toEqual([
+      { tipo: "statistica", etichettaChiave: "combattimento.laterale.velocita", valore: 6, ordine: 10 },
+      { tipo: "statistica", etichettaChiave: "fortuna.laterale.etichetta", valore: 2, ordine: 20 }, // la Fortuna a destra, dopo la velocità (0.16.0)
+    ]);
     expect(con("cavaliere").filter((v) => v.tipo === "riga").map((v) => v.tipo === "riga" && v.riga.chiave)).toEqual(["citta.laterale", "azioni.laterale"]);
     expect(con("ladro").find((v) => v.tipo === "statistica")).toMatchObject({ valore: 15 });
   });
@@ -34,7 +37,7 @@ describe("vista e menu", () => {
     const vista = creaVistaPartita(scelta.stato, ctx);
     expect(vista.contestoForzato).toBeUndefined();
     expect(vista.contestoBase).toBe("citta:porta-s");
-    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "E", "L", "M"]); // parla, addentrati nella foresta, esci (nascosta: la porta è aperta), Locanda, mappa
+    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "T", "E", "L", "M"]); // parla, addentrati nella foresta, apri il forziere (nascosta finché non ce n'è uno), esci (nascosta: la porta è aperta), Locanda, mappa
     expect(vista.pannelli.some((p) => p.contesti?.includes("citta:porta-s") && p.righe[0]?.chiave === "citta.pannello.descrizione")).toBe(true);
     expect(vista.pannelli.some((p) => p.titoloChiave === "classi.pannello.titolo")).toBe(false);
   });

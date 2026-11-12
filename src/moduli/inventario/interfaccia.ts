@@ -17,7 +17,7 @@ function pannelloInventario(stato: StatoGioco, ctx: Contesto): PannelloVista {
 
 export const interfacciaInventario: InterfacciaModulo = {
   titoliContesto: { [CONTESTO_INFO_INVENTARIO]: "inventario.titolo" },
-  illustrazioniContesto: { [CONTESTO_INFO_INVENTARIO]: "scena.creazione" },
+  illustrazioniContesto: { [CONTESTO_INFO_INVENTARIO]: "scena.zaino" },
   contestiPadre: { [CONTESTO_INFO_INVENTARIO]: CONTESTO_INFO_INDICE },
   menu: [{ id: "inventario.info", contesto: CONTESTO_INFO_INDICE, etichettaChiave: "inventario.menu", tasto: "4", ordine: 40, comando: { tipo: "naviga", verso: CONTESTO_INFO_INVENTARIO } }],
   pannelli: (stato, ctx) => [pannelloInventario(stato, ctx)],

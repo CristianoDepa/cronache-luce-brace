@@ -73,7 +73,7 @@ describe("scheda compatta nella mappa", () => {
     const app = { ...STATO_INIZIALE, fase: "gioco" as const, vista };
     const righe = (nav: string): string[] => costruisciSchermata({ ...app, navigazione: nav }, registro, Date.now()).destra.map((r) => r.map((x) => x.testo).join(""));
     const mappa = righe("mappa").filter((r) => r !== "");
-    expect(mappa.some((r) => /^Livello \d+ - Forza \d+ - Difesa \d+ - Velocità \d+$/.test(r))).toBe(true); // dalla 0.14.1
+    expect(mappa.some((r) => /^Livello \d+ - Forza \d+ - Difesa \d+ - Velocità \d+ - Fortuna \d+$/.test(r))).toBe(true); // dalla 0.14.1
     expect(mappa.some((r) => r.includes("Esperienza"))).toBe(false); // l'esperienza resta nella scheda completa
     expect(mappa.some((r) => r.startsWith("Oro"))).toBe(true);
     expect(mappa.some((r) => r.startsWith("Luogo:"))).toBe(false); // la mappa dice già "Sei qui"

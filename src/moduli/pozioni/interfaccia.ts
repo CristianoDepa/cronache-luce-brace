@@ -2,7 +2,7 @@ import type { Contesto, InterfacciaModulo, PannelloVista, RigaVista, StatoGioco,
 import { CONTESTO_COMBATTIMENTO } from "../combattimento/indice";
 import { CONTESTO_INFO_INVENTARIO, PARAMETRI_INVENTARIO, leggiSlot } from "../inventario/indice";
 import { prezzoRiacquisto } from "./azioni";
-import { POZIONI, prezzoPozione, tipoDaId } from "./dati";
+import { POZIONI, bonusPozione, prezzoPozione, tipoDaId } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
 import { scortaRimasta, tipiDelGiorno } from "./scorta";
 import { statoPozioni } from "./tipi";
@@ -39,6 +39,7 @@ const vociZaino: VoceMenu[] = Array.from({ length: PARAMETRI_INVENTARIO.slot }, 
   etichettaChiave: "pozioni.menu.usa",
   tasto: String(i + 1),
   ordine: i + 1,
+  alternativa: `zaino.${i + 1}`,
   comando: { tipo: "azione", azione: { tipo: "usaOggetto", dati: { posizione: i + 1 } } },
 }));
 
@@ -59,17 +60,18 @@ function pannelloSpeziale(stato: StatoGioco, ctx: Contesto): PannelloVista {
 // L'effetto di una pozione in corso: nella scheda del personaggio e in combattimento.
 function righeEffetto(stato: StatoGioco): RigaVista[] {
   const e = statoPozioni.leggi(stato).effetto;
-  return e && e.restanti > 0 ? [{ chiave: "pozioni.effettoAttivo", parametri: { nomeChiave: `pozioni.nome.${e.tipo}`, bonus: PARAMETRI_POZIONI.bonusEffetto } }] : [];
+  return e && e.restanti > 0 ? [{ chiave: "pozioni.effettoAttivo", parametri: { nomeChiave: `pozioni.nome.${e.tipo}`, bonus: bonusPozione(e.tipo) } }] : [];
 }
 
 // Voci da non mostrare ora: gli slot vuoti dello zaino e il "Bevi" in combattimento se lo zaino è vuoto.
 function vociNascoste(stato: StatoGioco, ctx: Contesto): string[] {
   const slot = leggiSlot(stato);
-  const vuoti = slot.flatMap((s, i) => (s === null ? [`pozioni.usa.${i + 1}`] : []));
+  const nonPozione = (s: string | null): boolean => s === null || tipoDaId(s) === undefined;
+  const vuoti = slot.flatMap((s, i) => (nonPozione(s) ? [`pozioni.usa.${i + 1}`] : []));
   // Dello Speziale si vedono solo i tasti delle pozioni di oggi.
   const dello = Array.from({ length: PARAMETRI_POZIONI.tipiMax }, (_, i) => i + 1).filter((n) => n > tipiDelGiorno(stato, ctx).length).map((n) => `pozioni.compra.${n}`);
-  const nonVendibili = slot.flatMap((s, i) => (s === null ? [`pozioni.vendi.${i + 1}`] : []));
-  return slot.every((s) => s === null) ? [...vuoti, ...dello, ...nonVendibili, "pozioni.bevi"] : [...vuoti, ...dello, ...nonVendibili];
+  const nonVendibili = slot.flatMap((s, i) => (nonPozione(s) ? [`pozioni.vendi.${i + 1}`] : []));
+  return slot.every(nonPozione) ? [...vuoti, ...dello, ...nonVendibili, "pozioni.bevi"] : [...vuoti, ...dello, ...nonVendibili];
 }
 
 export const interfacciaPozioni: InterfacciaModulo = {
@@ -92,7 +94,7 @@ export const interfacciaPozioni: InterfacciaModulo = {
       const tipo = id === null ? undefined : tipoDaId(id);
       return tipo === undefined ? [] : [[`pozioni.vendi.${i + 1}`, { chiave: "pozioni.menu.vendiNome", parametri: { nomeChiave: `pozioni.nome.${tipo}`, oro: prezzoRiacquisto(tipo, stato.personaggio.livello) } } as RigaVista]];
     })),
-    ...Object.fromEntries(leggiSlot(stato).flatMap((id, i) => (id === null ? [] : [[`pozioni.usa.${i + 1}`, { chiave: "pozioni.menu.usaNome", parametri: { nomeChiave: `pozioni.nome.${id.replace("pozione.", "")}` } } as RigaVista]]))),
+    ...Object.fromEntries(leggiSlot(stato).flatMap((id, i) => (id === null || tipoDaId(id) === undefined ? [] : [[`pozioni.usa.${i + 1}`, { chiave: "pozioni.menu.usaNome", parametri: { nomeChiave: `pozioni.nome.${id.replace("pozione.", "")}` } } as RigaVista]]))),
   }),
   titoliContesto: { [CONTESTO_SPEZIALE]: "pozioni.luogo.speziale", [CONTESTO_VENDI]: "pozioni.luogo.vendi" },
   contestiPadre: { [CONTESTO_VENDI]: CONTESTO_SPEZIALE },

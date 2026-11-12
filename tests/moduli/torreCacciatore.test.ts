@@ -349,7 +349,8 @@ describe("la scheda del personaggio (0.13.1): mana nelle Statistiche e crescita 
     const mistico = scheda(pg("mistico"));
     const statistiche = mistico.filter((g) => g.titolo === "interfaccia.scheda.statistiche");
     expect(statistiche).toHaveLength(1);
-    expect(statistiche[0]!.righe.at(-1)).toMatch(/^Mana: \d+\/(\d+) \(base 0, bonus \+\1\)$/); // il bonus è tutto il mana (base 0)
+    expect(statistiche[0]!.righe.at(-2)).toMatch(/^Mana: \d+\/(\d+) \(base 0, bonus \+\1\)$/); // il bonus è tutto il mana (base 0)
+    expect(statistiche[0]!.righe.at(-1)).toMatch(/^Fortuna: \d+ \(base \d+, bonus 0\)$/); // la Fortuna chiude il gruppo
     expect(statistiche[0]!.righe.slice(0, 3).map((r) => r.split(":")[0])).toEqual(["HP massimi", "Forza", "Difesa"]);
     expect(mistico.some((g) => g.titolo === "mana.scheda.titolo")).toBe(false);
     for (const classe of ["cavaliere", "ladro"]) expect(scheda(pg(classe)).flatMap((g) => g.righe).some((r) => r.startsWith("Mana"))).toBe(false);
@@ -365,9 +366,9 @@ describe("la scheda del personaggio (0.13.1): mana nelle Statistiche e crescita 
   it("la riga della classe dice solo il nome e sotto cosa si guadagna al prossimo livello (mai numeri negativi); i bonus dei livelli più avanti compaiono finché non si raggiungono", () => {
     const classe = (id: string, livello: number): string[] => scheda({ ...pg(id), personaggio: { ...pg(id).personaggio, livello } }).find((g) => g.titolo === "classi.scheda.titolo")!.righe;
     expect(classe("mistico", 2)).toEqual(["Mistico", "Al prossimo livello:", "HP massimi +3", "Difesa +1", "Mana +2", "Al livello 4:", "Velocità +1"]);
-    expect(classe("mistico", 3)).toEqual(["Mistico", "Al prossimo livello:", "HP massimi +3", "Difesa +1", "Velocità +1", "Mana +2"]); // il livello 4 è il prossimo: il suo bonus si somma
+    expect(classe("mistico", 3)).toEqual(["Mistico", "Al prossimo livello:", "HP massimi +3", "Difesa +1", "Velocità +1", "Mana +2", "Fortuna +1"]); // il livello 4 è il prossimo: il suo bonus si somma (e la Fortuna sale ai livelli pari)
     expect(classe("mistico", 4)).toEqual(["Mistico", "Al prossimo livello:", "HP massimi +3", "Difesa +1", "Mana +2"]);
-    expect(classe("cavaliere", 1)).toEqual(["Cavaliere", "Al prossimo livello:", "HP massimi +5", "Forza +1", "Al livello 4:", "Difesa +1"]);
+    expect(classe("cavaliere", 1)).toEqual(["Cavaliere", "Al prossimo livello:", "HP massimi +5", "Forza +1", "Fortuna +1", "Al livello 4:", "Difesa +1"]);
     expect(classe("ladro", 12)).toEqual(["Ladro"]); // al livello massimo non c'è più nulla da guadagnare
     for (const id of ["cavaliere", "mistico", "ladro"]) for (const l of [1, 3, 8]) expect(classe(id, l).join(" ")).not.toMatch(/-\d/);
   });

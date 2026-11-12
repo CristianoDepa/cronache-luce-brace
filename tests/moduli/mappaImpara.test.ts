@@ -45,7 +45,7 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
   it("entrare in un edificio non svela altre piazze; la Torre e i luoghi senza edifici non mostrano nulla in più", () => {
     const dentro = eseguiOk(eseguiOk(partenza(), viaggia("piazza-s"), ctx).stato, entra("guaritore"), ctx).stato;
     expect(statoCitta.leggi(dentro).visitati).toEqual(["porta-s", "piazza-s", "guaritore"]);
-    expect(lista(dentro, "piazze")[2]).toBe("[3] Piazza Napoleone: Guaritore, Speziale, Gilda dei Ladri - sei qui"); // da dentro, "sei qui" è la piazza ospite
+    expect(lista(dentro, "piazze")[2]).toBe("[3] Piazza Napoleone: Guaritore, Registro dei caduti, Speziale, Gilda dei Ladri - sei qui"); // da dentro, "sei qui" è la piazza ospite
     const torre = eseguiOk(partenza(), viaggia("torre"), ctx).stato;
     expect(lista(torre, "piazze")[4]).toBe("[5] Torre Guinigi - sei qui");
   });

@@ -12,7 +12,7 @@ import {
   numero,
   stringa,
 } from "../../core/indice";
-import { puntoIncontro } from "./punti";
+import { puntoIncontro, puntoScoperta } from "./punti";
 import { combattiFinoAllaFine, creaturaDisponibile, impostazioniAutomatico, iniziaScontro, tipoCreatura } from "../combattimento/indice";
 import type { FaseGiorno, Luogo } from "../luoghi/indice";
 import { calcolaPotenza, faseDelGiorno, pesiEffettivi, scegliConPesi, tipoLuogo } from "../luoghi/indice";
@@ -58,6 +58,9 @@ export const azioneEsploraForesta = definisciAzione("esploraForesta", validaLuog
   if (!luogo) return esitoErrore("foresta.errore.luogo_sconosciuto", dati.luogoId);
   const azioni = leggiAzioniResidue(stato);
   if (azioni <= 0) return esitoErrore("azioni.errore.esaurite");
+  // Una scoperta (es. la lapide) prende il posto dell'incontro: costa 1 azione, nessuno scontro.
+  const scoperta = applicaRegole(ctx, puntoScoperta, { stato, luogoId: dati.luogoId, trovato: false, eventi: [] });
+  if (scoperta.trovato) return esitoOk(consumaAzioni(scoperta.stato, 1) ?? scoperta.stato, scoperta.eventi);
   const fase = faseDelGiorno(ctx);
   const creaturaId = scegliCreatura(luogo, stato, ctx, fase);
   if (creaturaId === undefined) return esitoErrore("foresta.errore.nessuna_creatura");

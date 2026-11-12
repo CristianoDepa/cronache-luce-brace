@@ -1,5 +1,6 @@
 import type { Risultato, StatoGioco } from "../../core/indice";
 import { definisciAzione, esitoErrore, esitoOk, ok } from "../../core/indice";
+import { PARAMETRI_AMULETI, consegnaAmuleto } from "../amuleti/indice";
 import { consumaAzioni } from "../azioni/indice";
 import { consegnaPozioni } from "../pozioni/indice";
 import { generaMissione, puoOffrire } from "./missione";
@@ -27,7 +28,9 @@ export const azioneRiscuotiMissione = definisciAzione("riscuotiMissione", nessun
   if (!m || !m.completata) return esitoErrore("cacciatore.errore.niente_da_riscuotere");
   const pagato: StatoGioco = { ...stato, personaggio: { ...stato.personaggio, oro: stato.personaggio.oro + m.oro } };
   const premio = consegnaPozioni(pagato, ctx, m.pozioni);
-  return esitoOk(scrivi(premio.stato, statoCacciatore.leggi(stato).propostaAl, null), [{ chiave: "cacciatore.riscossa", parametri: { oro: m.oro }, tono: "positivo" }, ...premio.eventi]);
+  // Le prede PERICOLOSE danno anche un amuleto.
+  const amuleto = m.tipo === "preda" && m.livello === "pericolosa" ? consegnaAmuleto(premio.stato, ctx, PARAMETRI_AMULETI.fonti.predaPericolosa) : { stato: premio.stato, eventi: [] };
+  return esitoOk(scrivi(amuleto.stato, statoCacciatore.leggi(stato).propostaAl, null), [{ chiave: "cacciatore.riscossa", parametri: { oro: m.oro }, tono: "positivo" }, ...premio.eventi, ...amuleto.eventi]);
 });
 
 // Abbandona la missione in corso, senza penalità; per oggi non ne arriva un'altra.

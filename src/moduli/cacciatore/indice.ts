@@ -1,9 +1,11 @@
 import type { DefinizioneModulo } from "../../core/indice";
 import { VERSIONE_API } from "../../core/indice";
+import { ID_AMULETI } from "../amuleti/indice";
 import { ID_AZIONI } from "../azioni/indice";
 import { ID_CITTA } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_FORESTA } from "../foresta/indice";
+import { ID_FORTUNA } from "../fortuna/indice";
 import { ID_LUOGHI } from "../luoghi/indice";
 import { ID_POZIONI } from "../pozioni/indice";
 import { ID_TORRE } from "../torre/indice";
@@ -24,7 +26,7 @@ export { CONTESTO_CASTRUCCIO } from "./interfaccia";
 export const moduloCacciatore: DefinizioneModulo = {
   id: ID_CACCIATORE,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_LUOGHI, ID_POZIONI, ID_TORRE],
+  dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_FORTUNA, ID_LUOGHI, ID_POZIONI, ID_TORRE],
   contenuti: [...ILLUSTRAZIONI_CACCIATORE],
   azioni: [azioneChiediMissione, azioneRiscuotiMissione, azioneAbbandonaMissione],
   regole: [regolaProgressoMissione, regolaPreda],
