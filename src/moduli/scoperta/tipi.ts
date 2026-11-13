@@ -3,8 +3,9 @@ import { chiudi, comeOggetto, definisciStato, fallisci } from "../../core/indice
 
 export const ID_SCOPERTA = "scoperta";
 
-export type TipoScoperta = "lapide" | "forziere";
-const TIPI: readonly TipoScoperta[] = ["lapide", "forziere"];
+// lapide e forziere trovati; apertura-riuscita e apertura-fallita: l'esito del tentativo di aprire il forziere (sprite aperto o chiuso).
+export type TipoScoperta = "lapide" | "forziere" | "apertura-riuscita" | "apertura-fallita";
+const TIPI: readonly TipoScoperta[] = ["lapide", "forziere", "apertura-riuscita", "apertura-fallita"];
 
 // La scoperta in corso (null = nessuna): il tipo (lapide o forziere) e la zona dove è avvenuta (foresta, palude, cimitero).
 // Finché c'è, il giocatore vede la schermata di scoperta e deve premere «Continua».

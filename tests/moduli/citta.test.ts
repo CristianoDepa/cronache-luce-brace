@@ -111,7 +111,7 @@ describe("la città: dati", () => {
       expect(distanze.has(id), id).toBe(true);
       expect(distanzeCitta(registro, id).get("porta-s"), id).toBe(distanze.get(id));
     }
-    expect(elencaSiti(registro)).toHaveLength(30); // 28 luoghi della città (0.16.1: il registro dei caduti) (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
+    expect(elencaSiti(registro)).toHaveLength(31); // 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla) (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
   });
 
   it("distanze di riferimento dalla Porta San Pietro, dove si inizia", () => {
@@ -296,7 +296,7 @@ describe("i contesti e le schermate della città", () => {
     (pannelloDi(stato, titolo, contesto)?.righe ?? []).map((r) => traduciEvento(registro, "it", r));
 
   it("ogni luogo ha la mappa; le porte anche l'uscita; i luoghi con NPC il comando per parlare; gli ospiti gli ingressi", () => {
-    expect(menu("citta:porta-s")).toEqual(["E", "F", "L", "M", "N", "T"]); // esci (nascosta se la porta è aperta), addentrati nella foresta, Locanda, mappa, parla, forziere (nascosta finché non ce n'è uno) (elenco in ordine alfabetico)
+    expect(menu("citta:porta-s")).toEqual(["C", "E", "F", "L", "M", "N", "T"]); // capanna di Sibilla, esci (nascosta se la porta è aperta), addentrati nella foresta, Locanda, mappa, parla, forziere (nascosta finché non ce n'è uno) (elenco in ordine alfabetico)
     for (const id of ["porta-n", "porta-ne", "porta-e", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(["E", "M", "N"]);
     expect(menu("citta:porta-so")).toEqual(["C", "E", "M", "N", "P", "T"]); // palude e cimitero (dal livello 4; sotto, l'uscita racconta la porta chiusa), forziere (nascosta finché non ce n'è uno)
     expect(menu("citta:piazza-n")).toEqual(["G", "M", "N", "T"]); // Gilda dei Cavalieri e il Torneo (T): l'Armeria e la Sartoria sono in Via Fillungo
@@ -324,7 +324,7 @@ describe("i contesti e le schermate della città", () => {
 
   it("la lista delle destinazioni mostra direzione, movimenti e azioni da dove si è", () => {
     const porte = righe(partenza(), "citta.pannello.destinazioni", "mappa:porte");
-    expect(porte).toContain("[4] Porta San Pietro (sud): Locanda - sei qui");
+    expect(porte).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla, Locanda - sei qui");
     expect(porte).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 2 azioni");
     expect(porte).toContain("[2] Porta San Jacopo alla Tomba (nord-est) - 20 movimenti, 2 azioni");
     const mura = righe(partenza(), "citta.pannello.destinazioni", "mappa:mura");
@@ -351,7 +351,7 @@ describe("i contesti e le schermate della città", () => {
       "[S] Sartoria - 2 movimenti, 0 azioni",
       "[T] Stamperia - 2 movimenti, 0 azioni",
     ]);
-    expect(righe(partenza(), "citta.pannello.edifici", "citta:porta-s")).toEqual(["[L] Locanda - 2 movimenti, 0 azioni"]);
+    expect(righe(partenza(), "citta.pannello.edifici", "citta:porta-s")).toEqual(["[C] Capanna di Sibilla - 2 movimenti, 0 azioni", "[L] Locanda - 2 movimenti, 0 azioni"]);
     expect(righe(inSito(partenza(), "piazza-s", 6), "citta.pannello.edifici", "citta:piazza-s")).toEqual(["[U] Guaritore - 2 movimenti, 1 azione", "[R] Registro dei caduti - 2 movimenti, 1 azione", "[S] Speziale - 2 movimenti, 1 azione", "[G] Gilda dei Ladri - 2 movimenti, 1 azione"]);
     const voce = (c: string, t: string) => vociMenu(registro, c).find((v) => v.tasto === t);
     expect(voce("citta:fillungo", "A")?.comando).toEqual({ tipo: "azione", azione: { tipo: "entra", dati: { sito: "armeria" } } });
@@ -445,7 +445,7 @@ describe("comandi di prova (?dev=1)", () => {
   it("le schermate di prova hanno menu, titoli e testi nelle due lingue", () => {
     expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C"]);
     expect(vociMenu(registro, "sviluppo:vai").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]);
-    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(11);
+    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(12);
     expect(registro.contestiPadre.get("sviluppo:vai:porte")).toBe("sviluppo:vai");
     expect(registro.contestiPadre.get("sviluppo:vai")).toBe("sviluppo");
     expect(traduci(registro, "it", "sviluppo.menu.giorno")).toBe("Passa al giorno dopo");

@@ -2,6 +2,7 @@ import type { DefinizioneModulo, InterfacciaModulo, PannelloVista, Raster } from
 import { VERSIONE_API, leggiContenuto, posizioneSprite, rasterizza, sovrapponi, tipoIllustrazione } from "../../core/indice";
 import { azioneChiudiScoperta } from "./azioni";
 import { ILLUSTRAZIONI_SCOPERTA } from "./grafica";
+import type { TipoScoperta } from "./tipi";
 import { ID_SCOPERTA, statoScoperta } from "./tipi";
 
 export { ID_SCOPERTA, impostaScoperta, statoScoperta } from "./tipi";
@@ -10,6 +11,8 @@ export type { StatoScoperta, TipoScoperta } from "./tipi";
 const CONTESTO_SCOPERTA = "scoperta";
 // Lo sfondo della schermata è quello degli incontri della zona dove è avvenuta la scoperta.
 const SCENE_DELLA_ZONA: Readonly<Record<string, string>> = { foresta: "scena.foresta", palude: "scena.palude", cimitero: "scena.cimitero" };
+// Lo sprite per ogni tipo di scoperta (un forziere fallito resta chiuso).
+const SPRITE: Readonly<Record<TipoScoperta, string>> = { lapide: "sprite.lapide", forziere: "sprite.forziere", "apertura-riuscita": "sprite.forziere_aperto", "apertura-fallita": "sprite.forziere" };
 
 const interfaccia: InterfacciaModulo = {
   titoliContesto: { [CONTESTO_SCOPERTA]: "scoperta.titolo" },
@@ -21,7 +24,7 @@ const interfaccia: InterfacciaModulo = {
     if (tipo === null || zona === null) return {};
     const idScena = SCENE_DELLA_ZONA[zona];
     const scena = idScena === undefined ? undefined : leggiContenuto(ctx.registro, tipoIllustrazione, idScena);
-    const sprite = leggiContenuto(ctx.registro, tipoIllustrazione, `sprite.${tipo}`);
+    const sprite = leggiContenuto(ctx.registro, tipoIllustrazione, SPRITE[tipo]);
     if (!scena || !sprite) return {};
     const { x, y } = posizioneSprite(scena, sprite);
     return { [CONTESTO_SCOPERTA]: sovrapponi(rasterizza(scena), rasterizza(sprite), x, y) };
@@ -47,12 +50,16 @@ export const moduloScoperta: DefinizioneModulo = {
       "scoperta.menu.continua": "Continua",
       "scoperta.testo.lapide": "Tra le ombre ritrovi la tua lapide.",
       "scoperta.testo.forziere": "Un forziere chiuso, dimenticato da qualcuno. Lo aprirai dalla porta della zona.",
+      "scoperta.testo.apertura-riuscita": "Il coperchio si alza: dentro luccica il premio.",
+      "scoperta.testo.apertura-fallita": "Il forziere resta chiuso: lo lasci alle tue spalle.",
     },
     en: {
       "scoperta.titolo": "A discovery",
       "scoperta.menu.continua": "Continue",
       "scoperta.testo.lapide": "Among the shadows you find your gravestone again.",
       "scoperta.testo.forziere": "A locked chest, forgotten by someone. You will open it from the zone's gate.",
+      "scoperta.testo.apertura-riuscita": "The lid lifts: the prize glitters inside.",
+      "scoperta.testo.apertura-fallita": "The chest stays shut: you leave it behind you.",
     },
   },
 };

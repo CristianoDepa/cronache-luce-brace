@@ -22,7 +22,7 @@ const lista = (stato: StatoGioco, categoria: string, lingua: "it" | "en" = "it")
 describe("la mappa impara cosa c'è nei luoghi visitati", () => {
   it("all'inizio si conosce solo la porta di partenza (con la Locanda); le piazze mostrano solo il nome", () => {
     expect(statoCitta.leggi(partenza()).visitati).toEqual(["porta-s"]);
-    expect(lista(partenza(), "porte")).toContain("[4] Porta San Pietro (sud): Locanda - sei qui");
+    expect(lista(partenza(), "porte")).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla, Locanda - sei qui");
     expect(lista(partenza(), "piazze")).toEqual([
       "[1] Piazza dell'Anfiteatro - 14 movimenti, 1 azione",
       "[2] Piazza San Michele - 10 movimenti, 1 azione",

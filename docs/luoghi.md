@@ -93,3 +93,6 @@ Ogni porta ha la sua scena: **San Pietro** (foresta, vessilli verdi), **Sant'Ann
 
 ## Le porte e la schermata di scoperta (0.16.3)
 Ogni porta ha una sua architettura: **San Pietro** (arco tondo, mattone rosso), **Sant'Anna** (sesto acuto, pietra scura), **San Jacopo alla Tomba** (doppia cornice, pietra chiara), **Elisa** (architrave con colonne, frontone), **Santa Maria** (arco ribassato, mattone chiaro), **San Donato** (doppio arco, pietra grigia). Le architetture sono proposte, non storiche. Trovare la lapide o un forziere in una zona mostra la schermata di scoperta con `[C]` Continua.
+
+## La capanna di Sibilla (0.17.0)
+A **Porta San Pietro**, accanto alla Locanda (`[C]`, 2 movimenti, 0 azioni): vi abita Sibilla Brace, l'Incantatrice (rito sull'arma; vedi `game-design.md` §57).

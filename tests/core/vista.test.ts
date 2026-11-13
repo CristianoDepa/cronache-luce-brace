@@ -37,7 +37,7 @@ describe("vista e menu", () => {
     const vista = creaVistaPartita(scelta.stato, ctx);
     expect(vista.contestoForzato).toBeUndefined();
     expect(vista.contestoBase).toBe("citta:porta-s");
-    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "T", "E", "L", "M"]); // parla, addentrati nella foresta, apri il forziere (nascosta finché non ce n'è uno), esci (nascosta: la porta è aperta), Locanda, mappa
+    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "T", "E", "C", "L", "M"]); // parla, addentrati nella foresta, apri il forziere (nascosta finché non ce n'è uno), esci, capanna di Sibilla (nascosta: la porta è aperta), Locanda, mappa
     expect(vista.pannelli.some((p) => p.contesti?.includes("citta:porta-s") && p.righe[0]?.chiave === "citta.pannello.descrizione")).toBe(true);
     expect(vista.pannelli.some((p) => p.titoloChiave === "classi.pannello.titolo")).toBe(false);
   });

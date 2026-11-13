@@ -60,6 +60,13 @@ export interface CalcoloRound {
 // Punti di estensione del combattimento: altri moduli vi agganciano le proprie regole.
 export const puntoDanno = definisciPuntoRegola<CalcoloDanno>("combattimento.danno");
 export const puntoTipoDanno = definisciPuntoRegola<CalcoloTipoDanno>("combattimento.tipoDanno");
+
+// Un secondo tipo di danno dei colpi del giocatore (es. magico per un'arma incantata): contro una creatura conta il MIGLIORE dei due moltiplicatori.
+export interface CalcoloTipoSecondario {
+  readonly stato: StatoGioco;
+  readonly tipo: TipoDanno | undefined;
+}
+export const puntoTipoSecondario = definisciPuntoRegola<CalcoloTipoSecondario>("combattimento.tipoSecondario");
 export const puntoFineRound = definisciPuntoRegola<CalcoloRound>("combattimento.fineRound");
 export const puntoFuga = definisciPuntoRegola<CalcoloFuga>("combattimento.fuga");
 // Velocità del giocatore: parte dalla base e le regole di classi e oggetti la modificano.

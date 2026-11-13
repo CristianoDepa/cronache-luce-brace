@@ -5,6 +5,7 @@ import { nomeChiaveAmuleto } from "../amuleti/dati";
 import { fortunaBase, puntoFortunaBonus } from "../fortuna/indice";
 import { ZONE_FORZIERE, statoForziere } from "../forziere/indice";
 import { aggiungiOggetto } from "../inventario/indice";
+import { impostaScoperta } from "../scoperta/indice";
 
 // Comandi di prova della 0.16.0 (solo con ?dev=1): un amuleto a scelta, un forziere a scelta e la Fortuna a 20.
 const CONTESTO = "sviluppo";
@@ -59,7 +60,7 @@ const azioneDaiAmuleto = definisciAzione("devAmuleto", validaAmuleto, (stato, da
 const azioneTrovaForziere = definisciAzione("devForziere", validaZona, (stato, dati) => {
   const zona = ZONE_FORZIERE.find((z) => z === dati.zona);
   if (zona === undefined) return esitoErrore("sviluppo.errore.zona");
-  return esitoOk(statoForziere.scrivi(stato, { zona }), [{ chiave: "sviluppo.forziereTrovato", parametri: { zonaChiave: `sviluppo.zona.${zona}` }, tono: "positivo" }]);
+  return esitoOk(impostaScoperta(statoForziere.scrivi(stato, { zona }), "forziere", zona), [{ chiave: "sviluppo.forziereTrovato", parametri: { zonaChiave: `sviluppo.zona.${zona}` }, tono: "positivo" }]);
 }, consentite);
 
 const azioneFortuna = definisciAzione("devFortuna", nessunDato, (stato) => {

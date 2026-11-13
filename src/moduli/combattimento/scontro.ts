@@ -4,7 +4,7 @@ import { calcolaDannoBase, calcolaOroPerso, moltiplicatoreTipo } from "./calcolo
 import { PARAMETRI_COMBATTIMENTO } from "./parametri";
 import { aggiungiEffetti, applicaMoltiplicatoreDanno, calcolaPrecisione, consumaColpi, modificatoriAttaccante } from "./effetti";
 import type { Attaccante } from "./effetti";
-import { puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoTipoDanno } from "./punti";
+import { puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
 import { iniziativaContro } from "./velocita";
 import type { Creatura, EffettoScontro, Potenziamento, ScontroAttivo, TipoDanno } from "./tipi";
 import { registraStatistiche, impostaScontro } from "./statistiche";
@@ -60,6 +60,15 @@ export function calcolaDannoGiocatore(stato: StatoGioco, creatura: Creatura, ctx
 export function tipoDannoGiocatore(stato: StatoGioco, effetti: readonly EffettoScontro[], ctx: Contesto): TipoDanno {
   const dalleRegole = applicaRegole(ctx, puntoTipoDanno, { stato, tipo: "contundente" as TipoDanno }).tipo;
   return effetti.find((e) => e.bersaglio === "giocatore" && e.tipoDanno !== undefined)?.tipoDanno ?? dalleRegole;
+}
+
+// Moltiplicatore di natura del colpo del giocatore. Se un effetto attivo impone un tipo (la magia dopo la Concentrazione) conta solo quello;
+// altrimenti il MIGLIORE tra il tipo dell'arma e l'eventuale secondo tipo (arma incantata: magico), così l'incantamento non peggiora mai il danno.
+export function moltiplicatoreDelColpo(stato: StatoGioco, effetti: readonly EffettoScontro[], natura: Creatura["natura"], ctx: Contesto): number {
+  const primario = moltiplicatoreTipo(natura, tipoDannoGiocatore(stato, effetti, ctx));
+  if (effetti.some((e) => e.bersaglio === "giocatore" && e.tipoDanno !== undefined)) return primario;
+  const secondo = applicaRegole(ctx, puntoTipoSecondario, { stato, tipo: undefined }).tipo;
+  return secondo === undefined ? primario : Math.max(primario, moltiplicatoreTipo(natura, secondo));
 }
 
 // Il potenziamento dello scontro in corso, nella forma che serve alla regola di fine scontro (vuoto se non c'è).
@@ -150,8 +159,7 @@ function attaccoGiocatore(stato: StatoGioco, ctx: Contesto, eventiPrecedenti: re
       : { chiave: "combattimento.mancatoGiocatore" };
     return esitoOk(senzaColpo, [...eventiPrecedenti, mancato]);
   }
-  const tipo = tipoDannoGiocatore(stato, scontro.effetti, ctx);
-  const danno = applicaMoltiplicatoreDanno(calcolaDannoGiocatore(stato, creatura, ctx), modificatori.moltiplicatoreDanno * moltiplicatoreTipo(creatura.natura, tipo));
+  const danno = applicaMoltiplicatoreDanno(calcolaDannoGiocatore(stato, creatura, ctx), modificatori.moltiplicatoreDanno * moltiplicatoreDelColpo(stato, scontro.effetti, creatura.natura, ctx));
   return applicaColpoGiocatore(consumato, danno, ctx, eventiPrecedenti, false, potenziatoDa);
 }
 

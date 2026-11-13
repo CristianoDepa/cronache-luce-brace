@@ -802,3 +802,10 @@ Titoli ricavati dall'albo (nessun campo `titolo` nello stato); `aspetto` nello s
 - **Porte:** `scene_i.py` → `porta(nome)` ora usa `apertura(nome, s)` (predicato della forma, ingrandibile per le cornici), `MATERIALI` (colori delle mura) e una tabella `PORTE` (ambiente, vessilli, seme, materiale, cornici, merli). Il paesaggio si disegna in un rettangolo largo (x 20-75); la parete lo copre tranne l'apertura.
 - **Zaino:** `scene_h.py` → `zaino()` con lo scrigno aperto.
 - **Test:** 670 (nuovo `scoperta`; aggiornato lo stato nel salvataggio).
+
+## 49. Incantatrice e apertura del forziere (0.17.0)
+- **`incantatrice`** (dipende da equipaggiamento e fortuna): `parametri.ts` (livelli minimi 5 e 4, quota del prezzo 0,5, probabilità del bonus 0,3 e 0,3), `rito.ts` (`situazione` = livello / arma / già / oro / pronta, `costoDelRito`, `tiraBonus`), azione `incantaArma`, contesto `luogo:capanna` con pannello che dipende dalla situazione e voce di menu `[1]` nascosta finché non è «pronta». Il luogo `capanna` è in `citta/dati.ts` (ospite `porta-s`, tasto `C`) e le coordinate in `scene_d.py`. Nessuno stato proprio: l'incantamento vive nell'oggetto equipaggiato.
+- **`equipaggiamento`**: `Equipaggiato` ha `incantata?` e `bonusIncantesimo?` (convalidati); `effettiEquipaggiati` somma il bonus alla forza dell'arma; `regolaTipoSecondarioArma` risponde «magico» per l'arma incantata; righe di scheda e di combattimento.
+- **`combattimento`**: punto di regola `puntoTipoSecondario` e `moltiplicatoreDelColpo` (se un effetto impone un tipo, es. la Concentrazione, conta quello; altrimenti il migliore tra primo e secondo tipo).
+- **`scoperta`**: tipi `apertura-riuscita` e `apertura-fallita` (sprite `sprite.forziere_aperto` o chiuso); `apriForziere` imposta la schermata; il comando di prova `devForziere` ora imposta quella di forziere trovato.
+- **Test:** 683 (nuovo `incantatrice`; aggiornati menu, città, mappa, scoperta).

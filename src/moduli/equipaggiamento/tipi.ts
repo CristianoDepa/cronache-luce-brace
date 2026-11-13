@@ -78,6 +78,9 @@ export interface Equipaggiato {
   readonly livello: number;
   // Proprietà magica (per il bottino, dalle versioni successive): per ora nessuno oggetto ne ha e non ha alcun effetto.
   readonly proprieta?: string;
+  // L'arma incantata da Sibilla Brace (0.17.0): i colpi sono ANCHE magici; il bonus (0, 1 o 2) si somma alla forza. Permanente su quell'arma.
+  readonly incantata?: boolean;
+  readonly bonusIncantesimo?: number;
 }
 
 export interface StatoEquipaggiamento {
@@ -96,7 +99,14 @@ function convalidaSlot(dati: unknown, nome: string, errori: string[]): Equipaggi
     return null;
   }
   const proprieta = o["proprieta"] === undefined ? undefined : stringa(o, "proprieta", errori);
-  return { linea: stringa(o, "linea", errori), livello: numero(o, "livello", errori, { min: 1 }), ...(proprieta !== undefined ? { proprieta } : {}) };
+  const incantata = o["incantata"] === true;
+  const bonus = incantata ? numero(o, "bonusIncantesimo", errori, { min: 0, predefinito: 0 }) : 0;
+  return {
+    linea: stringa(o, "linea", errori),
+    livello: numero(o, "livello", errori, { min: 1 }),
+    ...(proprieta !== undefined ? { proprieta } : {}),
+    ...(incantata ? { incantata: true, bonusIncantesimo: bonus } : {}),
+  };
 }
 
 function convalidaStato(dati: unknown): Risultato<StatoEquipaggiamento> {

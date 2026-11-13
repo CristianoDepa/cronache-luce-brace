@@ -60,9 +60,24 @@ describe("Schermata di scoperta (0.16.3)", () => {
     }
     expect(immagini.size).toBe(6);
   });
-  it("il comando di prova «Trova un forziere» NON apre la schermata (è solo un aiuto per provare)", () => {
+  it("il comando di prova «Trova un forziere» apre la schermata di forziere trovato (0.17.0), per poterla provare", () => {
     const st = eseguiOk(pg(), { tipo: "devForziere", dati: { zona: "cimitero" } }, ctx).stato;
-    expect(creaVistaPartita(st, ctx).contestoForzato).toBeUndefined();
+    expect(statoScoperta.leggi(st)).toEqual({ tipo: "forziere", zona: "cimitero" });
+    expect(creaVistaPartita(st, ctx).contestoForzato).toBe("scoperta");
+    expect(statoForziere.leggi(st).zona).toBe("cimitero");
+  });
+  it("aprire il forziere mostra una schermata: sprite aperto se riesce, chiuso se fallisce; poi [C] Continua", () => {
+    const base = statoForziere.scrivi(pg(), { zona: "palude" });
+    const riuscita = eseguiOk(base, { tipo: "apriForziere" }, fisso(0, 0.9, 0.5)).stato;
+    expect(statoScoperta.leggi(riuscita)).toEqual({ tipo: "apertura-riuscita", zona: "palude" });
+    expect(statoForziere.leggi(riuscita).zona).toBeNull();
+    const v = creaVistaPartita(riuscita, ctx);
+    expect(v.contestoForzato).toBe("scoperta");
+    expect(v.pannelli.some((p) => p.righe.some((r) => r.chiave === "scoperta.testo.apertura-riuscita"))).toBe(true);
+    const fallita = eseguiOk(base, { tipo: "apriForziere" }, fisso(0.99)).stato;
+    expect(statoScoperta.leggi(fallita)).toEqual({ tipo: "apertura-fallita", zona: "palude" });
+    expect(JSON.stringify(creaVistaPartita(fallita, ctx).illustrazioni["scoperta"])).not.toBe(JSON.stringify(v.illustrazioni["scoperta"])); // chiuso e aperto sono immagini diverse
+    expect(creaVistaPartita(eseguiOk(riuscita, { tipo: "chiudiScoperta" }, ctx).stato, ctx).contestoForzato).toBeUndefined();
   });
   it("senza scoperta nessuna schermata e «Continua» non fa danni; stato scritto e riletto identico", () => {
     expect(creaVistaPartita(pg(), ctx).contestoForzato).toBeUndefined();

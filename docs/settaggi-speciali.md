@@ -100,6 +100,9 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Fortuna: crescita con i livelli (ritmo a rotazione, uguale per tutte le classi) | `src/moduli/livelli/dati.ts` (`fortuna`) | `[1, 0]` = +1 ai livelli pari |
 | Lapide: quota recuperata (base e tetto), probabilità di trovarla esplorando, scena delle zone | `src/moduli/lapide/parametri.ts` | 50%, 75%, 25% (provvisoria) |
 | Comandi di prova nuovi (`?dev=1` → `[O]` → `[V]`) | `[A]` amuleto, `[B]` forziere, `[C]` Fortuna 20 | acceso/spento |
+| Incantatrice: livelli minimi (giocatore, arma), quota del prezzo, probabilità del bonus e del +2 | `src/moduli/incantatrice/parametri.ts` | 5, 4, 0,5, 0,3, 0,3 |
+| Comando di prova `[B]` (Trova un forziere) | mostra la schermata di forziere trovato (dalla 0.17.0) | |
+| Tasto nuovo: capanna di Sibilla `[C]` a Porta San Pietro | `src/moduli/citta/dati.ts` (luogo `capanna`) | sempre visibile; il rito è la voce `[1]` e compare solo se Sibilla è pronta |
 | Tasto nuovo: registro dei caduti `[R]` a Piazza Napoleone | `src/moduli/citta/dati.ts` (luogo `registro`) | sempre visibile; la lapide NON ha più tasti |
 | Pozione della fortuna: bonus (durata come le altre) | `src/moduli/pozioni/parametri.ts` → `bonusFortuna` | +5 |
 | Forziere: probabilità, oro e porta per zona; apertura base; probabilità di pozione | `src/moduli/forziere/parametri.ts` | 1/2/3%, oro 20-50, 50-120, 90-200; 60%; 30% |

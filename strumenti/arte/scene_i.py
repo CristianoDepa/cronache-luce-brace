@@ -184,3 +184,43 @@ def forziere():
     q.rett(6, 3, 8, 17, "acc"); q.rett(18, 3, 20, 17, "acc"); q.rett(2, 9, 24, 9, "acc_s")   # le fasce di ferro
     q.rett(11, 8, 15, 13, "oro"); q.rett(11, 8, 15, 8, "oro_l"); q.set(13, 11, "nero")       # la serratura
     return q
+
+
+# --- La capanna di Sibilla Brace (0.17.0): il limitare del bosco di notte, una capanna di legno con la finestra illuminata di viola ---
+def capanna():
+    q = Quadro(W, H, CICLI_STELLE, None)
+    cielo(q, 0, 40); stelle(q, 22, 0, 24, 31)
+    q.rett(0, 34, W - 1, H - 1, "boscolont")
+    for x in range(0, W, 3): q.rett(x, 31 + int(2 * math.sin(x / 6.0)), x + 2, 36, "monte2")      # le colline lontane
+    for cx, base, h in ((5, 44, 24), (14, 40, 18), (86, 44, 24), (78, 40, 18), (23, 38, 13), (71, 38, 13)): pino(q, cx, base, h, 5)   # i pini ai lati
+    q.rett(0, 46, W - 1, H - 1, "terra_s"); q.macchia(0, 46, W - 1, H - 1, "terra", 0.22); q.macchia(0, 46, W - 1, H - 1, "ver_s", 0.05)
+    q.poli([(41, H - 1), (57, H - 1), (51, 49), (47, 49)], "marr_l")                           # il sentiero verso la porta
+    # la capanna: pareti di assi, tetto di paglia, camino
+    q.rett(32, 33, 64, 50, "legno")
+    for x in range(34, 64, 4): q.rett(x, 33, x, 50, "legno_s")
+    q.rett(32, 33, 32, 50, "legno_l"); q.rett(32, 50, 64, 50, "legno_s")
+    q.poli([(27, 36), (69, 36), (48, 19)], "marr"); q.poli([(27, 36), (48, 36), (48, 19)], "marr_s")
+    for y in range(24, 36, 3): q.rett(30 + (y - 24) // 2, y, 66 - (y - 24) // 2, y, "marr_l")      # la paglia a fasce
+    q.rett(57, 14, 60, 27, "pietra_s"); q.rett(57, 14, 60, 15, "pietra_l")
+    for k, (x, y) in enumerate(((58, 11), (60, 8), (59, 5), (62, 3))): q.ell(x, y, 2 + k * 0.5, 1.5, "vap1" if k % 2 == 0 else "vap2")   # il fumo
+    q.rett(44, 40, 50, 50, "legno_s"); q.rett(44, 40, 44, 50, "ombra"); q.set(49, 45, "oro")           # la porta
+    q.rett(34, 38, 41, 44, "ombra"); q.rett(35, 39, 40, 43, "viola"); q.rett(35, 39, 40, 39, "viola_l"); q.rett(37, 39, 37, 43, "ombra")   # la finestra con la luce viola
+    for x, y in ((53, 38), (56, 39), (59, 38)): q.rett(x, y, x + 1, y + 4, "ver_s"); q.set(x, y - 1, "marr_l")   # le erbe appese
+    # il calderone fuori, con il bollore violaceo e le scintille
+    q.ell(21, 54, 6, 4, "acc_s"); q.rett(15, 49, 27, 55, "acc"); q.ell(21, 49, 6, 2, "viola"); q.ell(21, 49, 4, 1, "viola_l")
+    q.rett(16, 56, 17, 59, "acc_s"); q.rett(25, 56, 26, 59, "acc_s"); q.rett(18, 59, 24, 59, "rosso")      # le gambe e il fuoco sotto
+    for x, y in ((19, 43), (23, 40), (21, 37), (25, 45), (17, 41)): q.set(x, y, "viola_l")
+    return q
+
+
+# --- Lo sprite del forziere APERTO (0.17.0): coperchio alzato e interno di velluto ---
+def forziere_aperto():
+    q = Quadro(26, 24, [], None)
+    q.ell(13, 22, 12, 2, "ombra")
+    q.rett(3, 2, 23, 10, "marr_s"); q.rett(3, 2, 23, 3, "marr_l"); q.rett(5, 4, 21, 9, "rosso"); q.rett(3, 2, 3, 10, "marr")          # il coperchio alzato, interno di velluto
+    q.rett(2, 12, 24, 21, "marr"); q.rett(2, 12, 24, 13, "marr_l"); q.rett(2, 20, 24, 21, "marr_s"); q.rett(2, 12, 2, 21, "marr_s")   # il corpo
+    q.rett(4, 10, 22, 13, "rosso"); q.rett(6, 11, 20, 12, "rosso_s")                                                                  # il velluto in vista
+    q.rett(7, 12, 9, 21, "acc"); q.rett(17, 12, 19, 21, "acc")                                                                        # le fasce
+    q.rett(11, 14, 15, 19, "oro"); q.rett(11, 14, 15, 14, "oro_l"); q.set(13, 16, "nero")                                            # la serratura
+    for x, y in ((8, 7), (13, 6), (18, 7)): q.set(x, y, "oro_l")                                                                       # un luccichio dal premio
+    return q

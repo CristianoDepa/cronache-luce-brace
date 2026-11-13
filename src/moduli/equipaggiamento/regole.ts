@@ -1,6 +1,6 @@
 import type { Contesto, StatoGioco } from "../../core/indice";
 import { leggiContenuto, puntoStatistiche, regola } from "../../core/indice";
-import { puntoTipoDanno, puntoVelocita } from "../combattimento/indice";
+import { puntoTipoDanno, puntoTipoSecondario, puntoVelocita } from "../combattimento/indice";
 import type { EffettiOggetto } from "./tipi";
 import { idOggetto, statoEquipaggiamento, tipoOggetto } from "./tipi";
 
@@ -12,7 +12,7 @@ export function effettiEquipaggiati(stato: StatoGioco, ctx: Contesto): EffettiOg
     if (!slot) continue;
     const oggetto = leggiContenuto(ctx.registro, tipoOggetto, idOggetto(slot.linea, slot.livello));
     if (!oggetto) continue;
-    totale.forza += oggetto.effetti.forza;
+    totale.forza += oggetto.effetti.forza + (slot === eq.arma ? (slot.bonusIncantesimo ?? 0) : 0);
     totale.difesa += oggetto.effetti.difesa;
     totale.hpMax += oggetto.effetti.hpMax;
     totale.velocita += oggetto.effetti.velocita;
@@ -41,3 +41,8 @@ export const regolaTipoDannoArma = regola(puntoTipoDanno, 60, (calcolo, ctx) => 
   const oggetto = arma ? leggiContenuto(ctx.registro, tipoOggetto, idOggetto(arma.linea, arma.livello)) : undefined;
   return oggetto?.tipoDanno ? { ...calcolo, tipo: oggetto.tipoDanno } : calcolo;
 });
+
+// L'arma incantata infligge ANCHE danno magico (il moltiplicatore migliore tra il suo tipo e il magico, vedi il combattimento).
+export const regolaTipoSecondarioArma = regola(puntoTipoSecondario, 60, (calcolo) =>
+  statoEquipaggiamento.leggi(calcolo.stato).arma?.incantata === true ? { ...calcolo, tipo: "magico" as const } : calcolo,
+);

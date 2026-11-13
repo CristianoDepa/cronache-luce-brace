@@ -44,6 +44,7 @@ function righeScheda(stato: StatoGioco, ctx: Contesto): RigaVista[] {
       ? { chiave: "equipaggiamento.scheda.arma", parametri: { oggettoChiave: arma.nomeChiave, livello: eq.arma.livello, tipoDannoChiave: chiaveTipoDanno(arma) ?? "combattimento.tipo.contundente", ...descriviEffetti(arma.effetti) } }
       : { chiave: "equipaggiamento.scheda.nessuno", parametri: { tipoChiave: "equipaggiamento.tipo.arma" } },
   );
+  if (eq.arma?.incantata) righe.push({ chiave: (eq.arma.bonusIncantesimo ?? 0) > 0 ? "equipaggiamento.scheda.incantataBonus" : "equipaggiamento.scheda.incantata", parametri: { bonus: eq.arma.bonusIncantesimo ?? 0 }, tono: "speciale" });
   if (riserva && eq.riserva) {
     righe.push({ chiave: "equipaggiamento.scheda.riserva", parametri: { oggettoChiave: riserva.nomeChiave, livello: eq.riserva.livello, tipoDannoChiave: chiaveTipoDanno(riserva) ?? "combattimento.tipo.contundente", ...descriviEffetti(riserva.effetti) } });
   }
@@ -187,7 +188,7 @@ function pannelloCombattimento(stato: StatoGioco, ctx: Contesto): PannelloVista 
         : riserva && tipoRiserva
           ? { chiave: "equipaggiamento.combattimento.maniNudeRiserva", parametri: { riservaChiave: riserva.nomeChiave, tipoRiservaChiave: tipoRiserva } }
           : { chiave: "equipaggiamento.combattimento.maniNude" };
-  return { contesti: [CONTESTO_COMBATTIMENTO], righe: [riga] };
+  return { contesti: [CONTESTO_COMBATTIMENTO], righe: eq.arma?.incantata ? [riga, { chiave: "equipaggiamento.combattimento.incantata", tono: "speciale" }] : [riga] };
 }
 
 export const interfacciaEquipaggiamento: InterfacciaModulo = {

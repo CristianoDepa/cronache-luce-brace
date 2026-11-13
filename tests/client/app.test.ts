@@ -181,7 +181,7 @@ describe("una giornata in città e nella foresta", () => {
   it("si parte alla Porta San Pietro: addentrarsi nella foresta, mappa, luogo e azioni rimaste a destra", async () => {
     const app = await giocatore();
     const s = app.schermata();
-    expect(tasti(s)).toEqual(["F", "L", "M", "I", "O"]); // F = Addentrati nella foresta; il comando "Parla" non c'è dove non c'è nessuno
+    expect(tasti(s)).toEqual(["F", "C", "L", "M", "I", "O"]); // F = Addentrati nella foresta, C = la capanna di Sibilla; il comando "Parla" non c'è dove non c'è nessuno
     expect(testo(s)).toContain("Porta San Pietro");
     expect(testo(s)).toContain("Luogo: Porta San Pietro");
     expect(testo(s)).toContain("Azioni 50/50");
@@ -799,7 +799,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(tasti(app.schermata())).toEqual(["1", "2", "3", "0", "I", "O"]);
     await app.premiTasto("1");
     expect(sx(app.schermata())).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 2 azioni"); // con la direzione
-    expect(sx(app.schermata())).toContain("[4] Porta San Pietro (sud): Locanda - sei qui"); // già visitata: mostra cosa contiene
+    expect(sx(app.schermata())).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla, Locanda - sei qui"); // già visitata: mostra cosa contiene
     expect(haDisegno(app.schermata())).toBe(true);
     await app.premiTasto("0"); // dalla lista torna alla mappa
     expect(sx(app.schermata())).toContain("Sei qui: Porta San Pietro");

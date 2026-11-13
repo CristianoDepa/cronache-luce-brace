@@ -6,12 +6,12 @@ import { azioneCompraOggetto, azioneScambiaArma } from "./azioni";
 import { ILLUSTRAZIONI_EQUIPAGGIAMENTO } from "./grafica";
 import { interfacciaEquipaggiamento } from "./interfaccia";
 import { LINEE, generaOggetti } from "./linee";
-import { regolaStatisticheOggetti, regolaTipoDannoArma, regolaVelocitaOggetti } from "./regole";
+import { regolaStatisticheOggetti, regolaTipoDannoArma, regolaTipoSecondarioArma, regolaVelocitaOggetti } from "./regole";
 import { TESTI_EQUIPAGGIAMENTO } from "./testi";
 import { ID_EQUIPAGGIAMENTO, statoEquipaggiamento, tipoOggetto } from "./tipi";
 
 export { ID_EQUIPAGGIAMENTO, statoEquipaggiamento, tipoOggetto, idOggetto } from "./tipi";
-export type { Oggetto, StatoEquipaggiamento } from "./tipi";
+export type { Equipaggiato, Oggetto, StatoEquipaggiamento } from "./tipi";
 export { LINEE, calcolaPrezzo, calcolaPunti, livelloMassimo, prezzoPerPunti } from "./linee";
 export { PARAMETRI_EQUIPAGGIAMENTO } from "./parametri";
 export { calcolaOfferta } from "./acquisto";
@@ -23,7 +23,7 @@ export const moduloEquipaggiamento: DefinizioneModulo = {
   tipiContenuto: [tipoOggetto],
   contenuti: [...generaOggetti(LINEE), ...ILLUSTRAZIONI_EQUIPAGGIAMENTO],
   azioni: [azioneCompraOggetto, azioneScambiaArma],
-  regole: [regolaStatisticheOggetti, regolaVelocitaOggetti, regolaTipoDannoArma],
+  regole: [regolaStatisticheOggetti, regolaVelocitaOggetti, regolaTipoDannoArma, regolaTipoSecondarioArma],
   testi: TESTI_EQUIPAGGIAMENTO,
   stato: statoEquipaggiamento,
   interfaccia: interfacciaEquipaggiamento,
