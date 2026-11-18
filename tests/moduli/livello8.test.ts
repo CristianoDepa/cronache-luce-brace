@@ -66,9 +66,9 @@ describe("La valle del Serchio: porta, creature e boss", () => {
   it("il Traghettatore, vinto, dà sempre un amuleto d'argento; le altre creature della valle no (da questa regola)", () => {
     const base = pg("cavaliere", 8);
     const dopo = applicaRegole(creaContestoDiProva(registro, 3), puntoFineScontro, { stato: base, creaturaId: "traghettatore", esito: "vittoria", eventi: [], scenaId: "scena.valle" });
-    expect(dopo.eventi.some((e) => e.chiave.startsWith("amuleti."))).toBe(true);
+    expect(dopo.eventi.some((e) => e.chiave.startsWith("oggettiMagici."))).toBe(true);
     const altra = applicaRegole(creaContestoDiProva(registro, 3), puntoFineScontro, { stato: base, creaturaId: "corvi", esito: "vittoria", eventi: [], scenaId: "scena.valle" });
-    expect(altra.eventi.some((e) => e.chiave.startsWith("amuleti."))).toBe(false);
+    expect(altra.eventi.some((e) => e.chiave.startsWith("oggettiMagici."))).toBe(false);
   });
 });
 
@@ -107,16 +107,25 @@ describe("Le abilità dell'8° livello: Cura, Furto e Dardo magico (tasto G)", (
     expect(colpito).toBe(true);
   });
   it("Furto: se poi si vince lo scontro l'oro è maggiorato del 50%", () => {
+    const chiavi: string[] = [];
     const oroDopo = (usaFurto: boolean): number => {
+      chiavi.length = 0;
       // Un Ladro equipaggiato (pugnale e cuoio di livello 6), a salute piena, contro una creatura facile.
       const nudo = pg("ladro", 8);
       const eq = statoEquipaggiamento.scrivi(nudo, { arma: { linea: "pugnale", livello: 6 }, armatura: { linea: "cuoio", livello: 6 }, riserva: null });
       let st = inizia({ ...eq, personaggio: { ...eq.personaggio, hp: calcolaStatistiche(eq, ctx).hpMax } }, "rospo");
       if (usaFurto) st = eseguiOk(st, { tipo: "usaAbilita", dati: { posizione: 3 } }, creaContestoDiProva(registro, 7)).stato;
-      for (let i = 0; i < 80 && statoCombattimento.leggi(st).scontro !== null; i++) st = eseguiOk(st, { tipo: "attacca" }, creaContestoDiProva(registro, 7 + i)).stato;
+      for (let i = 0; i < 80 && statoCombattimento.leggi(st).scontro !== null; i++) {
+        const r = eseguiOk(st, { tipo: "attacca" }, creaContestoDiProva(registro, 7 + i));
+        chiavi.push(...r.eventi.map((e) => e.chiave));
+        st = r.stato;
+      }
       return st.personaggio.oro;
     };
-    const senza = oroDopo(false), con = oroDopo(true);
+    const senza = oroDopo(false);
+    expect(chiavi).not.toContain("abilita.furto.rubato");
+    const con = oroDopo(true);
+    expect(chiavi).toContain("abilita.furto.rubato"); // 0.20.1: il Furto che ha reso lo dice
     expect(con).toBeGreaterThan(senza);
     expect(con - statoDiProva(registro).personaggio.oro).toBe(Math.round((senza - statoDiProva(registro).personaggio.oro) * 1.5));
   });

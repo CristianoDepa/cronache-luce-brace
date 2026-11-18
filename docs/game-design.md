@@ -710,3 +710,20 @@ Trovare la **lapide** (esplorando la zona dove sta) o un **forziere** (dopo una 
 
 ## 60. Piazza San Martino, Padre Bartolomeo e il Palazzo degli Anziani (0.19.0, realizzato)
 **La protezione divina.** In cattedrale, Padre Bartolomeo intercede per il personaggio: offerta di **50 monete per livello**, **una volta al giorno**. Per tutto il giorno la **prima morte** diventa una **sconfitta senza perdite**: il personaggio resta a 1 HP, non perde monete, non nasce la lapide, **lo scontro finisce** (il nemico non insegue; a 1 HP l'esplorazione è già bloccata dall'avviso «Sei ferito»). Non vale nei duelli con i capigilda (non letali). Da non confondere con: Guaritore (cura gli HP), Speziale (pozioni a turni), Sibilla (magia sull'arma). **I luoghi:** Piazza San Martino (cattedrale e registro dei caduti), Palazzo degli Anziani in Piazza Napoleone (bandi del Gonfaloniere, costruiti sullo stato di gioco; la Stamperia resta il gossip).
+
+## 61. Rifiniture della 0.19.1
+- **Grazia della cattedrale:** salva con tutte le conseguenze (niente oro perso, niente lapide, **niente perdita di esperienza**).
+- **Spiriti:** al primo incontro una riga in ciano avverte che servono armi incantate (annegato: «feriscono poco»; dama: «attraversano»). Il Traghettatore non è immune: nessun avviso.
+- **Valle:** forza dama 38, annegato 30, corvi 28 (dai log di collaudo: la dama costava ~65 HP a vittoria).
+- **Forziere:** trovato, si vede davanti alla porta della zona; un solo tentativo; poi sparisce.
+- **Foresta:** la riga giorno/notte informa soltanto (in ciano), senza bonus.
+- **Rito di Sibilla:** il registro mostra il prezzo pagato.
+
+## 62. I lavori ai bastioni (0.20.0, realizzato)
+Il giocatore può guadagnare monete (e un'esperienza minima) lavorando per i capitani di guardia dei **6 bastioni**: ogni giorno **3 bastioni** hanno un incarico, di tipo casuale. **Sorveglianza**: 3 azioni sul posto, nessun rischio, paga subito. **Consegna** (verso un altro bastione) e **scorta** (verso una porta): 1 azione di carico, poi si cammina; all'arrivo c'è una probabilità di **imboscata** (consegna 25%, scorta 50%): vinta, il lavoro è pagato; fuga o sconfitta, fallisce senza compenso. **Paga = livello × tariffa × azioni del lavoro** (tariffe provvisorie 4/6/6, da tarare: i lavori sicuri devono rendere meno del combattimento per azione, quelli rischiosi di più). Un lavoro alla volta, valido fino al cambio del giorno, abbandonabile senza penalità (il bastione oggi non offre più incarichi). Il capitano si vede solo dove c'è l'incarico. Il giocatore è libero di fare altro nel frattempo.
+
+**0.20.1.** L'imboscata è tesa dal **Tagliaborse**, un ladro incappucciato che si adegua al tuo livello (HP e forza 0,8 × la formula degli avversari del torneo), senza ricompense proprie: se lo batti ricevi la paga. I bandi del Palazzo dicono quali bastioni hanno un incarico oggi; dalla mappa si può abbandonare l'incarico con `[A]`.
+
+**0.20.2.** Ai livelli 1-2 i lavori sono «tranquillini»: imboscata al 10% (consegna) e al 20% (scorta); dal livello 3 al 25% e al 50%. La fuga dall'imboscata riesce all'80% (con velocità 10): fuggendo si perdono plico e incarico, come sempre. Il capitano avverte a parole («Fai attenzione...» nella consegna, «Tieni gli occhi aperti...» nella scorta).
+
+**0.21.0.** **Oggetti magici.** Medaglione e anello, uno per slot, effetti sommati. Anello: stesse tre qualità del medaglione con metà dei punti (1/2/3; vita +5/+10/+15 HP); medaglioni 2/4/6 (vita +10/+20/+30). **Scala solo degli oggetti magici: 1 punto = 5 HP** (equipaggiamento e livelli restano a 3 HP per punto, da ricalibrare in una versione a parte se serve). Fonti come i medaglioni, 50% anello e 50% medaglione. Maledizioni previste più avanti: un oggetto indossato che abbassa le statistiche e non si toglie finché Sibilla non ne paga un rito che lo inattiva.

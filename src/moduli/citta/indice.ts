@@ -10,10 +10,10 @@ import { PARAMETRI_CITTA } from "./parametri";
 import { ID_CITTA, statoCitta, tipoSito } from "./tipi";
 
 export { ID_CITTA, statoCitta, tipoSito } from "./tipi";
-export { puntoMovimento } from "./punti";
-export type { CalcoloMovimento } from "./punti";
+export { puntoArrivo, puntoMovimento } from "./punti";
+export type { CalcoloArrivo, CalcoloMovimento } from "./punti";
 export type { CategoriaSito, Sito } from "./tipi";
-export { DEFINIZIONI_SITI, chiaveDirezione, chiaveMappa, chiaveNome } from "./dati";
+export { DEFINIZIONI_SITI, chiaveDirezione, chiaveDove, chiaveMappa, chiaveNome } from "./dati";
 export { PARAMETRI_CITTA } from "./parametri";
 export { calcolaCostoViaggio, costruisciGrafo, distanzeDa } from "./percorsi";
 export { distanzeCitta, elencaSiti, leggiSito, origineViaggio, sitoCorrente, spostaIn } from "./uso";

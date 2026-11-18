@@ -127,7 +127,7 @@ def lupo():
     for x in (38, 40, 42): t.set(x, 16, "bianco")
     t.poli([(31, 6), (33, 0), (36, 6)], "pelo"); t.poli([(36, 6), (39, 0), (40, 7)], "pelo")
     t.poli([(32, 5), (33, 2), (35, 5)], "rosa")
-    t.rett(37, 9, 38, 10, "oro"); t.set(38, 10, "nero"); t.set(37, 8, "outline")
+    t.rett(36, 9, 38, 10, "oro"); t.rett(38, 9, 38, 10, "nero"); t.rett(36, 8, 38, 8, "outline"); t.set(39, 9, "outline")   # occhio giallo con pupilla verticale verso il muso (0.19.1: non più strabico)
     for x in (7, 11, 24, 28):
         t.rett(x, 22, x + 2, 29, "pelo"); t.rett(x, 22, x, 29, "pelo_s"); t.rett(x, 28, x + 2, 29, "pelo_s")
     t.poli([(5, 14), (0, 6), (2, 4), (9, 12)], "pelo_l"); t.macchia(0, 4, 8, 13, "pelo", 0.4)

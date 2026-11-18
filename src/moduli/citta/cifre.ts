@@ -47,7 +47,14 @@ export const ILLUSTRAZIONI_CIFRE: readonly VoceContenuto[] = Object.entries(FONT
 // Dove mettere la cifra accanto a un luogo di coordinate (x, y): verso l'esterno della città (a destra se il luogo sta nella
 // metà destra della mappa, a sinistra altrimenti), centrata in verticale. "Accanto" lascia libero il pixel del luogo.
 // Luoghi dove la posizione standard cadrebbe su altri disegni: posizione assoluta (angolo in alto a sinistra della cifra).
-const POSIZIONI_SPECIALI: Readonly<Record<string, { readonly x: number; readonly y: number }>> = { "piazza-n": { x: 62, y: 24 } };
+// 0.21.0: le cifre delle piazze stanno DENTRO la piazza (il 2 non tocca più il 5) e il 3 delle mura sta fuori da Porta Elisa, tra i due bastioni.
+const POSIZIONI_SPECIALI: Readonly<Record<string, { readonly x: number; readonly y: number }>> = {
+  "piazza-n": { x: 62, y: 24 },
+  "piazza-c": { x: 62, y: 44 },
+  "piazza-s": { x: 59, y: 58 },
+  "piazza-m": { x: 90, y: 54 },
+  "mura-e": { x: 115, y: 51 },
+};
 
 // Posizione della cifra di un luogo: quella speciale, se c'è, altrimenti la standard.
 export function posizioneCifraDi(id: string, x: number, y: number): { readonly x: number; readonly y: number } {

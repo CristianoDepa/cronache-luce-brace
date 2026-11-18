@@ -30,11 +30,14 @@ export function iniziaScontro(stato: StatoGioco, creaturaId: Id, ctx: Contesto, 
     return esitoErrore("combattimento.errore.creatura_non_disponibile", creaturaId);
   }
   const scontro: ScontroAttivo = { creaturaId, hpNemico: Math.round(creatura.hp * (potenziamento?.hp ?? 1)), round: 1, effetti: [], usi: {}, ...(scenaId !== undefined ? { scenaId } : {}), ...(moltiplicatorePremio !== 1 ? { moltiplicatorePremio } : {}), ...(potenziamento ? { potenziamento } : {}) };
+  // L'avviso del primo incontro si legge prima di registrare l'incontro.
+  const primoIncontro = (statoCombattimento.leggi(stato).statistiche[creaturaId]?.incontri ?? 0) === 0;
   const nuovo = registraStatistiche(impostaScontro(stato, scontro), creaturaId, { incontri: 1 });
   const inizio: EventoGioco = potenziamento?.soprannomeChiave
     ? { chiave: "combattimento.inizioNome", parametri: { creaturaChiave: creatura.nomeChiave, soprannomeChiave: potenziamento.soprannomeChiave } }
     : { chiave: "combattimento.inizio", parametri: { creaturaChiave: creatura.nomeChiave } };
-  return esitoOk(nuovo, [inizio]);
+  const avviso: EventoGioco[] = primoIncontro && creatura.avvisoPrimoIncontroChiave ? [{ chiave: creatura.avvisoPrimoIncontroChiave, tono: "speciale" }] : [];
+  return esitoOk(nuovo, [inizio, ...avviso]);
 }
 
 export function caricaScontro(stato: StatoGioco, ctx: Contesto): ScontroCorrente | undefined {
@@ -258,7 +261,8 @@ function concludiVittoria(
 ): Esito {
   // Il premio può essere maggiorato dal luogo e dall'ora (es. +25% di notte nel cimitero): vale per monete ed esperienza.
   const premio = statoCombattimento.leggi(stato).scontro?.moltiplicatorePremio ?? 1;
-  const oro = Math.round(applicaRegole(ctx, puntoOro, { stato, oro: creatura.oro }).oro * premio);
+  const calcoloOro = applicaRegole(ctx, puntoOro, { stato, oro: creatura.oro });
+  const oro = Math.round(calcoloOro.oro * premio);
   const esperienza = Math.round(creatura.esperienza * premio);
   const p = stato.personaggio;
   const vinto: StatoGioco = {
@@ -273,7 +277,7 @@ function concludiVittoria(
     tono: "positivo",
   };
   const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "vittoria", eventi: [], ...potenziamentoDi(stato), ...scenaDi(stato) });
-  return esitoOk(fine.stato, [...eventi, evento, ...fine.eventi]);
+  return esitoOk(fine.stato, [...eventi, evento, ...(calcoloOro.eventi ?? []), ...fine.eventi]);
 }
 
 // La penalità di esperienza sarà aggiunta dal modulo di progressione tramite una regola (M4).
@@ -286,7 +290,7 @@ function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id
     const base = protezione?.protetta ? protezione.stato : stato;
     const vivo: StatoGioco = { ...base, personaggio: { ...base.personaggio, hp: 1 } };
     const registrato = registraStatistiche(impostaScontro(vivo, null), creaturaId, { perse: 1 });
-    const fine = applicaRegole(ctx, puntoFineScontro, { stato: registrato, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato) });
+    const fine = applicaRegole(ctx, puntoFineScontro, { stato: registrato, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato), ...(protezione?.protetta ? { protetta: true } : {}) });
     const messaggio: EventoGioco[] = protezione?.protetta ? [...protezione.eventi] : [{ chiave: creatura.messaggioSconfittaChiave ?? "combattimento.sconfittaNonLetale", tono: "negativo" }];
     return esitoOk(fine.stato, [...eventi, ...messaggio, ...fine.eventi]);
   }

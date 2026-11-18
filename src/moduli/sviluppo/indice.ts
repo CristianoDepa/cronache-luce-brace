@@ -8,8 +8,9 @@ import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_MANA, ripristinaMana } from "../mana/indice";
 import { ID_PALUDE } from "../palude/indice";
 import { ID_LIVELLI, PARAMETRI_LIVELLI, esperienzaPerSalire, rettaPerLivello, salitaDiLivello, statoLivelli } from "../livelli/indice";
+import { ID_LAVORI, offerteDelGiorno } from "../lavori/indice";
 import { ID_MURA, presenzeOggi, tipoNpc } from "../mura/indice";
-import { ID_AMULETI } from "../amuleti/indice";
+import { ID_OGGETTI_MAGICI } from "../oggettimagici/indice";
 import { ID_FORTUNA } from "../fortuna/indice";
 import { ID_FORZIERE } from "../forziere/indice";
 import { AZIONI_PROVA, CONTESTI_PROVA, PADRI_PROVA, TESTI_PROVA, TITOLI_PROVA, regolaFortunaProva, statoSviluppo, vociMenuProva } from "./prove016";
@@ -101,6 +102,18 @@ const azioneMostraNpc = definisciAzione(
   consentite,
 );
 
+// Mostra gli incarichi di oggi ai bastioni (la mappa non li dice): serve per provare lavori, consegne e scorte.
+const azioneMostraLavori = definisciAzione(
+  "devMostraLavori",
+  nessunDato,
+  (stato, _d, ctx) => esitoOk(stato, offerteDelGiorno(stato, ctx).map((o) => ({
+    chiave: "sviluppo.lavoro",
+    tono: "speciale" as const,
+    parametri: { luogoChiave: chiaveNome(o.sito), tipoChiave: `lavori.tipo.${o.tipo}` },
+  }))),
+  consentite,
+);
+
 // Dà l'esperienza che manca per salire di livello (o 100 punti se già bastano): per provare livelli e gilde senza combattere.
 const azioneDaiEsperienza = definisciAzione(
   "devEsperienza",
@@ -154,6 +167,7 @@ function menu(): readonly VoceMenu[] {
     { id: "sviluppo.ripristina", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.ripristina", tasto: "3", ordine: 3, comando: { tipo: "azione", azione: { tipo: "devRipristina" } } },
     { id: "sviluppo.vai", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.vai", tasto: "4", ordine: 4, comando: { tipo: "naviga", verso: CONTESTO_VAI } },
     { id: "sviluppo.npc", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.npc", tasto: "6", ordine: 6, comando: { tipo: "azione", azione: { tipo: "devMostraNpc" } } },
+    { id: "sviluppo.lavori", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.lavori", tasto: "L", ordine: 24, comando: { tipo: "azione", azione: { tipo: "devMostraLavori" } } },
     { id: "sviluppo.esperienza", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.esperienza", tasto: "7", ordine: 7, comando: { tipo: "azione", azione: { tipo: "devEsperienza" } } },
     { id: "sviluppo.livello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.livello", tasto: "8", ordine: 8, comando: { tipo: "azione", azione: { tipo: "devLivello" } } },
     { id: "sviluppo.duello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.duello", tasto: "D", ordine: 23, comando: { tipo: "azione", azione: { tipo: "devPreparaDuello" } } },
@@ -174,6 +188,8 @@ function menu(): readonly VoceMenu[] {
 const interfaccia: InterfacciaModulo = {
   // Da morti restano usabili i comandi di prova ("Passa al giorno dopo" serve proprio a rialzarsi).
   contestiDaMorto: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
+  // I comandi di prova si aprono anche durante un combattimento (0.19.1), per curarsi o ripristinare a scontro in corso.
+  contestiLiberiDaForzato: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
   menu: menu(),
   titoliContesto: {
     [CONTESTO]: "sviluppo.titolo",
@@ -194,8 +210,8 @@ const interfaccia: InterfacciaModulo = {
 export const moduloSviluppo: DefinizioneModulo = {
   id: ID_SVILUPPO,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LIVELLI, ID_PALUDE],
-  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, ...AZIONI_PROVA],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE],
+  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneMostraLavori, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, ...AZIONI_PROVA],
   regole: [regolaFortunaProva],
   stato: statoSviluppo,
   testi: {
@@ -210,6 +226,8 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.vai": "Vai a un luogo",
       "sviluppo.menu.mostro": "Scegli il mostro",
       "sviluppo.menu.npc": "Mostra dove sono gli NPC di oggi",
+      "sviluppo.menu.lavori": "Mostra gli incarichi di oggi ai bastioni",
+      "sviluppo.lavoro": "Oggi {luogoChiave}: {tipoChiave} (comando di prova).",
       "sviluppo.menu.esperienza": "Dai l'esperienza per salire di livello",
       "sviluppo.menu.livello": "Sali di un livello (senza gilda)",
       "sviluppo.menu.duello": "Prepara il duello con il capogilda",
@@ -232,6 +250,8 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.vai": "Go to a place",
       "sviluppo.menu.mostro": "Choose the monster",
       "sviluppo.menu.npc": "Show where today's NPCs are",
+      "sviluppo.menu.lavori": "Show today's jobs at the bastions",
+      "sviluppo.lavoro": "Today {luogoChiave}: {tipoChiave} (test command).",
       "sviluppo.menu.esperienza": "Give the experience to level up",
       "sviluppo.menu.livello": "Go up one level (no guild)",
       "sviluppo.menu.duello": "Get ready for the guildmaster duel",

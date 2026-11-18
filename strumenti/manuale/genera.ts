@@ -1,5 +1,6 @@
 import { costruisciRegistro, creaStatoIniziale, leggiContenuto } from "../../src/core/indice";
-import { PARAMETRI_AMULETI } from "../../src/moduli/amuleti/indice";
+import { PARAMETRI_MAGICI, QUALITA_OGGETTO, puntiOggetto } from "../../src/moduli/oggettimagici/indice";
+import type { SlotMagico } from "../../src/moduli/oggettimagici/indice";
 import { CLASSI } from "../../src/moduli/classi/dati";
 import { tipoClasse } from "../../src/moduli/classi/indice";
 import type { Classe } from "../../src/moduli/classi/indice";
@@ -61,9 +62,12 @@ const tabellaClassiLivelli = (skill: Skill): string =>
 const lineaLivello = (skill: Skill): string =>
   classi.map((c) => `${maiuscola(c.nome)} ${segno(valore(skill, c, 3) - valore(skill, c, 2))} per livello`).join(", ");
 
+const valoriOggetto = (slot: SlotMagico, vita: boolean): string[] =>
+  QUALITA_OGGETTO.map((q) => segno(puntiOggetto(slot, q) * (vita ? PARAMETRI_MAGICI.hpPerPunto : 1)));
 const amuleto = (nome: string, vita = false): string => {
-  const b = Object.values(PARAMETRI_AMULETI.bonusPerQualita).map((v) => segno(vita ? v * PARAMETRI_AMULETI.moltiplicatoreVita : v));
-  return `**Amuleto** (medaglione ${nome}): bronzo ${b[0]}, argento ${b[1]}, oro ${b[2]}. Se ne indossa uno solo.`;
+  const m = valoriOggetto("medaglione", vita);
+  const a = valoriOggetto("anello", vita);
+  return `**Oggetti magici** (medaglione ${nome}): bronzo ${m[0]}, argento ${m[1]}, oro ${m[2]}; anello: bronzo ${a[0]}, argento ${a[1]}, oro ${a[2]}. Si indossa un medaglione e un anello, gli effetti si sommano.`;
 };
 
 const pozione = (nome: string, bonus: number): string =>

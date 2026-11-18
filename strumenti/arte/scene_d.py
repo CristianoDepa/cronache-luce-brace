@@ -20,12 +20,23 @@ INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "fi
            "piazza-m": (92, 58), "cattedrale": (98, 52), "palazzo-anziani": (66, 57),
            "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65)}
 
+def angoli_baluardi():
+    """Angoli (gradi da nord) dei baluardi disegnati sulla cinta: 11 equidistanti, tranne quelli troppo vicini a una porta."""
+    angoli_porte = [t for t, _ in PORTE.values()]
+    lontano = lambda t: all(min(abs(t - p) % 360, 360 - abs(t - p) % 360) > 10 for p in angoli_porte)
+    return [t for t in (k * 360 / 11 + 14 for k in range(11)) if lontano(t)]
+
+def baluardo_dopo(theta):
+    """Il primo baluardo disegnato dopo l'angolo dato, in senso orario (a cui si aggancia il tratto di mura che segue una porta)."""
+    angoli = angoli_baluardi()
+    return min((t for t in angoli if t > theta), default=angoli[0])
+
 def coordinate():
     c = {}
     for id_, (theta, _) in PORTE.items():
         x, y = sulla_cinta(theta)
         c[id_] = (round(x), round(y))
-        mx, my = sulla_cinta(theta + 12, RX - 4, RY - 4)
+        mx, my = sulla_cinta(baluardo_dopo(theta))
         c["mura-" + id_.split("-", 1)[1]] = (round(mx), round(my))
     c.update(INTERNI)
     return c
@@ -108,9 +119,9 @@ def sim_cattedrale(q, x, y):                                       # una croce c
 def sim_anziani(q, x, y):                                          # i colori rossi e bianchi della Repubblica (0.19.0)
     q.rett(x - 1, y - 1, x + 1, y + 1, "perg_l"); q.set(x - 1, y - 1, "rosso"); q.set(x, y - 1, "bianco"); q.set(x + 1, y - 1, "rosso")
 
-ICONE = {"cattedrale": ("pietra_s", "bianco", sim_cattedrale), "sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
+ICONE = {"cattedrale": ("pietra_s", "arancio", sim_cattedrale), "sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
          "guaritore": ("ver", "ver_l", sim_guaritore), "speziale": ("cian_s", "cian", sim_speziale), "locanda": ("marr", "marr_l", sim_locanda),
-         "gilda-cavaliere": ("rosso_s", "rosso", sim_cavalieri), "gilda-mistico": ("viola_s", "viola", sim_mistici), "gilda-ladro": ("grigio", "acc_s", sim_ladri)}
+         "gilda-cavaliere": ("rosso_s", "rosso", sim_cavalieri), "gilda-mistico": ("viola_s", "viola", sim_mistici), "gilda-ladro": ("grigio", "acc_s", sim_ladri), "palazzo-anziani": ("rosso_s", "rosso", sim_anziani)}
 
 def mappa():
     q = Quadro(W, H, [(["acq_a", "acq_b"], 700), (["fin", "fin_c"], 1200)], None)
@@ -144,9 +155,7 @@ def mappa():
     for (x0, y0), (x1, y1) in zip([sulla_cinta(t, RX - 2, RY - 2) for t in range(0, 361, 4)], [sulla_cinta(t, RX - 2, RY - 2) for t in range(4, 365, 4)]): q.linea(round(x0), round(y0), round(x1), round(y1), "mattone_s", 1)
     angoli_porte = [t for t, _ in PORTE.values()]
     lontano = lambda t: all(min(abs(t - p) % 360, 360 - abs(t - p) % 360) > 10 for p in angoli_porte)
-    for k in range(11):
-        t = k * 360 / 11 + 14
-        if not lontano(t): continue
+    for t in angoli_baluardi():
         x, y = (round(v) for v in sulla_cinta(t)); q.rett(x - 2, y - 2, x + 2, y + 2, "mattone_s"); q.rett(x - 1, y - 1, x + 1, y + 1, "mattone_l")
     for t in range(3, 360, 6):
         if not lontano(t): continue
@@ -178,7 +187,8 @@ def porta_aperta():
 
 
 def marcatore():
-    """Segno "sei qui": rombo lampeggiante 7 x 7."""
-    q = Quadro(7, 7, [(["mk1", "mk2"], 400)], None)
-    q.poli([(3, 0), (6, 3), (3, 6), (0, 3)], "inchiostro"); q.poli([(3, 1), (5, 3), (3, 5), (1, 3)], "mk1"); q.set(3, 3, "mk2")
+    """Segno "sei qui": freccia lampeggiante 7 x 9 che indica il luogo da sopra (la punta è in basso al centro, 0.19.1)."""
+    q = Quadro(7, 9, [(["mk1", "mk2"], 400)], None)
+    q.poli([(1, 0), (5, 0), (5, 4), (6, 4), (3, 8), (0, 4), (1, 4)], "inchiostro")
+    q.rett(2, 1, 4, 4, "mk1"); q.poli([(1, 4), (5, 4), (3, 7)], "mk1"); q.set(3, 2, "mk2")
     return q

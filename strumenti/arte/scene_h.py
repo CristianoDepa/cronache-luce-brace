@@ -65,6 +65,33 @@ def castruccio():
     return contorno(q)
 
 
+def capitano():
+    # il capitano di guardia ai bastioni: veste rossa con la striscia bianca di Lucca, elmo d'acciaio con cresta, una lancia
+    q = Quadro(20, 34)
+    persona(q, "rosso", "rosso_l", "rosso_s")
+    q.rett(8, 13, 12, 28, "bianco"); q.rett(8, 13, 8, 28, "bianco")                    # la striscia bianca sul petto
+    q.rett(4, 20, 16, 21, "marr")                                                     # cintura
+    q.poli([(5, 5), (15, 5), (15, 2), (10, -1), (5, 2)], "acc"); q.rett(6, -1, 14, 0, "acc_l"); q.rett(5, 5, 15, 5, "acc_s")   # elmo
+    q.rett(10, -2, 10, 3, "rosso_l")                                                  # cresta
+    q.linea(19, 4, 19, 33, "legno_l", 1); q.poli([(18, 4), (20, 4), (19, -2)], "acc_l")   # lancia
+    return contorno(q)
+
+
+def tagliaborse():
+    # Il tagliaborse (0.20.1): ladruncolo incappucciato, mantello scuro a due toni, volto nell'ombra con due occhi chiari, un coltellino in mano
+    # e una borsa rubata che pende dalla cintura.
+    q = Quadro(24, 36, [], None)
+    q.poli([(7, 12), (17, 12), (21, 34), (3, 34)], "viola_s"); q.poli([(7, 12), (11, 12), (11, 34), (3, 34)], "blu_s")      # il mantello
+    q.rett(3, 31, 21, 34, "nero"); q.rett(10, 14, 14, 30, "viola_s")                                                      # l'orlo e il giubbetto
+    q.poli([(5, 11), (19, 11), (17, 3), (12, 0), (7, 3)], "blu_s"); q.poli([(12, 0), (17, 3), (19, 11), (15, 11)], "viola_s")   # il cappuccio
+    q.ell(12, 8, 3.8, 4.2, "nero"); q.set(10, 8, "bianco"); q.set(14, 8, "bianco")                                          # il volto nell'ombra e gli occhi
+    q.rett(4, 21, 20, 22, "marr_s"); q.rett(11, 21, 12, 22, "oro")                                                         # la cintura con la fibbia
+    q.ell(6, 26, 2.6, 3.2, "marr"); q.rett(5, 22, 7, 23, "marr_s"); q.set(6, 26, "oro_l"); q.set(7, 27, "oro")             # la borsa rubata
+    q.rett(18, 17, 19, 21, "pelle_s"); q.rett(20, 12, 21, 18, "acc_l"); q.poli([(19, 18), (22, 18), (21, 20), (20, 20)], "acc_s")   # il braccio e il coltellino
+    q.rett(8, 34, 11, 35, "nero"); q.rett(13, 34, 16, 35, "nero")
+    return contorno(q)
+
+
 def tavolaccio():
     # Il tavolo della Zara visto dall'alto: assi rozze di legno, graffi di coltello, macchie di boccale e un bossolo di cuoio in un angolo.
     q = Quadro(W, H, [], None)
@@ -327,6 +354,9 @@ def zaino():
     q.rett(65, 38, 66, 50, "marr_s"); q.rett(90, 38, 91, 50, "marr_s"); q.rett(65, 43, 91, 44, "acc_s")
     q.rett(67, 35, 89, 38, "ver"); q.rett(69, 36, 87, 37, "ver_s")                                        # l'imbottitura vuota, in vista
     q.rett(76, 43, 80, 47, "oro"); q.set(78, 45, "nero"); q.rett(76, 43, 80, 43, "oro_l")                     # la serratura
+    # le due nicchie dei due oggetti magici (0.21.0): a sinistra il medaglione (tondo), a destra l'anello (un tondo più piccolo con il foro)
+    q.ell(74, 29, 4, 4, "ver_s"); q.ell(74, 29, 2.5, 2.5, "ver")
+    q.ell(83, 29, 3, 3, "ver_s"); q.ell(83, 29, 1.4, 1.4, "ver")
     return q
 
 

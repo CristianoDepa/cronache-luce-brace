@@ -8,7 +8,7 @@ Quanti colpi puoi incassare. **Base** 20; **classe**: Cavaliere +10, Mistico -2,
 
 **Equipaggiamento**: le armature danno HP (3 HP valgono 1 punto di potenza; per livello della linea: leggera 2 punti per livello, media 3 punti per livello, pesante 4 punti per livello).
 
-**Segreto della Torre** (prima salita): +3 HP per sempre. **Amuleto** (medaglione della vita): bronzo +6, argento +12, oro +18. Se ne indossa uno solo.
+**Segreto della Torre** (prima salita): +3 HP per sempre. **Oggetti magici** (medaglione della vita): bronzo +10, argento +20, oro +30; anello: bronzo +5, argento +10, oro +15. Si indossa un medaglione e un anello, gli effetti si sommano.
 
 In scheda: «HP massimi: N». Valore teorico con classe e livelli (senza oggetti):
 
@@ -30,7 +30,7 @@ In scheda: «HP massimi: N». Valore teorico con classe e livelli (senza oggetti
 
 Quanto fai male. **Base** 5; **classe**: Cavaliere 0, Mistico +3, Ladro 0; **livelli**: Cavaliere +1 per livello, Mistico 0 per livello, Ladro 0 per livello (e un extra al 4° livello per alcune classi).
 
-**Equipaggiamento**: le armi danno forza (1 punto per punto; leggera 2 punti per livello, media 3 punti per livello, pesante 4 punti per livello). **Pozione della forza**: +2 per 5 + d6 turni di combattimento (la durata non si vede mai). **Amuleto** (medaglione della forza): bronzo +2, argento +4, oro +6. Se ne indossa uno solo.
+**Equipaggiamento**: le armi danno forza (1 punto per punto; leggera 2 punti per livello, media 3 punti per livello, pesante 4 punti per livello). **Pozione della forza**: +2 per 5 + d6 turni di combattimento (la durata non si vede mai). **Oggetti magici** (medaglione della forza): bronzo +2, argento +4, oro +6; anello: bronzo +1, argento +2, oro +3. Si indossa un medaglione e un anello, gli effetti si sommano.
 
 In scheda: «Forza: N (base B, bonus +X)». Valore teorico con classe e livelli:
 
@@ -52,7 +52,7 @@ In scheda: «Forza: N (base B, bonus +X)». Valore teorico con classe e livelli:
 
 Quanto ti proteggi. **Base** 2; **classe**: Cavaliere +2, Mistico 0, Ladro 0; **livelli**: Cavaliere 0 per livello, Mistico +1 per livello, Ladro 0 per livello.
 
-**Equipaggiamento**: le armature danno difesa (leggera 2 punti per livello, media 3 punti per livello, pesante 4 punti per livello). **Pozione della corazza**: +2 per 5 + d6 turni di combattimento (la durata non si vede mai). **Amuleto** (medaglione della difesa): bronzo +2, argento +4, oro +6. Se ne indossa uno solo.
+**Equipaggiamento**: le armature danno difesa (leggera 2 punti per livello, media 3 punti per livello, pesante 4 punti per livello). **Pozione della corazza**: +2 per 5 + d6 turni di combattimento (la durata non si vede mai). **Oggetti magici** (medaglione della difesa): bronzo +2, argento +4, oro +6; anello: bronzo +1, argento +2, oro +3. Si indossa un medaglione e un anello, gli effetti si sommano.
 
 In scheda: «Difesa: N (base B, bonus +X)». Valore teorico con classe e livelli:
 
@@ -74,7 +74,7 @@ In scheda: «Difesa: N (base B, bonus +X)». Valore teorico con classe e livelli
 
 Decide chi colpisce per primo e quanto è facile fuggire. **Base** 10; **classe**: Cavaliere -4, Mistico 0, Ladro +5; **livelli**: Cavaliere 0 per livello, Mistico 0 per livello, Ladro +1 per livello.
 
-**Equipaggiamento**: la velocità è fissa per peso (leggera +3, media 0, pesante -3). **Pozione della destrezza**: +2 per 5 + d6 turni di combattimento (la durata non si vede mai). **Amuleto** (medaglione della velocità): bronzo +2, argento +4, oro +6. Se ne indossa uno solo.
+**Equipaggiamento**: la velocità è fissa per peso (leggera +3, media 0, pesante -3). **Pozione della destrezza**: +2 per 5 + d6 turni di combattimento (la durata non si vede mai). **Oggetti magici** (medaglione della velocità): bronzo +2, argento +4, oro +6; anello: bronzo +1, argento +2, oro +3. Si indossa un medaglione e un anello, gli effetti si sommano.
 
 In scheda: «Velocità: N (base B, bonus +X)». Valore teorico con classe e livelli:
 
@@ -96,7 +96,7 @@ In scheda: «Velocità: N (base B, bonus +X)». Valore teorico con classe e live
 
 Serve alle abilità. Solo chi ne ha: **classe**: Cavaliere 0, Mistico +10, Ladro 0; **livelli**: Cavaliere 0 per livello, Mistico +2 per livello, Ladro 0 per livello.
 
-**Segreto della Torre** (solo il Mistico): +1 mana per sempre. **Amuleto** (medaglione del mana): bronzo +2, argento +4, oro +6. Se ne indossa uno solo. Il medaglione del mana non cade a chi non ha mana.
+**Segreto della Torre** (solo il Mistico): +1 mana per sempre. **Oggetti magici** (medaglione del mana): bronzo +2, argento +4, oro +6; anello: bronzo +1, argento +2, oro +3. Si indossa un medaglione e un anello, gli effetti si sommano. Il medaglione del mana non cade a chi non ha mana.
 
 **Recupero**: +1 per ogni scontro vinto, al nuovo giorno e dormendo in Locanda. In scheda: «Mana: attuale/massimo (base B, bonus +X)». Valore teorico con classe e livelli:
 
@@ -118,7 +118,7 @@ Serve alle abilità. Solo chi ne ha: **classe**: Cavaliere 0, Mistico +10, Ladro
 
 Agisce SOLO su bottino e scoperte (pozioni trovate dopo una vittoria, forzieri, prede di Castruccio): non nel combattimento e non nella Zara. Ogni punto aumenta del 3% la probabilità, e nessuna supera il 90%.
 
-**Classe**: Cavaliere +2, Mistico +3, Ladro +5; **livelli**: +1 ogni 2 livelli. **Pozione della fortuna**: +5 per 5 + d6 turni di combattimento (la durata non si vede mai). **Amuleto** (medaglione della fortuna): bronzo +2, argento +4, oro +6. Se ne indossa uno solo.
+**Classe**: Cavaliere +2, Mistico +3, Ladro +5; **livelli**: +1 ogni 2 livelli. **Pozione della fortuna**: +5 per 5 + d6 turni di combattimento (la durata non si vede mai). **Oggetti magici** (medaglione della fortuna): bronzo +2, argento +4, oro +6; anello: bronzo +1, argento +2, oro +3. Si indossa un medaglione e un anello, gli effetti si sommano.
 
 **Forziere**: compare dopo una vittoria (foresta 1%, palude 2%, cimitero 3%, valle 4%); si apre al 60% (più lo scasso del Ladro, vedi la pagina Scasso), con la Fortuna fino al tetto della classe; un solo tentativo; dentro oro o una pozione.
 

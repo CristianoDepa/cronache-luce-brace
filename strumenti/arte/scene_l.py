@@ -66,23 +66,27 @@ def disertore():
     return q
 
 def annegato():
-    # L'annegato (0.18.1): mezzo busto che emerge dall'acqua, capelli lunghi e bagnati sul volto, camicia a brandelli, alghe, una corda alla vita, gocce e una mano tesa in avanti.
+    # L'annegato (0.18.1, ritoccato 0.19.1): mezzo busto che emerge dall'acqua, capelli lunghi e bagnati sul volto, camicia a brandelli, alghe, una corda alla vita, gocce e una mano tesa in avanti.
     q = Quadro(30, 40, [], None)
-    q.poli([(8, 14), (20, 14), (23, 34), (5, 34)], "perg_s"); q.poli([(8, 14), (12, 14), (10, 34), (5, 34)], "cian_s")          # il torace livido
-    q.poli([(7, 14), (21, 14), (22, 22), (18, 20), (15, 25), (11, 20), (6, 24)], "blu_s")                                      # la camicia a brandelli
+    q.poli([(8, 14), (20, 14), (23, 34), (5, 34)], "perg_l"); q.poli([(8, 14), (12, 14), (10, 34), (5, 34)], "perg")          # il torace livido
+    q.poli([(7, 14), (21, 14), (22, 22), (18, 20), (15, 25), (11, 20), (6, 24)], "blu_l")                                      # la camicia a brandelli
     q.rett(6, 26, 22, 28, "marr_l"); q.rett(9, 26, 10, 29, "marr_l")                                                           # la corda
-    q.ell(14, 9, 5.2, 6, "perg_s")                                                                                              # la testa
+    q.ell(14, 9, 5.2, 6, "perg_l")                                                                                              # la testa
     q.poli([(8, 4), (13, 3), (12, 12), (10, 19), (7, 16)], "blu_s"); q.poli([(15, 3), (20, 5), (21, 16), (18, 19), (16, 12)], "blu_s"); q.rett(9, 3, 19, 5, "blu_s")   # i capelli bagnati, in due ciocche
     q.set(10, 8, "acqua_l"); q.set(19, 9, "acqua_l"); q.set(9, 14, "acqua_l"); q.set(20, 13, "acqua_l")                           # luccichii sui capelli
     q.set(12, 8, "bianco"); q.set(13, 8, "nero"); q.set(16, 8, "bianco"); q.set(15, 8, "nero"); q.rett(13, 11, 15, 12, "nero")      # occhi sbarrati e bocca aperta
     q.rett(13, 10, 15, 10, "perg")
     q.rett(7, 6, 9, 8, "ver_s"); q.rett(19, 12, 22, 14, "ver_s"); q.rett(10, 22, 11, 26, "ver"); q.rett(17, 20, 19, 23, "ver_s")  # le alghe
-    q.rett(20, 17, 29, 19, "perg_s"); q.rett(27, 16, 29, 17, "perg_s"); q.rett(27, 20, 29, 21, "perg_s"); q.set(29, 19, "perg_s")  # il braccio e la mano tesi
-    q.rett(1, 17, 7, 19, "perg_s"); q.rett(1, 19, 3, 31, "perg_s")                                                             # l'altro braccio che pende
+    q.rett(20, 17, 29, 19, "perg_l"); q.rett(27, 16, 29, 17, "perg_l"); q.rett(27, 20, 29, 21, "perg_l"); q.set(29, 19, "perg_l")  # il braccio e la mano tesi
+    q.rett(1, 17, 7, 19, "perg_l"); q.rett(1, 19, 3, 31, "perg_l")                                                             # l'altro braccio che pende
     q.ell(14, 36, 14, 4, "acqua"); q.rett(0, 34, 29, 39, "acqua"); q.rett(2, 33, 27, 33, "acqua_l"); q.rett(5, 37, 24, 37, "acqua_l")   # l'acqua che gli arriva alla vita
     q.rett(3, 35, 10, 35, "acqua_l"); q.rett(18, 38, 26, 38, "acqua_l")
     for x, y in ((2, 31), (28, 22), (8, 12), (21, 30)): q.set(x, y, "acqua_l"); q.set(x, y + 2, "acqua_l")                      # le gocce
-    return q
+    n = contorno(q, "inchiostro")
+    for y in range(35, n.h):                                           # niente contorno attorno all'acqua
+        for x in range(n.w):
+            if n.p[y][x] == "inchiostro": n.p[y][x] = None
+    return n   # 0.19.1: pelle chiara, camicia chiara e un contorno scuro per staccarlo dal cielo
 
 def dama_della_nebbia():
     # La dama della nebbia (0.18.1): figura slanciata e simmetrica, testa centrata, velo che scende sulle spalle, abito stretto in alto e largo in basso, mani giunte;

@@ -30,6 +30,8 @@ export interface Creatura {
   readonly nonLetale: boolean;
   // Messaggio mostrato quando si perde un duello non letale (se manca: il messaggio generico dei duelli con i capigilda).
   readonly messaggioSconfittaChiave?: string;
+  // Avviso mostrato solo al primo incontro con la creatura (0.19.1: gli spiriti resistono alle armi comuni).
+  readonly avvisoPrimoIncontroChiave?: string;
   // Le creature con lo stesso gruppo compaiono in una sola riga della tabella delle statistiche (es. i quattro aspetti del gladiatore).
   readonly gruppoStatistiche?: string;
   // Id dell'illustrazione della creatura.
@@ -83,6 +85,7 @@ export const tipoCreatura: TipoContenuto<Creatura> = {
       fugaConsentita: booleano(o, "fugaConsentita", errori, true),
       nonLetale: booleano(o, "nonLetale", errori, false),
       ...(stringaOpzionale(o, "gruppoStatistiche", errori) !== undefined ? { gruppoStatistiche: stringaOpzionale(o, "gruppoStatistiche", errori) as string } : {}),
+      ...(stringaOpzionale(o, "avvisoPrimoIncontroChiave", errori) !== undefined ? { avvisoPrimoIncontroChiave: stringaOpzionale(o, "avvisoPrimoIncontroChiave", errori) as string } : {}),
       ...(stringaOpzionale(o, "messaggioSconfittaChiave", errori) !== undefined ? { messaggioSconfittaChiave: stringaOpzionale(o, "messaggioSconfittaChiave", errori) as string } : {}),
       ...(evento !== undefined ? { evento } : {}),
       ...(immagineId !== undefined ? { immagineId } : {}),

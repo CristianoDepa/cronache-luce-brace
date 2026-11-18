@@ -1,6 +1,6 @@
 import type { Contesto, DefinizioneModulo, InterfacciaModulo, PannelloVista, RigaVista, StatoGioco } from "../../core/indice";
 import { VERSIONE_API, calcolaStatistiche, regola } from "../../core/indice";
-import { ID_AMULETI, PARAMETRI_AMULETI, consegnaAmuleto } from "../amuleti/indice";
+import { ID_OGGETTI_MAGICI, PARAMETRI_MAGICI, consegnaOggettoMagico } from "../oggettimagici/indice";
 import { ID_AZIONI } from "../azioni/indice";
 import { ID_CITTA, leggiSito } from "../citta/indice";
 import { ID_COMBATTIMENTO, puntoFineScontro } from "../combattimento/indice";
@@ -46,7 +46,7 @@ const interfaccia: InterfacciaModulo = {
 // Il Traghettatore, il boss della valle, dà sempre un amuleto d'argento (compenso in monete se lo zaino è pieno), oltre ai premi doppi già nei suoi dati.
 export const regolaBossValle = regola(puntoFineScontro, 70, (calcolo, ctx) => {
   if (calcolo.esito !== "vittoria" || calcolo.creaturaId !== ID_CREATURA_BOSS) return calcolo;
-  const premio = consegnaAmuleto(calcolo.stato, ctx, PARAMETRI_AMULETI.fonti.bossValle);
+  const premio = consegnaOggettoMagico(calcolo.stato, ctx, PARAMETRI_MAGICI.fonti.bossValle);
   return { ...calcolo, stato: premio.stato, eventi: [...calcolo.eventi, ...premio.eventi] };
 });
 
@@ -54,7 +54,7 @@ export const regolaBossValle = regola(puntoFineScontro, 70, (calcolo, ctx) => {
 export const moduloValle: DefinizioneModulo = {
   id: ID_VALLE,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_LUOGHI, ID_PALUDE],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_LUOGHI, ID_PALUDE],
   contenuti: [...MOSTRI_VALLE, ...LUOGHI_VALLE, ...ILLUSTRAZIONI_VALLE],
   regole: [regolaBossValle],
   testi: TESTI_VALLE,

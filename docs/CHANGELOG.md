@@ -1,5 +1,56 @@
 # Cronologia delle versioni
 
+## 0.21.0 - Oggetti magici e anelli
+- **Il modulo `amuleti` diventa `oggettimagici`** (id di stato `oggettiMagici`, testi `oggettiMagici.*`): due slot, **medaglione** e **anello**, uno per slot; gli effetti si **sommano** (anello forza +1 e medaglione forza +2 = +3; anello vita e medaglione fortuna agiscono ciascuno sulla propria statistica).
+- **Anelli:** sei tipi (forza, difesa, velocità, vita, mana, fortuna) in tre qualità con **metà dei punti** del medaglione: 1/2/3 punti (vita +5/+10/+15 HP). Medaglioni 2/4/6 punti.
+- **Scala degli HP solo per gli oggetti magici:** 1 punto di vita = **5 HP** (prima 3): i medaglioni di vita passano da +6/+12/+18 a **+10/+20/+30**. Equipaggiamento, livelli, Torre e prezzi restano a 3 HP per punto.
+- **Fonti invariate, ora al 50%:** bottino dei mostri (0,5%), prede pericolose, torneo, Traghettatore: ogni oggetto è un anello o un medaglione al 50% (`probabilitaAnello`), della stessa qualità; il mana non cade a chi non ha mana; a zaino pieno vale lo stesso compenso.
+- **Zaino e scheda:** seconda nicchia nell'immagine dello zaino (medaglione tondo e anello); la scheda ha le righe «Medaglione» e «Anello» sotto «Oggetti magici»; il numero dello slot indossa nello slot giusto (in combattimento no).
+- **Comando di prova `[A]` «Dai un oggetto magico»:** ora scelta in tre passi (medaglione o anello, qualità, tipo).
+- **Mappa (dal collaudo della 0.20.2):** il 3 delle mura sta fuori da Porta Elisa tra i due bastioni; i numeri di San Michele, Napoleone e San Martino stanno dentro la piazza; la metà destra del tetto della cattedrale è **arancione** (il bianco puro si fondeva con il segno «sei qui» e lampeggiava); il bianco del segno «sei qui» è ora `#fffff0` così nessun altro pixel bianco lo segue.
+- **Manuale** rigenerato dai dati. 750 test (+1 saltato).
+
+## 0.20.2 - Correzioni dal collaudo della 0.20.1
+- **Numeri della mappa:** i numeri delle Mura si agganciano ora ai **baluardi disegnati** (ogni tratto prende il primo baluardo dopo la propria porta, in senso orario) e non cadono più sulle porte; anche il segnaposto «sei qui» finisce sul baluardo. Il settimo baluardo resta senza numero.
+- **Il capitano parla:** consegna «Il capitano ti dice: «Fai attenzione, le strade non sono molto sicure oggidì.»»; scorta «Il capitano ti dice: «Tieni gli occhi aperti: là fuori non è sicuro.»» (al posto degli avvisi neutri).
+- **Messaggi di partenza:** la consegna usa la forma «dove» del luogo («...da recapitare sulle Mura - Sant'Anna» / «a Porta San Donato»); la scorta dice «Destinazione: X». La riga dei lavori nei bandi usa la stessa forma («sulle Mura - San Pietro, ...»).
+- **Fuga dall'imboscata all'80%:** il Tagliaborse ha velocità 4 (era 10): con velocità 10 la fuga passa dal 50% all'80%.
+- **Lavori tranquilli ai primi livelli:** fino al livello 2 la probabilità di imboscata è 10% per la consegna e 20% per la scorta (poi 25% e 50%); nuova funzione `probabilitaImboscata(tipo, livello)`.
+- **Palazzo degli Anziani:** le finestre di destra non toccano più il portale (simmetriche rispetto alla sinistra; due finestre a destra, il resto è lo stendardo).
+- **Luna di giorno:** verificata: la luna delle scene all'aperto di giorno ha già il colore del cielo (si intravede appena); nessuna modifica.
+- Interno: `citta` esporta `chiaveDove`; 747 test.
+
+## 0.20.1 - Correzioni dei lavori
+- **Capitano sul camminamento:** lo sprite sta ora a destra dell'eventuale NPC, sul camminamento (x 72), non più sopra la torre.
+- **Testi:** sorveglianza «Turno di sorveglianza finito: tranquillo, quasi noioso. Ricevi N monete e N punti esperienza.»; consegna «Ti affidano un pacco da recapitare a X, entro oggi. All'arrivo riceverai N monete.»; scorta «Ti affidano un convoglio da scortare fino a X, entro oggi. ...» (anche in inglese).
+- **Nuova creatura «Tagliaborse»** (famiglia umanoidi, difesa 3, velocità 10, senza oro né esperienza: il premio è la paga): è **l'unico imboscatore** (non più lupi e creature della foresta), nella scena dei bastioni. HP e forza si scalano sul livello del giocatore con il potenziamento: **0,8 × (30 + 12 × livello)** HP e **0,8 × (6 + 1,5 × livello)** forza (fattore tarato col simulatore; 0,7 era troppo facile). Nuovo sprite `sprite.tagliaborse` (incappucciato, coltellino, borsa rubata). Voce nel bestiario.
+- **Abbandonare da ovunque:** `[A]` «Abbandona l'incarico» anche nella mappa (nascosto senza lavoro in corso).
+- **Bandi del Palazzo:** una riga dice **quali bastioni hanno un incarico oggi** (senza il tipo) o che non ce ne sono; se Castruccio ha una preda, il bando ne dice il **soprannome**.
+- **Furto:** alla vittoria compare «Furto: hai portato via più del solito.» se il Furto ha davvero reso di più (nuovo campo opzionale `eventi` nel calcolo `puntoOro`).
+- **Mappa:** icona del Palazzo degli Anziani (tetto rosso con i colori della Repubblica).
+- Interno: il modulo `bandi` dipende da `lavori` (spostato dopo `lavori` in `MODULI_ATTIVI` per non cambiare l'ordine dei pannelli); `lavori` non dipende più da foresta e luoghi; 747 test (nuovo `bilanciamentoTagliaborse.test.ts`).
+
+## 0.20.0 - I lavori ai bastioni
+- **Nuovo modulo `lavori`.** Ogni giorno **tre dei sei bastioni** (le mura) hanno un **capitano di guardia** con un incarico; il suo **sprite compare solo dove l'incarico c'è ancora da prendere** (niente incarico o già fatto = bastione vuoto). Al massimo 3 lavori al giorno. Tipo a caso per bastione (stesso peso): **sorveglianza**, **consegna** (destinazione: un altro bastione), **scorta** (destinazione: una porta). Le offerte dipendono solo dal giorno (`ultimoReset`), non si salvano.
+- **Comandi nei bastioni:** `[L]` lavora (l'etichetta dice tipo, azioni e monete) e `[A]` abbandona (senza penalità; quel bastione oggi non offre più incarichi). Pannello «Il capitano di guardia», riga «Incarico: ...» nella colonna di destra e nella scheda.
+- **Costi e paga:** sorveglianza **3 azioni** sul posto, paga subito; consegna e scorta **1 azione di carico** + il viaggio (a piedi, come sempre), paga all'arrivo. **Paga = livello × tariffa × azioni del lavoro** (tariffe provvisorie: sorveglianza 4, consegna 6, scorta 6); esperienza minima: 1 punto per azione. La Fortuna non c'entra.
+- **Imboscata:** all'arrivo di consegna/scorta c'è una probabilità (consegna 25%, scorta 50%) di **scontro normale** con una creatura della foresta (dal livello 4 anche della palude, scena dei bastioni). **Vittoria = paga; fuga o sconfitta = lavoro fallito, nessun compenso** (la morte segue le regole di sempre). Un solo lavoro alla volta, valido fino al cambio del giorno.
+- **Comando di prova** `[O]`→`[V]`→`[L]`: elenca gli incarichi di oggi (la mappa non li dice).
+- **Nuovo sprite** `sprite.npc.capitano` (veste rossa con striscia bianca, elmo con cresta, lancia).
+- Interno: nuovo punto di regola **`puntoArrivo`** in `citta` (dopo ogni viaggio a piedi); modulo `lavori` (stato `{giorno, fatte, attivo}`, regole su `puntoArrivo`, `puntoFineScontro`, `puntoFineRound` per la fuga); `sviluppo` dipende da `lavori`; 743 test (nuovo `lavori.test.ts`, aggiornati quattro test sui tasti/moduli).
+
+## 0.19.1 - Correzioni dal collaudo della 0.19.0
+- **Valle (solo dati):** forza dama della nebbia 41 → **38**, annegato 32 → **30**, corvi 31 → **28**.
+- **Avviso agli spiriti:** al **primo incontro** con l'annegato e con la dama della nebbia compare una riga in ciano («Le armi comuni lo feriscono poco...» / «...la attraversano come nebbia: serve un'arma incantata.»); il Traghettatore non è immune e non ha avviso. Nuovo campo opzionale `avvisoPrimoIncontroChiave` nelle creature.
+- **Grazia della cattedrale:** ora salva «con tutte le conseguenze»: niente oro perso, niente lapide **e niente perdita di esperienza** (il punto `puntoFineScontro` porta `protetta`).
+- **Rito di Sibilla:** dopo il rito il registro dice quanto hai pagato («Paghi N monete.»).
+- **Foresta:** la riga giorno/notte è in ciano (tono «speciale») con testo neutro («È notte: nel bosco si aggirano più lupi e meno ratti.»), senza promettere pericolo.
+- **Comandi di prova durante il combattimento:** `[O]` → `[V]` si aprono anche a scontro in corso (prima restavi bloccato); lanciare un combattimento dal comando di prova porta subito allo scontro.
+- **Testi a capo con rientro sospeso:** le righe lunghe ripartono sotto la prima lettera dopo «[1] », «> » o «- » (client, `larghezzaRientro`).
+- **Forziere:** dopo aver trovato il forziere, alla porta della zona **si vede il forziere davanti alla porta**; dopo il tentativo l'immagine torna alla sola porta. La schermata d'esito non ripete più il testo (resta quello del registro).
+- **Grafiche:** il segno «sei qui» sulla mappa è una **freccia lampeggiante sopra il luogo** (prima un rombo sul tetto che sembrava un tetto che cambiava colore); **Palazzo degli Anziani** con **una sola bandiera** (bianco e rosso, come il gonfalone di Lucca) su un'asta fissata al muro; **Armeria** con rastrelliera di spade, armatura su manichino e scudo; **annegato** più chiaro con contorno; **lupo** con l'occhio che guarda in avanti.
+- Interno: `CalcoloFineScontro.protetta`, `Creatura.avvisoPrimoIncontroChiave`, `contestiLiberiDaForzato` anche per `sviluppo`, `ParametriZonaForziere.scenaPortaId`, `illustrazioni` del modulo `forziere`; 733 test (nuovo `rifiniture0191.test.ts`).
+
 ## 0.19.0 - Piazza San Martino: cattedrale, Padre Bartolomeo e il Palazzo degli Anziani
 - **Piazza San Martino**, nuova piazza di Lucca, collegata a **Piazza Napoleone (3 movimenti)** e a **Piazza San Michele (4)**; scena dalla foto della cattedrale (facciata di marmo con portico a tre archi e loggette, campanile di mattoni, edificio basso con archi), di notte e di giorno. Il **registro dei caduti** si è spostato qui (`[R]`).
 - **La Cattedrale di San Martino** (`[C]`): **Padre Bartolomeo**, l'arciprete (il nome è un omaggio, solo il nome di battesimo). **Chiedi l'intercessione** (`[1]`): offerta di **50 monete per livello** (400 al livello 8), **una volta al giorno**. La **protezione divina**: la prima volta nel giorno che il personaggio morirebbe, resta vivo a **1 HP**, **non perde nulla**, **non nasce la lapide** e **lo scontro finisce** («La grazia ti ha coperto. Ti rialzi con 1 HP, e il pericolo si allontana.»); non serve nei duelli con i capigilda (già non letali). La grazia dura fino al giorno dopo; se non è servita la cattedrale dice «La protezione è svanita». Battute in tono sobrio e severo; la scheda dice «Sotto la grazia di Padre Bartolomeo, fino a domani.»

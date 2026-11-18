@@ -56,14 +56,19 @@ def armeria():
     q.macchia(0, 0, W - 1, 51, "pietra", 0.3); q.macchia(0, 0, W - 1, 51, "pietra_l", 0.08)
     q.sfuma(52, H - 1, ["pavim", "pavim_s"])
     for x in range(0, W, 10): q.rett(x, 52, x, H - 1, "ombra")
-    for sx in (1, -1):
-        q.linea(48 - sx * 26, 4, 48 + sx * 26, 46, "acc_l", 3); q.linea(48 - sx * 26 + sx, 4, 48 + sx * 26 + sx, 46, "acc")
-        hx = 48 + sx * 24
-        q.rett(hx - 6, 40, hx + 6, 42, "oro"); q.linea(hx, 42, hx - sx * 2, 50, "marr", 2)
-    q.disco(48, 26, 16, "acc_s"); q.disco(48, 26, 14, "blu"); q.macchia(34, 12, 48, 26, "blu_l", 0.4); q.disco(48, 26, 5, "acc"); q.disco(48, 26, 3, "oro")
-    q.rett(47, 14, 49, 38, "bianco"); q.rett(38, 25, 58, 27, "bianco")
-    for ax, sx in ((8, 1), (86, -1)):
-        q.linea(ax, 8, ax, 50, "legno", 2); q.poli([(ax, 10), (ax + sx * 10, 14), (ax + sx * 10, 24), (ax, 28)], "acc"); q.poli([(ax, 10), (ax + sx * 4, 12), (ax + sx * 4, 26), (ax, 28)], "acc_l")
+    # 0.19.1: pochi oggetti ben leggibili: rastrelliera con tre spade (a sinistra), armatura su manichino (al centro), scudo sul muro (a destra)
+    q.rett(7, 8, 35, 46, "legno_s"); q.rett(8, 9, 34, 45, "legno"); q.rett(8, 9, 34, 10, "legno_l"); q.rett(7, 46, 35, 47, "ombra")      # la rastrelliera
+    q.rett(8, 40, 34, 42, "legno_s")
+    for x in (13, 21, 29):
+        q.rett(x - 1, 12, x + 1, 31, "acc_l"); q.rett(x - 1, 12, x - 1, 31, "bianco"); q.rett(x + 1, 14, x + 1, 31, "acc")         # la lama
+        q.poli([(x - 1, 11), (x + 1, 11), (x, 8)], "bianco")                                                                      # la punta
+        q.rett(x - 3, 32, x + 3, 33, "oro"); q.rett(x - 3, 33, x + 3, 33, "oro_s")                                                 # la guardia
+        q.rett(x, 34, x, 39, "marr_s"); q.rett(x - 1, 34, x + 1, 39, "marr"); q.disco(x, 41, 2, "oro")                             # l'impugnatura e il pomo
+    q.rett(47, 44, 49, 51, "legno"); q.rett(41, 51, 55, 52, "ombra"); q.rett(42, 50, 54, 51, "legno_s")                            # il manichino con l'armatura
+    q.poli([(41, 21), (57, 21), (55, 44), (43, 44)], "acc"); q.poli([(41, 21), (49, 21), (49, 44), (43, 44)], "acc_l"); q.rett(43, 33, 55, 34, "oro")
+    q.rett(48, 21, 50, 44, "acc_s"); q.disco(39, 23, 4, "acc_l"); q.disco(59, 23, 4, "acc"); q.rett(36, 26, 41, 38, "acc_s"); q.rett(57, 26, 62, 38, "acc_s")
+    q.rett(44, 15, 54, 19, "acc"); q.disco(49, 12, 6, "acc_l"); q.rett(45, 12, 53, 13, "ombra"); q.rett(48, 6, 50, 7, "rosso"); q.poli([(48, 4), (50, 4), (53, 9), (47, 9)], "rosso")
+    q.disco(80, 22, 12, "acc_s"); q.disco(80, 22, 10, "rosso"); q.disco(80, 22, 10, "rosso"); q.rett(79, 12, 81, 32, "bianco"); q.rett(70, 21, 90, 23, "bianco"); q.disco(80, 22, 3, "oro")   # lo scudo con la croce
     # braciere
     q.rett(80, 56, 92, 58, "acc_s"); q.poli([(80, 56), (92, 56), (88, 50), (84, 50)], "acc"); fiamma(q, 86, 50, 9, 3)
     return q

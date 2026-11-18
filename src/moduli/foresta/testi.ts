@@ -3,8 +3,8 @@ import type { DizionarioTesti } from "../../core/indice";
 export const TESTI_FORESTA: DizionarioTesti = {
   it: {
     "foresta.ferito": "Sei ferito ({hp}/{hpMax} HP): curati prima di esplorare.",
-    "foresta.fase.giorno": "È giorno: nella foresta si incontrano soprattutto ratti e lupi.",
-    "foresta.fase.notte": "È notte: i lupi sono più numerosi e i ratti più rari.",
+    "foresta.fase.giorno": "È giorno: nel bosco si incontrano soprattutto ratti e qualche lupo.",
+    "foresta.fase.notte": "È notte: nel bosco si aggirano più lupi e meno ratti.",
     "foresta.luogo.foresta": "La Foresta",
     "foresta.menu.vai": "Entra nella foresta",
     "foresta.menu.esplora": "Addentrati nella foresta",
@@ -14,8 +14,8 @@ export const TESTI_FORESTA: DizionarioTesti = {
   },
   en: {
     "foresta.ferito": "You are wounded ({hp}/{hpMax} HP): heal before exploring.",
-    "foresta.fase.giorno": "It is daytime: the forest holds mostly rats and wolves.",
-    "foresta.fase.notte": "It is night: wolves are more numerous and rats rarer.",
+    "foresta.fase.giorno": "It is daytime: the woods hold mostly rats and a few wolves.",
+    "foresta.fase.notte": "It is night: more wolves and fewer rats roam the woods.",
     "foresta.luogo.foresta": "The Forest",
     "foresta.menu.vai": "Enter the forest",
     "foresta.menu.esplora": "Venture into the forest",

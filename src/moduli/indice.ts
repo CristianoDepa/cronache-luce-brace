@@ -1,6 +1,6 @@
 import type { DefinizioneModulo } from "../core/indice";
 import { moduloAbilita } from "./abilita/indice";
-import { moduloAmuleti } from "./amuleti/indice";
+import { moduloOggettiMagici } from "./oggettimagici/indice";
 import { moduloAzioni } from "./azioni/indice";
 import { moduloCitta } from "./citta/indice";
 import { moduloClassi } from "./classi/indice";
@@ -10,6 +10,7 @@ import { moduloForesta } from "./foresta/indice";
 import { moduloGuaritore } from "./guaritore/indice";
 import { moduloBanca } from "./banca/indice";
 import { moduloLocanda } from "./locanda/indice";
+import { moduloLavori } from "./lavori/indice";
 import { moduloMura } from "./mura/indice";
 import { moduloSviluppo } from "./sviluppo/indice";
 import { moduloInterfaccia } from "./interfaccia/indice";
@@ -60,14 +61,15 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloIncantatrice,
   moduloValle,
   moduloCattedrale,
-  moduloBandi,
-  moduloAmuleti,
+  moduloOggettiMagici,
   moduloZara,
   moduloCronache,
   moduloTorneo,
   moduloBanca,
   moduloLocanda,
   moduloMura,
+  moduloLavori,
+  moduloBandi, // dopo i lavori, da cui dipende (così l'ordine dei pannelli degli altri moduli non cambia)
   moduloLivelli,
   moduloGilde,
   moduloPalude,

@@ -31,7 +31,9 @@ const interfaccia: InterfacciaModulo = {
   },
   pannelli(stato): readonly PannelloVista[] {
     const { tipo } = statoScoperta.leggi(stato);
-    return tipo === null ? [] : [{ contesti: [CONTESTO_SCOPERTA], righe: [{ chiave: `scoperta.testo.${tipo}`, tono: "speciale" }] }];
+    // L'esito dell'apertura è già nel registro degli eventi: niente seconda riga uguale (0.19.1).
+    if (tipo === null || tipo === "apertura-riuscita" || tipo === "apertura-fallita") return [];
+    return [{ contesti: [CONTESTO_SCOPERTA], righe: [{ chiave: `scoperta.testo.${tipo}`, tono: "speciale" }] }];
   },
 };
 
@@ -50,16 +52,12 @@ export const moduloScoperta: DefinizioneModulo = {
       "scoperta.menu.continua": "Continua",
       "scoperta.testo.lapide": "Tra le ombre ritrovi la tua lapide.",
       "scoperta.testo.forziere": "Un forziere chiuso, dimenticato da qualcuno. Lo aprirai dalla porta della zona.",
-      "scoperta.testo.apertura-riuscita": "Il coperchio si alza: dentro luccica il premio.",
-      "scoperta.testo.apertura-fallita": "Il forziere resta chiuso: lo lasci alle tue spalle.",
     },
     en: {
       "scoperta.titolo": "A discovery",
       "scoperta.menu.continua": "Continue",
       "scoperta.testo.lapide": "Among the shadows you find your gravestone again.",
       "scoperta.testo.forziere": "A locked chest, forgotten by someone. You will open it from the zone's gate.",
-      "scoperta.testo.apertura-riuscita": "The lid lifts: the prize glitters inside.",
-      "scoperta.testo.apertura-fallita": "The chest stays shut: you leave it behind you.",
     },
   },
 };

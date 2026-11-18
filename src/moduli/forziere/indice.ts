@@ -1,5 +1,5 @@
-import type { DefinizioneModulo, InterfacciaModulo, VoceMenu } from "../../core/indice";
-import { VERSIONE_API } from "../../core/indice";
+import type { Contesto, DefinizioneModulo, InterfacciaModulo, Raster, StatoGioco, VoceMenu } from "../../core/indice";
+import { VERSIONE_API, leggiContenuto, rasterizza, sovrapponi, tipoIllustrazione } from "../../core/indice";
 import { ID_CLASSI } from "../classi/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_FORTUNA } from "../fortuna/indice";
@@ -31,7 +31,26 @@ const menu: readonly VoceMenu[] = CONTESTI_PORTE.map((contesto) => ({
 
 const contestoDelForziere = (zona: string | null): string | undefined => (zona === null ? undefined : parametriZona(zona)?.contesto);
 
+// Margine sotto il forziere disegnato davanti alla porta (pixel).
+const MARGINE_BASSO_FORZIERE = 3;
+
+// La scena della porta con il forziere trovato davanti, al centro in basso.
+function portaConForziere(stato: StatoGioco, ctx: Contesto): Readonly<Record<string, Raster>> {
+  const z = statoForziere.leggi(stato).zona;
+  const par = z === null ? undefined : parametriZona(z);
+  if (par === undefined) return {};
+  const scena = leggiContenuto(ctx.registro, tipoIllustrazione, par.scenaPortaId);
+  const sprite = leggiContenuto(ctx.registro, tipoIllustrazione, "sprite.forziere");
+  if (!scena || !sprite) return {};
+  const base = rasterizza(scena);
+  const forziere = rasterizza(sprite);
+  const x = Math.floor((base.larghezza - forziere.larghezza) / 2);
+  const y = base.altezza - forziere.altezza - MARGINE_BASSO_FORZIERE;
+  return { [par.contesto]: sovrapponi(base, forziere, x, y) };
+}
+
 const interfaccia: InterfacciaModulo = {
+  illustrazioni: portaConForziere,
   menu,
   menuNascosto: (stato) => {
     const attivo = contestoDelForziere(statoForziere.leggi(stato).zona);

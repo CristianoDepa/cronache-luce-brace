@@ -1,8 +1,8 @@
 import type { Risultato } from "../../core/indice";
-import { chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
+import { applicaRegole, chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
 import { consumaAzioni } from "../azioni/indice";
 import { PARAMETRI_CITTA } from "./parametri";
-import { movimentoVietato } from "./punti";
+import { movimentoVietato, puntoArrivo } from "./punti";
 import { calcolaCostoViaggio } from "./percorsi";
 import { statoCitta } from "./tipi";
 import { chiaveDove } from "./dati";
@@ -33,8 +33,11 @@ export const azioneViaggia = definisciAzione("viaggia", validaSito, (stato, dati
   const { azioni, resto } = calcolaCostoViaggio(movimenti, distanza, PARAMETRI_CITTA.movimentiPerAzione);
   const pagato = consumaAzioni(stato, azioni);
   if (!pagato) return esitoErrore("citta.errore.troppo_stanco");
-  return esitoOk(spostaIn(ctx.registro, pagato, dati.sito, resto), [
+  // Dopo l'arrivo i moduli possono reagire (es. la fine di una consegna).
+  const arrivo = applicaRegole(ctx, puntoArrivo, { stato: spostaIn(ctx.registro, pagato, dati.sito, resto), sito: dati.sito, eventi: [] });
+  return esitoOk(arrivo.stato, [
     { chiave: "citta.arrivo", parametri: { doveChiave: chiaveDove(dati.sito), movimenti: distanza, azioni } },
+    ...arrivo.eventi,
   ]);
 });
 

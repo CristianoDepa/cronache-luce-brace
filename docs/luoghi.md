@@ -28,7 +28,7 @@ Da ogni luogo: `[M]` mappa e viaggi, `[I]` informazioni, `[O]` opzioni; `[N]` pa
 
 ## Le mura (6 tratti ad anello)
 
-nord → nord-est 7 mov → est 7 → sud 9 → sud-ovest 6 → nord-ovest 5 → di nuovo nord 8 (ognuno è un luogo; si sale da una porta con 2 mov). Sulle mura c'è solo l'NPC del giorno, a rotazione (Beatrice, Frate Anselmo, Ginevra, Tobia, Mastro Lorenzo, Zita).
+nord → nord-est 7 mov → est 7 → sud 9 → sud-ovest 6 → nord-ovest 5 → di nuovo nord 8 (ognuno è un luogo; si sale da una porta con 2 mov). Sulle mura c'è l'NPC del giorno, a rotazione (Beatrice, Frate Anselmo, Ginevra, Tobia, Mastro Lorenzo, Zita).
 
 ## Le piazze, la via e la Torre
 
@@ -105,3 +105,18 @@ Fuori da **Porta Santa Maria**, dal livello 8 (`[V]`): rive di fango, croci e ne
 
 ## Piazza San Martino (0.19.0)
 A **3 movimenti** da Piazza Napoleone e **4** da San Michele: la **Cattedrale di San Martino** (`[C]`, Padre Bartolomeo e la protezione divina) e il **Registro dei caduti** (`[R]`, spostato qui dalla Piazza Napoleone). In **Piazza Napoleone** c'è ora il **Palazzo degli Anziani** (`[A]`): i bandi del Gonfaloniere. Dietro **Porta Santa Maria** la mappa mostra il Serchio con il Ponte del Diavolo.
+
+## Novità 0.19.1
+Sulla mappa il segno «sei qui» è una **freccia sopra il luogo**. Il **Palazzo degli Anziani** ha una sola bandiera bianca e rossa. L'**Armeria** mostra rastrelliera, armatura e scudo. Il **forziere** trovato si vede davanti alla porta della zona (foresta, palude/cimitero, valle).
+
+## I lavori ai bastioni (0.20.0)
+In ognuno dei **6 bastioni** compaiono due comandi: `[L]` **lavora** (solo dove il capitano ha un incarico per oggi: 3 bastioni su 6, a caso ogni giorno; il suo sprite si vede solo allora) e `[A]` **abbandona** l'incarico in corso. Tipi: sorveglianza (sul posto, 3 azioni), consegna (a un altro bastione), scorta (fino a una porta). Il resto dei bastioni resta com'era (NPC del giorno con `[N]`).
+
+## Novità 0.20.1
+Il capitano sta sul camminamento (a destra dell'NPC). L'imboscata dei lavori è sempre del Tagliaborse, nella scena dei bastioni. Il Palazzo degli Anziani ha la sua icona sulla mappa (vicino a Piazza Napoleone). Dalla mappa `[A]` abbandona l'incarico.
+
+## Novità 0.20.2
+I numeri delle Mura sulla mappa stanno accanto ai baluardi disegnati (non più sulle porte). Nel Palazzo degli Anziani le finestre di destra sono distanziate dal portale. Nei bandi i bastioni con incarico sono nominati con «sulle Mura - X».
+
+## Novità 0.21.0
+Mappa: il 3 delle Mura sta fuori da Porta Elisa, tra i due bastioni; i numeri delle piazze San Michele, Napoleone e San Martino stanno dentro la piazza; il tetto della cattedrale ha la metà destra arancione. Zaino: seconda nicchia per l'anello.

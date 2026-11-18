@@ -37,7 +37,7 @@ COL = {
     "f1": ("#7a0a0a", None), "f2": ("#c81e1e", None), "f3": ("#ff6a1a", None), "f4": ("#ffb02a", None), "f5": ("#ffe36a", None), "f6": ("#fff6c0", None),
     # metalli
     "acc_s": ("#555a63", None), "acc": ("#a0a7b2", None), "acc_l": ("#e6eaee", None),
-    "oro_s": ("#c9a020", None), "oro": ("#ffd84a", None), "oro_l": ("#fff0a0", None),
+    "arancio": ("#f07a1a", None), "oro_s": ("#c9a020", None), "oro": ("#ffd84a", None), "oro_l": ("#fff0a0", None),
     # stoffe e pelle
     "viola_s": ("#5a0e68", None), "viola": ("#8a1a9a", None), "viola_l": ("#d055e0", None),
     "blu_s": ("#1a2a78", None), "blu": ("#2a4ab8", None), "blu_l": ("#6a8af0", None),
@@ -53,7 +53,7 @@ COL = {
     # mappa della città (pergamena; non cambiano con il giorno)
     "perg": ("#d8c598", None), "perg_s": ("#b8a06a", None), "perg_l": ("#ecdfbc", None), "inchiostro": ("#3a2a18", None),
     "acqua": ("#4a7ab8", None), "acqua_l": ("#8ab0e0", None), "acq_a": ("#b4d6f4", None), "acq_b": ("#4a7ab8", None), "collina": ("#a8925a", None), "collina_s": ("#80693a", None),
-    "mp_aperta": ("#ffd84a", None), "mp_chiusa": ("#8a8a8a", None), "mk1": ("#ff2a2a", None), "mk2": ("#ffffff", None),
+    "mp_aperta": ("#ffd84a", None), "mp_chiusa": ("#8a8a8a", None), "mk1": ("#ff2a2a", None), "mk2": ("#fffff0", None),
     "nero": ("#000000", None), "bianco": ("#ffffff", None), "outline": ("#1b1d22", None),
     "grigio": ("#6a6e78", None), "ombra": ("#0b0b12", None),
     # interni caldi

@@ -51,7 +51,7 @@ describe("coerenza dei tasti", () => {
   it("gli elenchi di luoghi (mappa, porte, mura, piazze, comandi di prova) sono numerati; gli incontri e le esplorazioni a lettera", () => {
     for (const c of ["mappa", "mappa:porte", "mappa:mura", "mappa:piazze"]) {
       if (!esiste(c)) continue;
-      for (const v of voci(c)) expect(v.tasto, `${c} ${v.id}`).toMatch(/^[0-9]$/);
+      for (const v of voci(c).filter((x) => x.id !== "lavori.abbandona.mappa")) expect(v.tasto, `${c} ${v.id}`).toMatch(/^[0-9]$/);
     }
     // Dalla 0.13.0 l'esplorazione parte dalle porte: F dalla Porta San Pietro, P (palude) e C (cimitero) da Sant'Anna.
     expect(voci("luogo:paludi").map((v) => v.tasto).sort()).toEqual(["R"]);

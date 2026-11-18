@@ -107,13 +107,13 @@ describe("Interfaccia: forziere e amuleti nelle voci di menu", () => {
     expect(cimitero.menuNascosto).not.toContain("forziere.apri.citta:porta-so");
   });
   it("nello zaino lo stesso numero usa la pozione o indossa l'amuleto, secondo cosa contiene lo slot", () => {
-    const st = aggiungiOggetto(aggiungiOggetto(pg("cavaliere"), "pozione.curaLeggera") ?? pg("cavaliere"), "amuleto.forza.oro")!;
+    const st = aggiungiOggetto(aggiungiOggetto(pg("cavaliere"), "pozione.curaLeggera") ?? pg("cavaliere"), "medaglione.forza.oro")!;
     const v = creaVistaPartita(st, ctx);
-    expect(v.menuNascosto).toContain("amuleti.indossa.1"); // lo slot 1 è una pozione
+    expect(v.menuNascosto).toContain("oggettiMagici.indossa.1"); // lo slot 1 è una pozione
     expect(v.menuNascosto).not.toContain("pozioni.usa.1");
     expect(v.menuNascosto).toContain("pozioni.usa.2"); // lo slot 2 è un amuleto
-    expect(v.menuNascosto).not.toContain("amuleti.indossa.2");
-    expect(v.etichette["amuleti.indossa.2"]?.chiave).toBe("amuleti.menu.indossaNome");
+    expect(v.menuNascosto).not.toContain("oggettiMagici.indossa.2");
+    expect(v.etichette["oggettiMagici.indossa.2"]?.chiave).toBe("oggettiMagici.menu.indossaNome");
     expect(v.etichette["pozioni.usa.2"]).toBeUndefined();
   });
 });

@@ -97,7 +97,8 @@ const regolaFortunaLivello = regola(puntoFortunaBase, 90, (calcolo) => ({ ...cal
 // Morire contro una creatura (non un duello non letale) costa una parte dell'esperienza, mai sotto la soglia del livello attuale.
 const regolaPenalitaMorte = regola(puntoFineScontro, 80, (calcolo, ctx) => {
   const creatura = leggiContenuto(ctx.registro, tipoCreatura, calcolo.creaturaId);
-  if (calcolo.esito !== "sconfitta" || !creatura || creatura.nonLetale) return calcolo;
+  // Con la grazia della cattedrale (0.19.1) non si perde nemmeno l'esperienza: la protezione salva con tutte le conseguenze.
+  if (calcolo.esito !== "sconfitta" || !creatura || creatura.nonLetale || calcolo.protetta) return calcolo;
   const p = calcolo.stato.personaggio;
   const persi = penalitaEsperienza(p.livello, p.esperienza);
   if (persi === 0) return calcolo;

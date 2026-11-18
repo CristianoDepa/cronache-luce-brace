@@ -306,7 +306,7 @@ describe("i contesti e le schermate della città", () => {
     expect(menu("citta:piazza-s")).toEqual(["A", "G", "M", "N", "S", "U"]); // Palazzo degli Anziani, Guaritore, Speziale, Gilda dei Ladri (il registro dal 0.19.0 è a San Martino)
     expect(menu("citta:fillungo")).toEqual(["A", "M", "S", "T"]); // Armeria, Sartoria, Stamperia (T) e la mappa (la via non ospita NPC)
     expect(menu("citta:torre")).toEqual(["1", "C", "M"]); // la Torre non ospita NPC mura: la salita (1), Castruccio (C) e la mappa
-    for (const id of ["mura-n", "mura-ne", "mura-e", "mura-s", "mura-so", "mura-no"]) expect(menu(`citta:${id}`), id).toEqual(["M", "N"]);
+    for (const id of ["mura-n", "mura-ne", "mura-e", "mura-s", "mura-so", "mura-no"]) expect(menu(`citta:${id}`), id).toEqual(["A", "L", "M", "N"]); // A/L: abbandona e lavora (0.20.0, i lavori)
     expect(menu("luogo:foresta")).toEqual(["R"]); // l'area esterna non ha più comandi: l'esplorazione parte dalla porta
     for (const c of ["luogo:armeria", "luogo:sartoria", "luogo:banca", "luogo:guaritore", "luogo:locanda"]) {
       expect(menu(c), c).toContain("M");
@@ -315,7 +315,7 @@ describe("i contesti e le schermate della città", () => {
   });
 
   it("la mappa ha tre categorie (niente edifici) e ogni categoria elenca i suoi luoghi, con il contesto padre", () => {
-    expect(menu("mappa")).toEqual(["1", "2", "3"]);
+    expect(menu("mappa")).toEqual(["1", "2", "3", "A"]); // la A (abbandona l'incarico) si vede solo con un lavoro in corso
     expect(menu("mappa:porte")).toHaveLength(6);
     expect(menu("mappa:mura")).toHaveLength(6);
     expect(menu("mappa:piazze")).toHaveLength(6); // quattro piazze (con San Martino), Via Fillungo e la Torre
@@ -368,8 +368,8 @@ describe("i contesti e le schermate della città", () => {
       const raster = creaVistaPartita(stato, ctx).illustrazioni["mappa"];
       const c = COORDINATE[sito];
       if (!raster || !c) return false;
-      // il centro del rombo è bianco/rosso lampeggiante (ruoli mk1 e mk2)
-      return ["#ff2a2a", "#ffffff"].includes(coloreIn(raster, c.x, c.y) ?? "");
+      // la freccia (0.19.1) sta sopra il luogo; il suo corpo è rosso/bianco lampeggiante (ruoli mk1 e mk2)
+      return ["#ff2a2a", "#ffffff"].includes(coloreIn(raster, c.x, Math.max(2, c.y - 14) + 3) ?? "");
     };
     expect(marcatore(partenza(), "porta-s")).toBe(true);
     expect(marcatore(inSito(partenza(), "torre"), "torre")).toBe(true);
@@ -447,7 +447,7 @@ describe("comandi di prova (?dev=1)", () => {
   });
 
   it("le schermate di prova hanno menu, titoli e testi nelle due lingue", () => {
-    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D"]);
+    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L"]);
     expect(vociMenu(registro, "sviluppo:vai").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]);
     expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(14); // 0.19.0: la cattedrale e il Palazzo degli Anziani
     expect(registro.contestiPadre.get("sviluppo:vai:porte")).toBe("sviluppo:vai");

@@ -1,6 +1,6 @@
 import type { DefinizioneModulo } from "../../core/indice";
 import { VERSIONE_API } from "../../core/indice";
-import { ID_AMULETI } from "../amuleti/indice";
+import { ID_OGGETTI_MAGICI } from "../oggettimagici/indice";
 import { ID_AZIONI } from "../azioni/indice";
 import { ID_CITTA } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
@@ -26,7 +26,7 @@ export { CONTESTO_CASTRUCCIO } from "./interfaccia";
 export const moduloCacciatore: DefinizioneModulo = {
   id: ID_CACCIATORE,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_FORTUNA, ID_LUOGHI, ID_POZIONI, ID_TORRE],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_FORTUNA, ID_LUOGHI, ID_POZIONI, ID_TORRE],
   contenuti: [...ILLUSTRAZIONI_CACCIATORE],
   azioni: [azioneChiediMissione, azioneRiscuotiMissione, azioneAbbandonaMissione],
   regole: [regolaProgressoMissione, regolaPreda],

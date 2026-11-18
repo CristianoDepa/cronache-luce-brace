@@ -217,8 +217,8 @@ export function creaApp(
         if (risposta.ok && eraForzato && corrente.vista?.contestoForzato === undefined) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE });
         // Alcune voci dicono dove andare dopo l'azione riuscita (es. scegliere un mostro e vederne la scheda).
         if (risposta.ok && c.poi !== undefined) return imposta({ navigazione: c.poi });
-        // Un'azione fatta da una pagina libera durante uno scontro (es. bere dallo zaino) riporta al combattimento, che resta imposto.
-        else if (risposta.ok && eraForzato && registro.contestiLiberiDaForzato.has(corrente.navigazione)) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE });
+        // Un'azione fatta da una pagina libera durante uno scontro (es. bere dallo zaino) o che lo fa cominciare (comandi di prova) porta al combattimento, che è imposto.
+        else if (risposta.ok && (eraForzato || corrente.vista?.contestoForzato !== undefined) && registro.contestiLiberiDaForzato.has(corrente.navigazione)) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE });
         if (risposta.ok && corrente.vista?.contestoBase !== prima) {
           imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE, log: logDaEventi(registro, corrente.lingua, [...risposta.eventi]) });
         }

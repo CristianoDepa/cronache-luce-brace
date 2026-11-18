@@ -1,6 +1,6 @@
 import type { Risultato, StatoGioco } from "../../core/indice";
 import { definisciAzione, esitoErrore, esitoOk, ok } from "../../core/indice";
-import { PARAMETRI_AMULETI, consegnaAmuleto } from "../amuleti/indice";
+import { PARAMETRI_MAGICI, consegnaOggettoMagico } from "../oggettimagici/indice";
 import { consumaAzioni } from "../azioni/indice";
 import { consegnaPozioni } from "../pozioni/indice";
 import { generaMissione, puoOffrire } from "./missione";
@@ -29,7 +29,7 @@ export const azioneRiscuotiMissione = definisciAzione("riscuotiMissione", nessun
   const pagato: StatoGioco = { ...stato, personaggio: { ...stato.personaggio, oro: stato.personaggio.oro + m.oro } };
   const premio = consegnaPozioni(pagato, ctx, m.pozioni);
   // Le prede PERICOLOSE danno anche un amuleto.
-  const amuleto = m.tipo === "preda" && m.livello === "pericolosa" ? consegnaAmuleto(premio.stato, ctx, PARAMETRI_AMULETI.fonti.predaPericolosa) : { stato: premio.stato, eventi: [] };
+  const amuleto = m.tipo === "preda" && m.livello === "pericolosa" ? consegnaOggettoMagico(premio.stato, ctx, PARAMETRI_MAGICI.fonti.predaPericolosa) : { stato: premio.stato, eventi: [] };
   return esitoOk(scrivi(amuleto.stato, statoCacciatore.leggi(stato).propostaAl, null), [{ chiave: "cacciatore.riscossa", parametri: { oro: m.oro }, tono: "positivo" }, ...premio.eventi, ...amuleto.eventi]);
 });
 

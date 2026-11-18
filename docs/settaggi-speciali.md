@@ -46,9 +46,10 @@ Versione del gioco: compare alla scelta della lingua, nel menu iniziale e nelle 
 | Mura e NPC (effetti, incontri, testi) | `src/moduli/mura/npc.ts` | 6 NPC |
 | NPC al giorno (3) e luoghi del primo giorno | `src/moduli/mura/parametri.ts` | 3; mura-s, piazza-s, piazza-n |
 | Chiacchiere: costo (3-5 monete + 1 azione), curva del silenzio (0, 15, 30, 50, 75, 95%), quota di indizi esatti (30%) | `src/moduli/mura/parametri.ts` → `chiacchiere` | vedi `game-design.md` §25.4 |
+| Lavori ai bastioni: offerte al giorno (3), pesi dei tipi, azioni di sorveglianza (3) e di carico (1), **tariffe** (sorveglianza 4, consegna 6, scorta 6 per livello e azione), esperienza per azione (1), **probabilità di imboscata** (consegna 0,25, scorta 0,5), zone dell'imboscata (foresta; palude dal livello 4) | `src/moduli/lavori/parametri.ts` → `PARAMETRI_LAVORI` | vedi a sinistra; tutti **da tarare** |
 | Dove sta in piedi un NPC nel villaggio (porte e piazze) | `src/moduli/mura/indice.ts` → `ANCORA_VILLAGGIO` | x 64, y 58 |
 
-Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere subito l'orco, in `foresta/dati.ts` si può mettere `orco: { peso: 40, potenzaMin: 0 }` (e poi ripristinare la riga originale).
+Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`; gli **incarichi di oggi ai bastioni** con `[V]` → `[L]` (0.20.0); `lavori/parametri.ts` (0.20.1) regola anche il Tagliaborse (`tagliaborse.fattore` 0,8, HP e forza per livello). Per vedere subito l'orco, in `foresta/dati.ts` si può mettere `orco: { peso: 40, potenzaMin: 0 }` (e poi ripristinare la riga originale).
 
 ## 5. Livelli e gilde (0.8.0)
 | Cosa | File | Valore attuale |
@@ -99,7 +100,7 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Fortuna di base per classe | `src/moduli/classi/dati.ts` (`fortuna`) | 2 / 3 / 5 |
 | Fortuna: crescita con i livelli (ritmo a rotazione, uguale per tutte le classi) | `src/moduli/livelli/dati.ts` (`fortuna`) | `[1, 0]` = +1 ai livelli pari |
 | Lapide: quota recuperata (base e tetto), probabilità di trovarla esplorando, scena delle zone | `src/moduli/lapide/parametri.ts` | 50%, 75%, 25% (provvisoria) |
-| Comandi di prova nuovi (`?dev=1` → `[O]` → `[V]`) | `[A]` amuleto, `[B]` forziere, `[C]` Fortuna 20 | acceso/spento |
+| Comandi di prova nuovi (`?dev=1` → `[O]` → `[V]`) | `[A]` oggetto magico (slot, qualità, tipo), `[B]` forziere, `[C]` Fortuna 20 | acceso/spento |
 | Incantatrice: livelli minimi (giocatore, arma), quota del prezzo, probabilità del bonus e del +2 | `src/moduli/incantatrice/parametri.ts` | 5, 4, 0,5, 0,3, 0,3 |
 | Capigilda del livello 8 (HP, forza, difesa, velocità) | `src/moduli/gilde/dati.ts` | Orlando 105/29/14/7, Teodora 72/31/6/10, Falco Rosso 86/29/6/16 |
 | **Comando di prova `[D]`** (`?dev=1`): «Prepara il duello con il capogilda» | `src/moduli/sviluppo/indice.ts` | porta alla vigilia del duello 4 o 8 |
@@ -110,7 +111,7 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Pesi, solo notte e premio notturno della valle; soglie del pericolo | `src/moduli/valle/dati.ts` | premio notte ×1,25 |
 | Tetto dei livelli (8) e retta del livello 8 (1.200) | `src/moduli/livelli/parametri.ts` | |
 | Abilità dell'8° (Cura 30%, Furto +50%, Dardo magico ×1,5, 4 mana) | `src/moduli/abilita/dati.ts` | tasto `[G]` in combattimento |
-| Amuleto del Traghettatore (qualità) | `src/moduli/amuleti/parametri.ts` | `bossValle: "argento"` |
+| Oggetto magico del Traghettatore (qualità) | `src/moduli/oggettimagici/parametri.ts` | `bossValle: "argento"` |
 | Esplorazione della valle `[V]` a Porta Santa Maria | `src/moduli/citta/dati.ts` (`porta-n`, `livelloMin: 8`) | dal livello 8 (`[V]` + `[8]` a Sali di livello) |
 | Comando di prova `[B]` | zona «Valle del Serchio» tra le zone (tasto 4) | |
 | Comando di prova `[B]` (Trova un forziere) | mostra la schermata di forziere trovato (dalla 0.17.0) | |
@@ -120,7 +121,12 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Forziere: probabilità, oro e porta per zona; apertura base; probabilità di pozione | `src/moduli/forziere/parametri.ts` | 1/2/3%, oro 20-50, 50-120, 90-200; 60%; 30% |
 | Scasso del Ladro (punti percentuali per livello, a rotazione) | `src/moduli/livelli/dati.ts` (`scasso`) | `[1]` = +1 per livello |
 | Tetto di Fortuna per l'apertura del forziere, per classe | `src/moduli/classi/dati.ts` (`tettoForziere`) | 0,70 / 0,75 / 0,85 |
-| Amuleti: bonus per qualità, moltiplicatore HP, probabilità di bottino, qualità delle fonti, compenso a zaino pieno | `src/moduli/amuleti/parametri.ts` | +2/+4/+6, x3, 0,5%, bronzo/argento/oro, 60/150/400 |
+| Oggetti magici: punti per qualità e slot, HP per punto, probabilità di anello, probabilità di bottino, qualità delle fonti, compenso a zaino pieno | `src/moduli/oggettimagici/parametri.ts` | medaglione 2/4/6, anello 1/2/3, 5 HP per punto, 50% anello, 0,5%, bronzo/argento/oro, 60/150/400 |
 | Manuale di gioco (genera `docs/manuale.md`) | `CLB_MANUALE=1 npx vitest run strumenti/manuale` | |
 | Tasto nuovo | Forziere `[T]` alle porte di San Pietro e Sant'Anna (solo se c'è un forziere) | |
+| **0.19.1** - Comandi di prova (`?dev=1` → `[O]` → `[V]`) | usabili anche **durante un combattimento** | |
+| **0.19.1** - Valle: forza dama 38, annegato 30, corvi 28 | `src/moduli/valle/dati.ts` | |
+| **0.19.1** - Distanza della freccia «sei qui» dal luogo | `src/moduli/citta/interfaccia.ts` (`SALTO_MARCATORE`) | 14 |
 
+| Lavori ai primi livelli (0.20.2): livello massimo «tranquillo» (2) e probabilità di imboscata ridotte (consegna 0,10, scorta 0,20) | `src/moduli/lavori/parametri.ts` → `livelloTranquillo`, `probabilitaImboscataTranquilla` | vedi a sinistra; da tarare |
+| Velocità del Tagliaborse (4: fuga 80% con velocità 10) | `src/moduli/lavori/dati.ts` → `velocita` | 4 |

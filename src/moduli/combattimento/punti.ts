@@ -33,6 +33,8 @@ export interface CalcoloVelocita {
 export interface CalcoloOro {
   readonly stato: StatoGioco;
   readonly oro: number;
+  // Messaggi che le regole vogliono mostrare alla vittoria (es. il Furto che ha reso di più).
+  readonly eventi?: readonly EventoGioco[];
 }
 
 // Fine di uno scontro (vittoria o sconfitta): le regole dei moduli possono cambiare lo stato e aggiungere eventi
@@ -48,6 +50,8 @@ export interface CalcoloFineScontro {
   readonly scenaId?: Id;
   // Le monete perse morendo (solo nelle sconfitte letali): serve alla lapide che le custodisce.
   readonly oroPerso?: number;
+  // La sconfitta è stata coperta dalla protezione divina (0.19.1): nessuna conseguenza (né esperienza persa) per chi la ascolta.
+  readonly protetta?: boolean;
 }
 
 // Fine di ogni round (anche l'ultimo, anche una fuga fallita): serve a contare i turni di combattimento (es. gli effetti delle pozioni).

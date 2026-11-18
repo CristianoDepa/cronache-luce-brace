@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Contesto, StatoGioco } from "../../src/core/indice";
 import { applicaRegole, creaVistaPartita, puntoInizioGiorno, traduci, traduciEvento, vociMenu } from "../../src/core/indice";
+import { statoCacciatore } from "../../src/moduli/cacciatore/indice";
 import { statoCattedrale } from "../../src/moduli/cattedrale/indice";
 import { statoClassi } from "../../src/moduli/classi/indice";
 import { distanzeCitta } from "../../src/moduli/citta/indice";
@@ -132,6 +133,10 @@ describe("Piazza San Martino, il registro spostato e il Palazzo degli Anziani (0
     expect(t).toContain("Oggi Castruccio Castracani non ha affidato alcun incarico");
     const campione = statoTorneo.scrivi(pg(8, 100), { ...statoTorneo.leggi(pg(8, 100)), albo: { "0": { vittorie: 1, finali: 1, iscrizioni: 1 }, "1": { vittorie: 1, finali: 1, iscrizioni: 1 }, "2": { vittorie: 1, finali: 1, iscrizioni: 1 }, "3": { vittorie: 1, finali: 1, iscrizioni: 1 } } });
     expect(bandi(campione)).toContain("Gran Campione di Lucca è");
+    // 0.20.1: i bandi dicono quali bastioni hanno un incarico (senza il tipo) e il nome della preda di Castruccio
+    expect(t).toMatch(/Oggi i capitani dei bastioni hanno incarichi per chi vuole guadagnare qualche moneta: sulle Mura - [^{]+\./);
+    const preda = statoCacciatore.scrivi(pg(8, 100), { ...statoCacciatore.leggi(pg(8, 100)), propostaAl: pg(8, 100).ultimoReset, missione: { tipo: "preda", creaturaId: "lupo", luogoId: "foresta", quantita: 1, fatte: 0, completata: false, oro: 10, pozioni: 0, soprannome: 0 } });
+    expect(bandi(preda)).toContain("ha messo oggi una taglia su Zanna Rossa");
   });
   it("da Piazza San Martino si può entrare in cattedrale e al registro; dal Palazzo si legge il bando", () => {
     expect(vociMenu(registro, "citta:piazza-m").map((v) => v.tasto)).toEqual(expect.arrayContaining(["C", "R"]));

@@ -80,13 +80,17 @@ def palazzo_anziani():
     cielo(q, 0, 46); stelle(q, 22, 0, 18, 29, 0, 95)
     q.rett(6, 14, 90, 46, "perg_l" if "perg_l" in COL else "pietra_l"); q.rett(6, 14, 90, 15, "pietra_l"); q.rett(4, 10, 92, 14, "pietra"); q.rett(4, 10, 92, 10, "pietra_l")
     for x in range(5, 92, 6): q.rett(x, 7, x + 3, 10, "pietra")                                                              # la merlatura
-    for x0 in (10, 20, 30, 56, 66, 76):                                                                                       # le finestre del piano nobile e del piano alto
+    for x0 in (10, 20, 30, 63, 73):                                                                                       # le finestre del piano nobile e del piano alto
         for y in (18, 31):
             q.rett(x0, y, x0 + 4, y + 8, "ombra"); q.rett(x0 + 1, y + 1, x0 + 3, y + 7, "fin"); q.rett(x0 + 2, y, x0 + 2, y + 8, "pietra_l"); q.ell(x0 + 2, y, 2.4, 2, "pietra_l")
     q.rett(40, 20, 55, 46, "pietra_l"); q.ell(47.5, 24, 8.5, 5, "pietra_l")                                                    # il portale
     q.rett(42, 28, 53, 46, "ombra"); q.ell(47.5, 28, 5.5, 5, "ombra"); q.rett(46, 36, 49, 46, "legno_s"); q.set(48, 41, "oro")
-    q.rett(38, 17, 57, 19, "pietra"); q.rett(44, 12, 51, 17, "rosso"); q.rett(44, 12, 51, 14, "bianco")                         # lo stemma con i colori di Lucca
-    q.rett(2, 8, 3, 40, "legno"); q.rett(4, 9, 12, 16, "rosso"); q.rett(4, 12, 12, 13, "bianco")                                # lo stendardo
+    q.rett(38, 17, 57, 19, "pietra")
+    # UNA sola bandiera di Lucca (0.19.1): stendardo che pende da un'asta fissata alla facciata con due staffe, a destra dell'ultima finestra
+    q.rett(82, 14, 83, 16, "acc_s"); q.rett(90, 14, 91, 16, "acc_s")                                                          # le staffe nel muro
+    q.rett(80, 15, 93, 16, "legno"); q.set(80, 14, "oro"); q.set(93, 14, "oro"); q.set(79, 15, "oro_l"); q.set(94, 15, "oro_l")   # l'asta con i pomelli
+    q.rett(83, 17, 90, 26, "bianco"); q.rett(83, 27, 90, 32, "rosso"); q.poli([(83, 33), (90, 33), (86, 37)], "rosso")           # stendardo bianco e rosso, come la vera Lucca (niente croce)
+    q.rett(83, 17, 83, 32, "pietra_s"); q.rett(90, 17, 90, 32, "pietra_s"); q.rett(84, 37, 89, 37, "oro_s")  # orlo in ombra
     q.rett(6, 46, 90, 47, "pietra_s")
     q.rett(0, 47, W - 1, H - 1, "pavim"); q.rett(0, 47, W - 1, 47, "pavim_l")
     for y in range(49, H, 3):

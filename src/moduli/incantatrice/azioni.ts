@@ -30,5 +30,6 @@ export const azioneIncantaArma = definisciAzione("incantaArma", nessunDato, (sta
   const pagato = { ...stato, personaggio: { ...stato.personaggio, oro: stato.personaggio.oro - s.costo } };
   const nuovo = statoEquipaggiamento.scrivi(pagato, { ...eq, arma: { ...eq.arma, incantata: true, bonusIncantesimo: bonus } });
   const evento = bonus === 0 ? { chiave: "incantatrice.riuscito", tono: "speciale" as const } : { chiave: "incantatrice.conBonus", parametri: { bonus }, tono: "speciale" as const };
-  return esitoOk(nuovo, [{ ...evento, importante: true }]);
+  // Si dice anche quanto è costato il rito (richiesta del game designer, 0.19.1).
+  return esitoOk(nuovo, [{ ...evento, importante: true }, { chiave: "incantatrice.pagato", parametri: { costo: s.costo } }]);
 });

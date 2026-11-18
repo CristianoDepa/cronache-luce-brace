@@ -9,6 +9,8 @@ export interface ParametriZonaForziere {
   readonly oroMax: number;
   // Dove si apre: la porta da cui si accede alla zona.
   readonly contesto: string;
+  // La scena della porta: il forziere trovato si vede davanti ad essa finché non lo si apre (0.19.1).
+  readonly scenaPortaId: string;
 }
 
 export const PARAMETRI_FORZIERE = {
@@ -17,10 +19,10 @@ export const PARAMETRI_FORZIERE = {
   // Dentro il forziere: con questa probabilità c'è una pozione a caso, altrimenti oro.
   probabilitaPozione: 0.3,
   zone: {
-    foresta: { scenaId: "scena.foresta", probabilita: 0.01, oroMin: 20, oroMax: 50, contesto: "citta:porta-s" },
-    palude: { scenaId: "scena.palude", probabilita: 0.02, oroMin: 50, oroMax: 120, contesto: "citta:porta-so" },
-    cimitero: { scenaId: "scena.cimitero", probabilita: 0.03, oroMin: 90, oroMax: 200, contesto: "citta:porta-so" },
-    valle: { scenaId: "scena.valle", probabilita: 0.04, oroMin: 140, oroMax: 300, contesto: "citta:porta-n" },
+    foresta: { scenaId: "scena.foresta", probabilita: 0.01, oroMin: 20, oroMax: 50, contesto: "citta:porta-s", scenaPortaId: "scena.porta-s" },
+    palude: { scenaId: "scena.palude", probabilita: 0.02, oroMin: 50, oroMax: 120, contesto: "citta:porta-so", scenaPortaId: "scena.porta-so" },
+    cimitero: { scenaId: "scena.cimitero", probabilita: 0.03, oroMin: 90, oroMax: 200, contesto: "citta:porta-so", scenaPortaId: "scena.porta-so" },
+    valle: { scenaId: "scena.valle", probabilita: 0.04, oroMin: 140, oroMax: 300, contesto: "citta:porta-n", scenaPortaId: "scena.porta-n" },
   } satisfies Readonly<Record<string, ParametriZonaForziere>>,
 } as const;
 

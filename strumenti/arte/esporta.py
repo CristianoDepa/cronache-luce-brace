@@ -41,6 +41,7 @@ modulo("cronache", "ILLUSTRAZIONI_CRONACHE", [scene_h.stamperia().esporta("scena
 modulo("zara", "ILLUSTRAZIONI_ZARA", [scene_h.tavolaccio().esporta("scena.zara"), *[scene_h.dado_grande(n).esporta(f"dadogrande.{n}") for n in range(1, 7)]])
 modulo("torre", "ILLUSTRAZIONI_TORRE", [scene_h.torre_base().esporta("scena.torre"), scene_h.torre_cima().esporta("scena.torre.cima")])
 modulo("cacciatore", "ILLUSTRAZIONI_CACCIATORE", [scene_h.castruccio().esporta("sprite.npc.castruccio")])
+modulo("lavori", "ILLUSTRAZIONI_LAVORI", [scene_h.capitano().esporta("sprite.npc.capitano"), scene_h.tagliaborse().esporta("sprite.tagliaborse")])
 modulo("banca", "ILLUSTRAZIONI_BANCA", [scene_c.banca().esporta("scena.banca")])
 modulo("locanda", "ILLUSTRAZIONI_LOCANDA", [scene_c.locanda().esporta("scena.locanda")])
 npc = scene_c.npc()

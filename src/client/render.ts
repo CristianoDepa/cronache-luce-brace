@@ -25,10 +25,21 @@ function creaSegmento(segmento: Segmento): HTMLSpanElement {
   return span;
 }
 
+// Quanti caratteri occupa il "prefisso" di una riga (spazi iniziali, poi "[x] ", "> " o "- "): le righe a capo ripartono da lì (rientro sospeso, 0.19.1).
+export function larghezzaRientro(testo: string): number {
+  const m = /^ *(?:\[[^\]\n]{1,3}\] |> |- )?/.exec(testo);
+  return m ? m[0].length : 0;
+}
+
 function creaRiga(riga: Riga): HTMLDivElement {
   const div = document.createElement("div");
   div.className = "riga";
   for (const segmento of riga) div.appendChild(creaSegmento(segmento));
+  const rientro = larghezzaRientro(riga.map((s) => s.testo).join(""));
+  if (rientro > 0) {
+    div.style.paddingLeft = `${rientro}ch`;
+    div.style.textIndent = `-${rientro}ch`;
+  }
   if (riga.length === 0 || riga.every((s) => s.testo === "")) div.textContent = "\u00a0";
   return div;
 }

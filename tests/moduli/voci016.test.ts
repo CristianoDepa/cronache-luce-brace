@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Contesto, StatoGioco } from "../../src/core/indice";
 import { creaVistaPartita, eseguiAzione, traduci, traduciEvento } from "../../src/core/indice";
-import { QUALITA_AMULETO, TIPI_AMULETO, idAmuleto } from "../../src/moduli/amuleti/indice";
+import { QUALITA_OGGETTO, SLOT_MAGICI, TIPI_OGGETTO, idOggetto } from "../../src/moduli/oggettimagici/indice";
 import { statoClassi } from "../../src/moduli/classi/indice";
 import { fortunaBonus, fortunaTotale } from "../../src/moduli/fortuna/indice";
 import { statoForziere } from "../../src/moduli/forziere/indice";
@@ -23,11 +23,11 @@ const conEffetto = (st: StatoGioco, tipo: "fortuna" | "forza", restanti = 4): St
 const it_ = (chiave: string, parametri = {}): string => traduci(registro, "it", chiave, parametri);
 
 describe("0.16.0: comandi di prova (?dev=1)", () => {
-  it("«Dai un amuleto» mette nello zaino quello scelto; tipo o qualità sconosciuti e zaino pieno danno errore", () => {
-    const r = eseguiOk(pg(), { tipo: "devAmuleto", dati: { tipo: "fortuna", qualita: "oro" } }, ctx);
-    expect(leggiSlot(r.stato)).toContain("amuleto.fortuna.oro");
-    expect(eseguiAzione(pg(), { tipo: "devAmuleto", dati: { tipo: "spada", qualita: "oro" } }, ctx).ok).toBe(false);
-    expect(eseguiAzione(pg(), { tipo: "devAmuleto", dati: { tipo: "forza", qualita: "platino" } }, ctx).ok).toBe(false);
+  it("«Dai un oggetto magico» mette nello zaino quello scelto (medaglione o anello); slot, tipo o qualità sconosciuti danno errore", () => {
+    const r = eseguiOk(pg(), { tipo: "devAmuleto", dati: { slot: "anello", tipo: "fortuna", qualita: "oro" } }, ctx);
+    expect(leggiSlot(r.stato)).toContain("anello.fortuna.oro");
+    expect(eseguiAzione(pg(), { tipo: "devAmuleto", dati: { slot: "anello", tipo: "spada", qualita: "oro" } }, ctx).ok).toBe(false);
+    expect(eseguiAzione(pg(), { tipo: "devAmuleto", dati: { slot: "anello", tipo: "forza", qualita: "platino" } }, ctx).ok).toBe(false);
     let pieno = pg();
     for (let i = 0; i < 6; i++) pieno = aggiungiOggetto(pieno, "pozione.curaLeggera") ?? pieno;
     expect(eseguiAzione(pieno, { tipo: "devAmuleto", dati: { tipo: "forza", qualita: "oro" } }, ctx).ok).toBe(false);
@@ -50,12 +50,15 @@ describe("0.16.0: comandi di prova (?dev=1)", () => {
     expect(fortunaTotale(conPozione, ctx)).toBe(20);
     expect(fortunaBonus(conPozione, ctx)).toBe(15);
   });
-  it("i menu: [A] amuleto (3 qualità, poi 6 tipi), [B] forziere (3 zone), [C] Fortuna 20", () => {
-    expect(vociMenu(registro, "sviluppo:amuleto").map((v) => v.tasto)).toEqual(["1", "2", "3"]);
-    for (const q of QUALITA_AMULETO) expect(vociMenu(registro, `sviluppo:amuleto:${q}`).map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6"]);
+  it("i menu: [A] oggetto magico (2 slot, 3 qualità, poi 6 tipi), [B] forziere (4 zone), [C] Fortuna 20", () => {
+    expect(vociMenu(registro, "sviluppo:amuleto").map((v) => v.tasto)).toEqual(["1", "2"]);
+    for (const slot of SLOT_MAGICI) {
+      expect(vociMenu(registro, `sviluppo:amuleto:${slot}`).map((v) => v.tasto)).toEqual(["1", "2", "3"]);
+      for (const q of QUALITA_OGGETTO) expect(vociMenu(registro, `sviluppo:amuleto:${slot}:${q}`).map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6"]);
+    }
     expect(vociMenu(registro, "sviluppo:forziere").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]); // foresta, palude, cimitero, valle (0.18.0)
-    expect(TIPI_AMULETO).toHaveLength(6);
-    expect(idAmuleto("vita", "argento")).toBe("amuleto.vita.argento");
+    expect(TIPI_OGGETTO).toHaveLength(6);
+    expect(idOggetto("anello", "vita", "argento")).toBe("anello.vita.argento");
   });
 });
 

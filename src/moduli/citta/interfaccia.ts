@@ -12,6 +12,8 @@ import { distanzeCitta, origineViaggio, sitoCorrente } from "./uso";
 export const CONTESTO_MAPPA = "mappa";
 const ID_SCENA_MAPPA = "scena.mappa";
 const ID_MARCATORE = "sprite.marcatore";
+// Quanti pixel sopra il luogo sta l'angolo alto della freccia "sei qui" (la punta tocca appena il tetto).
+const SALTO_MARCATORE = 14;
 const ID_PORTA_APERTA = "sprite.porta_aperta";
 const SCENA_PER_CATEGORIA: Record<string, string> = { porta: "scena.villaggio", mura: "scena.mura", piazza: "scena.villaggio" };
 // Alcuni luoghi hanno una scena propria invece di quella della loro categoria (es. la base della Torre Guinigi; dalla 0.16.2 ciascuna delle sei porte).
@@ -173,7 +175,7 @@ function conPorteAperte(stato: StatoGioco, ctx: Contesto, mappa: Raster): Raster
   }, mappa);
 }
 
-// La mappa con il segno "sei qui" (un rombo lampeggiante) sul luogo dove ti trovi. Da dentro un edificio il segno sta sul luogo
+// La mappa con il segno "sei qui" (una freccia lampeggiante sopra il luogo, senza coprirne il tetto) dove ti trovi. Da dentro un edificio il segno sta sul luogo
 // ospite. Con una categoria aperta si aggiungono le cifre dei suoi luoghi.
 function mappaConMarcatore(stato: StatoGioco, ctx: Contesto, categoria?: CategoriaSito): Raster | undefined {
   const dove = origineViaggio(ctx.registro, statoCitta.leggi(stato).sito);
@@ -183,7 +185,7 @@ function mappaConMarcatore(stato: StatoGioco, ctx: Contesto, categoria?: Categor
   if (!mappa || !marcatore) return undefined;
   const conPorte = conPorteAperte(stato, ctx, rasterizza(mappa));
   const base = categoria ? conCifre(ctx, conPorte, categoria) : conPorte;
-  return posto ? sovrapponi(base, rasterizza(marcatore), posto.x - 3, posto.y - 3) : base;
+  return posto ? sovrapponi(base, rasterizza(marcatore), posto.x - 3, Math.max(2, posto.y - SALTO_MARCATORE)) : base;
 }
 
 export const interfacciaCitta: InterfacciaModulo = {

@@ -57,7 +57,7 @@ describe("Il rito", () => {
     expect(arma.incantata).toBe(true);
     expect(arma.bonusIncantesimo).toBe(0);
     expect(r.stato.personaggio.oro).toBe(1000 - Math.floor(prezzoSpada(4) * 0.5));
-    expect(r.eventi.map((e) => e.chiave)).toEqual(["incantatrice.riuscito"]);
+    expect(r.eventi.map((e) => e.chiave)).toEqual(["incantatrice.riuscito", "incantatrice.pagato"]);
   });
   it("il bonus: tiro di Fortuna al 30% (alzato dalla Fortuna), poi +1 con il 70% o +2 con il 30%", () => {
     expect(PARAMETRI_INCANTATRICE.probabilitaBonus).toBe(0.3);

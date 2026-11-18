@@ -28,7 +28,7 @@ export function avvisoFerito(stato: StatoGioco, ctx: Contesto): readonly RigaVis
 // Le azioni (incontri) che costa sono quelle del modulo azioni; il ritorno alla porta lo dichiara la città.
 const interfaccia: InterfacciaModulo = {
   // Una riga dice se è giorno o notte e cosa cambia nella foresta.
-  pannelli: (stato, ctx) => [{ contesti: [CONTESTO_PORTA], righe: [{ chiave: `foresta.fase.${faseDelGiorno(ctx)}` }, ...avvisoFerito(stato, ctx)] }],
+  pannelli: (stato, ctx) => [{ contesti: [CONTESTO_PORTA], righe: [{ chiave: `foresta.fase.${faseDelGiorno(ctx)}`, tono: "speciale" as const }, ...avvisoFerito(stato, ctx)] }],
   titoliContesto: { [CONTESTO_LUOGO]: "foresta.luogo.foresta" },
   illustrazioniContesto: { [CONTESTO_LUOGO]: "scena.foresta" },
   menu: [

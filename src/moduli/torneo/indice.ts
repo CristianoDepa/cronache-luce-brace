@@ -1,6 +1,6 @@
 import type { DefinizioneModulo } from "../../core/indice";
 import { VERSIONE_API } from "../../core/indice";
-import { ID_AMULETI } from "../amuleti/indice";
+import { ID_OGGETTI_MAGICI } from "../oggettimagici/indice";
 import { ID_AZIONI } from "../azioni/indice";
 import { ID_CITTA } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
@@ -25,7 +25,7 @@ export { CONTESTO_TORNEO } from "./interfaccia";
 export const moduloTorneo: DefinizioneModulo = {
   id: ID_TORNEO,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_CRONACHE, ID_POZIONI],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_CRONACHE, ID_POZIONI],
   contenuti: [...CREATURE_TORNEO, ...ILLUSTRAZIONI_TORNEO],
   azioni: [azioneIscriviTorneo, azioneCombattiTurno, azioneRitiraTorneo, azioneAvviaTorneo],
   regole: [regolaFineDuelloTorneo, regolaBloccoInGara, regolaRitiroDiUfficio],

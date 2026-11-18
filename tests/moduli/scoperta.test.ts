@@ -73,7 +73,7 @@ describe("Schermata di scoperta (0.16.3)", () => {
     expect(statoForziere.leggi(riuscita).zona).toBeNull();
     const v = creaVistaPartita(riuscita, ctx);
     expect(v.contestoForzato).toBe("scoperta");
-    expect(v.pannelli.some((p) => p.righe.some((r) => r.chiave === "scoperta.testo.apertura-riuscita"))).toBe(true);
+    expect(v.pannelli.some((p) => p.righe.some((r) => r.chiave.startsWith("scoperta.testo")))).toBe(false); // l'esito è già nel registro: niente seconda riga
     const fallita = eseguiOk(base, { tipo: "apriForziere" }, fisso(0.99)).stato;
     expect(statoScoperta.leggi(fallita)).toEqual({ tipo: "apertura-fallita", zona: "palude" });
     expect(JSON.stringify(creaVistaPartita(fallita, ctx).illustrazioni["scoperta"])).not.toBe(JSON.stringify(v.illustrazioni["scoperta"])); // chiuso e aperto sono immagini diverse
