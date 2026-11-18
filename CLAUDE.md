@@ -30,4 +30,4 @@ Si lavora solo su `main`: nessun ramo. Mai `git push --force`, `git reset --hard
 `docs/roadmap.md` (versioni e piano), `docs/todo.md` (decisioni e segnalazioni, in fondo le più recenti), `docs/idee.md` (Fortuna, amuleti, manuale, idee di Gemini), `docs/luoghi.md`, `docs/architecture.md`, `docs/game-design.md`, `docs/settaggi-speciali.md`, `docs/CHANGELOG.md`.
 
 ## Stato e prossimo passo
-Ultima versione: 0.17.0 (Sibilla Brace, rito sull'arma, danno magico, schermata di apertura del forziere; 683 test). Prossimo passo: **0.18.0 "Livello 8 e la valle del Serchio"** (Porta Santa Maria, mostri, capogilda, abilità; vedi `docs/roadmap.md` e `docs/todo.md`). Prima di sviluppare: proponimi il piano e chiedimi il GO.
+Ultima versione: 0.19.0 (Piazza San Martino, cattedrale e protezione divina di Padre Bartolomeo, Palazzo degli Anziani con i bandi; 730 test). Prossimo passo: **0.20.0 "Eventi e stati"** (veleno, paura, scippo, diavolo del Ponte, bivio; vedi `docs/roadmap.md` e `docs/todo.md`). Prima di sviluppare: proponimi il piano e chiedimi il GO.

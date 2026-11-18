@@ -139,6 +139,7 @@ def fiamma(q, cx, base, h, w=3):
 
 CICLO_FUOCO = (["f2", "f3", "f4", "f5"], 130)
 CICLO_FINESTRE = (["fin", "fin_c"], 700)
+CICLO_FUMO = (["fu1", "fu2", "fu3", "fu4"], 480)    # il fumo di un camino: i toni di grigio ruotano tra le nuvolette (0.18.1)
 CICLO_LUCCIOLE = (["lucciola", "lucciola_b"], 1100)
 
 def sfuma_rett(q, x0, y0, x1, y1, colori):

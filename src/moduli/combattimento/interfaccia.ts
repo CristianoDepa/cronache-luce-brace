@@ -191,7 +191,7 @@ export const interfacciaCombattimento: InterfacciaModulo = {
           // Gli effetti ancora attivi che hanno un nome (es. un'abilità) si evidenziano.
           ...corrente.scontro.effetti.flatMap((e): RigaVista[] =>
             e.etichettaChiave && e.descrizioneChiave
-              ? [{ chiave: "combattimento.pannello.effettoAttivo", parametri: { abilitaChiave: e.etichettaChiave, descrizioneChiave: e.descrizioneChiave }, tono: "speciale" }]
+              ? [{ chiave: "combattimento.pannello.effettoAttivo", parametri: { abilitaChiave: e.etichettaChiave, descrizioneChiave: e.descrizioneChiave, colpi: e.colpi }, tono: "speciale" }]
               : [],
           ),
         ],

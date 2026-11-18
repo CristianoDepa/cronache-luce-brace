@@ -112,8 +112,8 @@ describe("Lapide: nessuna voce di menu e dati", () => {
     expect(JSON.stringify(v.pannelli)).not.toContain("123");
     for (const porta of ["citta:porta-s", "citta:porta-so"]) expect(registro.moduli.flatMap((m) => m.interfaccia?.menu ?? []).some((x) => x.contesto === porta && x.id.startsWith("lapide."))).toBe(false);
   });
-  it("le zone sono foresta, palude e cimitero (gli id dei luoghi da esplorare) e lo stato scrive e rilegge identico", () => {
-    expect([...ZONE_LAPIDE]).toEqual(["foresta", "palude", "cimitero"]);
+  it("le zone sono foresta, palude, cimitero e (0.18.0) valle (gli id dei luoghi da esplorare) e lo stato scrive e rilegge identico", () => {
+    expect([...ZONE_LAPIDE]).toEqual(["foresta", "palude", "cimitero", "valle"]);
     const st = conLapide(pg(), "palude", 40, 3);
     expect(statoLapide.leggi(st)).toEqual({ zona: "palude", oro: 40, eta: 3 });
   });

@@ -1,10 +1,17 @@
-import type { Risultato } from "../../core/indice";
-import { chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, numero } from "../../core/indice";
+import type { Contesto, EventoGioco, Risultato, StatoGioco } from "../../core/indice";
+import { calcolaStatistiche, chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, numero } from "../../core/indice";
 import { caricaScontro, registraUsoScontro, risolviRound, statoCombattimento, usiScontro } from "../combattimento/indice";
 import type { EffettoScontro } from "../combattimento/indice";
 import type { Abilita } from "./tipi";
 import { spendiMana } from "../mana/indice";
 import { abilitaDellaClasse } from "./uso";
+
+// Recupera la quota indicata degli HP massimi; restituisce lo stato e quanti HP sono stati davvero recuperati.
+function curaPercentuale(stato: StatoGioco, ctx: Contesto, quota: number): { readonly stato: StatoGioco; readonly recuperati: number } {
+  const hpMax = calcolaStatistiche(stato, ctx).hpMax;
+  const hp = Math.min(hpMax, stato.personaggio.hp + Math.round(hpMax * quota));
+  return { stato: { ...stato, personaggio: { ...stato.personaggio, hp } }, recuperati: hp - stato.personaggio.hp };
+}
 
 function validaPosizione(dati: unknown): Risultato<{ readonly posizione: number }> {
   const o = comeOggetto(dati);
@@ -39,11 +46,14 @@ export const azioneUsaAbilita = definisciAzione("usaAbilita", validaPosizione, (
   if (attivi.some((e) => e.origine === id)) return esitoErrore("abilita.errore.gia_attiva");
   const pagato = spendiMana(stato, ctx, abilita.costoMana);
   if (!pagato) return esitoErrore("abilita.errore.mana_insufficiente", String(abilita.costoMana));
-  const round = risolviRound(registraUsoScontro(pagato, id), ctx, {
+  // Cura: si recupera subito una quota degli HP massimi (senza superare il massimo).
+  const guarito = abilita.cura === undefined ? undefined : curaPercentuale(pagato, ctx, abilita.cura);
+  const round = risolviRound(registraUsoScontro(guarito?.stato ?? pagato, id), ctx, {
     salta: abilita.azione === "attesa",
     prima: conOrigine(abilita.prima, id, abilita),
     dopo: conOrigine(abilita.dopo, id, abilita),
   });
   if (!round.ok) return round;
-  return esitoOk(round.stato, [{ chiave: "abilita.usata", parametri: { abilitaChiave: abilita.nomeChiave }, tono: "speciale" }, ...round.eventi]);
+  const extra: EventoGioco[] = guarito ? [{ chiave: "abilita.cura.cura", parametri: { hp: guarito.recuperati }, tono: "positivo" }] : [];
+  return esitoOk(round.stato, [{ chiave: "abilita.usata", parametri: { abilitaChiave: abilita.nomeChiave }, tono: "speciale" }, ...extra, ...round.eventi]);
 });

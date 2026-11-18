@@ -2,7 +2,7 @@ import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from quadro import *
-import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_n
 
 SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
 INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
@@ -29,6 +29,9 @@ modulo("combattimento", "ILLUSTRAZIONI_COMBATTIMENTO", [scene_c.combattimento().
 modulo("equipaggiamento", "ILLUSTRAZIONI_EQUIPAGGIAMENTO", [scene_b.armeria().esporta("scena.armeria"), scene_b.sartoria().esporta("scena.sartoria")])
 modulo("guaritore", "ILLUSTRAZIONI_GUARITORE", [scene_c.guaritore().esporta("scena.guaritore")])
 modulo("scoperta", "ILLUSTRAZIONI_SCOPERTA", [scene_i.lapide().esporta("sprite.lapide"), scene_i.forziere().esporta("sprite.forziere"), scene_i.forziere_aperto().esporta("sprite.forziere_aperto")])
+modulo("cattedrale", "ILLUSTRAZIONI_CATTEDRALE", [scene_n.cattedrale().esporta("scena.cattedrale")])
+modulo("bandi", "ILLUSTRAZIONI_BANDI", [scene_n.palazzo_anziani().esporta("scena.palazzo")])
+modulo("valle", "ILLUSTRAZIONI_VALLE", [f().esporta(i) for i, f in scene_l.SPRITE.items()] + [scene_l.valle().esporta("scena.valle")])
 modulo("incantatrice", "ILLUSTRAZIONI_INCANTATRICE", [scene_i.capanna().esporta("scena.capanna")])
 modulo("registro", "ILLUSTRAZIONI_REGISTRO", [scene_h.registro().esporta("scena.registro")])
 modulo("inventario", "ILLUSTRAZIONI_INVENTARIO", [scene_h.zaino().esporta("scena.zaino")])
@@ -42,9 +45,9 @@ modulo("banca", "ILLUSTRAZIONI_BANCA", [scene_c.banca().esporta("scena.banca")])
 modulo("locanda", "ILLUSTRAZIONI_LOCANDA", [scene_c.locanda().esporta("scena.locanda")])
 npc = scene_c.npc()
 modulo("mura", "ILLUSTRAZIONI_MURA", [mura.esporta("scena.mura")] + [npc[n].esporta(f"sprite.npc.{n}") for n in ["beatrice", "anselmo", "ginevra", "tobia", "lorenzo", "zita"]])
-modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")] + [scene_i.porta(n).esporta("scena.porta-" + s) for n, s in (("san-pietro", "s"), ("sant-anna", "so"), ("san-jacopo", "ne"), ("elisa", "e"), ("santa-maria", "n"), ("san-donato", "no"))])
+modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_n.piazza_san_martino().esporta("scena.piazza-m"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")] + [scene_i.porta(n).esporta("scena.porta-" + s) for n, s in (("san-pietro", "s"), ("sant-anna", "so"), ("san-jacopo", "ne"), ("elisa", "e"), ("santa-maria", "n"), ("san-donato", "no"))])
 cg = scene_e.capogilda()
-modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")])
+modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")] + [scene_l.capigilda8()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere8", "mistico8", "ladro8")])
 modulo("palude", "ILLUSTRAZIONI_PALUDE", [scene_f.palude().esporta("scena.palude"), scene_f.cimitero().esporta("scena.cimitero")] + [f().esporta(f"sprite.{n}") for n, f in scene_f.MOSTRI.items()])
 righe = "\n".join('  "%s": { x: %d, y: %d },' % (k, x, y) for k, (x, y) in scene_d.coordinate().items())
 scrivi(f"{SRC}/citta/coordinate.ts", "// Coordinate (in pixel) dei luoghi sulla mappa 96 x 64: generate da strumenti/arte (scene_d.py), non modificare a mano.\nexport const COORDINATE: Readonly<Record<string, { readonly x: number; readonly y: number }>> = {\n" + righe + "\n};\n")

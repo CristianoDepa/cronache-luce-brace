@@ -106,9 +106,9 @@ def fuori_san_donato(q):      # il bosco scuro: alberi fitti, un sentiero strett
 PORTE = {
     "san-pietro": (fuori_san_pietro, "ver", 11, "mattone-rosso", ((3, "pietra_l"),), True),
     "sant-anna": (fuori_sant_anna, "viola", 12, "pietra-scura", ((3, "pietra"),), True),
-    "san-jacopo": (fuori_san_jacopo, "blu", 13, "pietra-chiara", ((7, "pietra_l"), (5, "pietra_s"), (3, "pietra_l")), True),
+    "san-jacopo": (fuori_santa_maria, "blu", 13, "pietra-chiara", ((7, "pietra_l"), (5, "pietra_s"), (3, "pietra_l")), True),
     "elisa": (fuori_elisa, "rosso", 14, "pietra-chiara", ((2, "pietra"),), False),
-    "santa-maria": (fuori_santa_maria, "oro", 15, "mattone-chiaro", ((3, "mattone")), True),
+    "santa-maria": (fuori_san_jacopo, "oro", 15, "mattone-chiaro", ((3, "mattone")), True),
     "san-donato": (fuori_san_donato, "grigio", 16, "pietra-grigia", ((3, "pietra_l"),), True),
 }
 
@@ -188,7 +188,7 @@ def forziere():
 
 # --- La capanna di Sibilla Brace (0.17.0): il limitare del bosco di notte, una capanna di legno con la finestra illuminata di viola ---
 def capanna():
-    q = Quadro(W, H, CICLI_STELLE, None)
+    q = Quadro(W, H, CICLI_STELLE + [CICLO_FUMO], None)
     cielo(q, 0, 40); stelle(q, 22, 0, 24, 31)
     q.rett(0, 34, W - 1, H - 1, "boscolont")
     for x in range(0, W, 3): q.rett(x, 31 + int(2 * math.sin(x / 6.0)), x + 2, 36, "monte2")      # le colline lontane
@@ -200,9 +200,10 @@ def capanna():
     for x in range(34, 64, 4): q.rett(x, 33, x, 50, "legno_s")
     q.rett(32, 33, 32, 50, "legno_l"); q.rett(32, 50, 64, 50, "legno_s")
     q.poli([(27, 36), (69, 36), (48, 19)], "marr"); q.poli([(27, 36), (48, 36), (48, 19)], "marr_s")
-    for y in range(24, 36, 3): q.rett(30 + (y - 24) // 2, y, 66 - (y - 24) // 2, y, "marr_l")      # la paglia a fasce
-    q.rett(57, 14, 60, 27, "pietra_s"); q.rett(57, 14, 60, 15, "pietra_l")
-    for k, (x, y) in enumerate(((58, 11), (60, 8), (59, 5), (62, 3))): q.ell(x, y, 2 + k * 0.5, 1.5, "vap1" if k % 2 == 0 else "vap2")   # il fumo
+    for y in range(24, 36, 3):                                                                       # la paglia a fasce: più larghe in basso (la gronda), strette in alto
+        hw = int((y - 19) * 21 / 17); q.rett(48 - hw, y, 48 + hw, y, "marr_l")
+    q.rett(54, 16, 57, 27, "pietra_s"); q.rett(54, 16, 57, 17, "pietra_l")       # il camino, una riga più in basso e sul tetto (0.18.1)
+    for k, (x, y) in enumerate(((55, 14), (57, 11), (56, 8), (58, 5))): q.ell(x, y, 2 + k * 0.5, 1.6, f"fu{k + 1}")   # il fumo, animato dal ciclo dei toni di grigio
     q.rett(44, 40, 50, 50, "legno_s"); q.rett(44, 40, 44, 50, "ombra"); q.set(49, 45, "oro")           # la porta
     q.rett(34, 38, 41, 44, "ombra"); q.rett(35, 39, 40, 43, "viola"); q.rett(35, 39, 40, 39, "viola_l"); q.rett(37, 39, 37, 43, "ombra")   # la finestra con la luce viola
     for x, y in ((53, 38), (56, 39), (59, 38)): q.rett(x, y, x + 1, y + 4, "ver_s"); q.set(x, y - 1, "marr_l")   # le erbe appese
@@ -210,6 +211,10 @@ def capanna():
     q.ell(21, 54, 6, 4, "acc_s"); q.rett(15, 49, 27, 55, "acc"); q.ell(21, 49, 6, 2, "viola"); q.ell(21, 49, 4, 1, "viola_l")
     q.rett(16, 56, 17, 59, "acc_s"); q.rett(25, 56, 26, 59, "acc_s"); q.rett(18, 59, 24, 59, "rosso")      # le gambe e il fuoco sotto
     for x, y in ((19, 43), (23, 40), (21, 37), (25, 45), (17, 41)): q.set(x, y, "viola_l")
+    # Sibilla Brace in persona, accanto al calderone: mantello viola con cappuccio, volto pallido, occhi accesi, bastone con un cristallo
+    q.poli([(3, 44), (11, 44), (13, 57), (1, 57)], "viola_s"); q.poli([(4, 46), (10, 46), (11, 57), (3, 57)], "viola")
+    q.ell(7, 41, 4, 5, "viola_s"); q.ell(7, 42, 3, 4, "perg"); q.set(6, 41, "oro_l"); q.set(8, 41, "oro_l"); q.rett(6, 44, 8, 44, "ombra")
+    q.rett(10, 47, 14, 48, "viola_s"); q.rett(14, 38, 14, 56, "legno"); q.disco(14, 37, 2, "viola_l"); q.set(13, 36, "bianco")
     return q
 
 

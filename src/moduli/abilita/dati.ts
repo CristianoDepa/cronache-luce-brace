@@ -49,7 +49,7 @@ export const ABILITA: readonly VoceContenuto[] = [
   },
   // --- Abilità del 4° livello (0.8.0): difensive, usano il turno. VALORI PROPOSTI, da tarare con la simulazione. ---
   {
-    // Il prossimo colpo del nemico fa metà danno. Una volta per scontro.
+    // I prossimi 2 colpi del nemico (anche se mancati) fanno metà danno. Una volta per scontro.
     tipo: "abilita",
     id: "parata",
     dati: {
@@ -93,6 +93,34 @@ export const ABILITA: readonly VoceContenuto[] = [
       livelloMin: 4,
       azione: "attesa",
       dopo: [{ bersaglio: "nemico", deltaPrecisione: -0.3, colpi: 2 }],
+    },
+  },
+  // --- Abilità dell'8° livello (0.18.0): una per classe, senza scelta. VALORI PROPOSTI, da tarare con la simulazione. ---
+  {
+    // Salta il turno e recupera il 30% degli HP massimi. Una volta per scontro.
+    tipo: "abilita",
+    id: "cura",
+    dati: { nomeChiave: "abilita.cura", descrizioneChiave: "abilita.cura.descrizione", classi: ["cavaliere"], costoMana: 0, livelloMin: 8, usiPerScontro: 1, azione: "attesa", cura: 0.3 },
+  },
+  {
+    // Un attacco normale; se poi vinci lo scontro, ruba il 50% in più dell'oro. Una volta per scontro.
+    tipo: "abilita",
+    id: "furto",
+    dati: { nomeChiave: "abilita.furto", descrizioneChiave: "abilita.furto.descrizione", classi: ["ladro"], costoMana: 0, livelloMin: 8, usiPerScontro: 1, azione: "attacco", furto: 0.5 },
+  },
+  {
+    // Un colpo magico che non manca mai, con danno ×1,5. Costa mana.
+    tipo: "abilita",
+    id: "dardo",
+    dati: {
+      nomeChiave: "abilita.dardo",
+      descrizioneChiave: "abilita.dardo.descrizione",
+      attivoChiave: "abilita.dardo.attivo",
+      classi: ["mistico"],
+      costoMana: 4,
+      livelloMin: 8,
+      azione: "attacco",
+      prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 1.5, moltiplicatorePrecisione: 2, colpi: 1, tipoDanno: "magico" }],
     },
   },
 ];

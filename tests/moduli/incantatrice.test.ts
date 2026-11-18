@@ -30,7 +30,7 @@ describe("Sibilla Brace: quando riceve (soglie e costo)", () => {
   it("sotto il livello 5 non riceve il giocatore; con l'arma di livello 3 o meno (o senza arma) rifiuta; dal livello 4 dell'arma si può", () => {
     expect(situazione(pg({ livello: 4, arma: spada(4) }), ctx).tipo).toBe("livello");
     expect(situazione(pg({ arma: spada(3) }), ctx).tipo).toBe("arma");
-    expect(situazione(pg({ arma: undefined }), ctx).tipo).toBe("arma");
+    expect(situazione(pg({ arma: undefined }), ctx).tipo).toBe("senzaArma"); // senza arma ha una battuta tutta sua
     expect(situazione(pg({ arma: spada(4) }), ctx).tipo).toBe("pronta");
   });
   it("il rito costa la metà del prezzo dell'arma; senza oro sufficiente Sibilla lo dice", () => {
@@ -73,14 +73,18 @@ describe("Il rito", () => {
     expect(tiraBonus(pg(), fisso(0.35, 0.5))).toBe(0); // Fortuna di un Cavaliere di livello 5 = 4: soglia 33,6%
     expect(tiraBonus(pg(), fisso(0.33, 0.5))).toBe(1);
   });
-  it("non si ripete su quell'arma, e senza i requisiti o l'oro dà errore senza toccare nulla", () => {
+  it("la richiesta si può fare sempre: senza i requisiti Sibilla risponde con la battuta adatta e non cambia nulla", () => {
+    const risposta = (st: StatoGioco): string[] => eseguiOk(st, { tipo: "incantaArma" }, ctx).eventi.map((e) => e.chiave);
     const una = eseguiOk(pg({ arma: spada(4) }), { tipo: "incantaArma" }, fisso(0.99)).stato;
-    expect(eseguiAzione(una, { tipo: "incantaArma" }, ctx).ok).toBe(false);
-    expect(eseguiAzione(pg({ livello: 4, arma: spada(4) }), { tipo: "incantaArma" }, ctx).ok).toBe(false);
-    expect(eseguiAzione(pg({ arma: spada(3) }), { tipo: "incantaArma" }, ctx).ok).toBe(false);
+    expect(risposta(una)).toEqual(["incantatrice.gia"]);                                              // non si ripete
+    expect(risposta(pg({ livello: 4, arma: spada(4) }))).toEqual(["incantatrice.rifiuto.livello", "incantatrice.indizio.livello"]);
+    expect(risposta(pg({ arma: spada(3) }))).toEqual(["incantatrice.rifiuto.arma", "incantatrice.indizio.arma"]);
+    expect(risposta(pg({ arma: undefined }))).toEqual(["incantatrice.rifiuto.senzaArma", "incantatrice.indizio.senzaArma"]);
     const povero = pg({ arma: spada(4), oro: 10 });
-    expect(eseguiAzione(povero, { tipo: "incantaArma" }, ctx).ok).toBe(false);
-    expect(statoEquipaggiamento.leggi(povero).arma!.incantata).toBeUndefined();
+    expect(risposta(povero)).toEqual(["incantatrice.oro"]);
+    const dopo = eseguiOk(povero, { tipo: "incantaArma" }, ctx).stato;
+    expect(statoEquipaggiamento.leggi(dopo).arma!.incantata).toBeUndefined();
+    expect(dopo.personaggio.oro).toBe(10);
   });
   it("comprando un'arma nuova l'incantamento non c'è più; scambiando con la riserva resta sull'arma", () => {
     const incantata = eseguiOk(pg({ arma: spada(4) }), { tipo: "incantaArma" }, fisso(0)).stato;
@@ -111,12 +115,12 @@ describe("Danno magico: il moltiplicatore migliore", () => {
 
 describe("Interfaccia: la capanna, la scheda e la scena", () => {
   const pannelloCapanna = (st: StatoGioco): string[] => creaVistaPartita(st, ctx).pannelli.filter((p) => p.contesti?.includes("luogo:capanna")).flatMap((p) => p.righe).map((r) => traduciEvento(registro, "it", r));
-  it("la voce di menu del rito compare solo quando Sibilla è pronta; i testi dipendono dalla situazione", () => {
-    expect(creaVistaPartita(pg({ livello: 4, arma: spada(4) }), ctx).menuNascosto).toContain("incantatrice.rito");
+  it("«Chiedi il rito» c'è sempre; il pannello propone il costo solo quando Sibilla è pronta (nessun messaggio fuorviante dopo il rito)", () => {
+    expect(creaVistaPartita(pg({ livello: 4, arma: spada(4) }), ctx).menuNascosto).not.toContain("incantatrice.rito");
     expect(creaVistaPartita(pg({ arma: spada(4) }), ctx).menuNascosto).not.toContain("incantatrice.rito");
     expect(pannelloCapanna(pg({ arma: spada(4), oro: 1000 })).join(" ")).toContain("Il rito costa");
-    expect(pannelloCapanna(pg({ arma: spada(4), oro: 5 })).join(" ")).toContain("Il fuoco costa");
-    expect(pannelloCapanna(incantataSub(pg({ arma: spada(4) }))).join(" ")).toContain("porta già il mio segno");
+    expect(pannelloCapanna(pg({ arma: spada(4), oro: 5 }))).toEqual([]);
+    expect(pannelloCapanna(incantataSub(pg({ arma: spada(4) })))).toEqual([]);
   });
   function incantataSub(st: StatoGioco): StatoGioco { return eseguiOk(st, { tipo: "incantaArma" }, fisso(0.99)).stato; }
   it("la scheda dice che l'arma è incantata, con il bonus; la capanna ha scena e titolo", () => {

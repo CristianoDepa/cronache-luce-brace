@@ -5,10 +5,11 @@ import type { Equipaggiato } from "../equipaggiamento/indice";
 import { probabilitaConFortuna } from "../fortuna/indice";
 import { PARAMETRI_INCANTATRICE } from "./parametri";
 
-// Che cosa risponde Sibilla in questo momento (decide testo e voci di menu):
-// livello troppo basso, arma debole (o assente), arma già incantata, oro insufficiente, oppure pronta per il rito.
+// Che cosa risponde Sibilla in questo momento (decide la sua risposta alla richiesta del rito):
+// livello troppo basso, nessuna arma, arma debole, arma già incantata, oro insufficiente, oppure pronta per il rito.
 export type Situazione =
   | { readonly tipo: "livello" }
+  | { readonly tipo: "senzaArma" }
   | { readonly tipo: "arma" }
   | { readonly tipo: "gia" }
   | { readonly tipo: "oro"; readonly costo: number }
@@ -23,7 +24,8 @@ export function costoDelRito(arma: Equipaggiato, ctx: Contesto): number {
 export function situazione(stato: StatoGioco, ctx: Contesto): Situazione {
   const arma = statoEquipaggiamento.leggi(stato).arma;
   if (stato.personaggio.livello < PARAMETRI_INCANTATRICE.livelloMinimoGiocatore) return { tipo: "livello" };
-  if (!arma || arma.livello < PARAMETRI_INCANTATRICE.livelloMinimoArma) return { tipo: "arma" };
+  if (!arma) return { tipo: "senzaArma" };
+  if (arma.livello < PARAMETRI_INCANTATRICE.livelloMinimoArma) return { tipo: "arma" };
   if (arma.incantata) return { tipo: "gia" };
   const costo = costoDelRito(arma, ctx);
   return stato.personaggio.oro < costo ? { tipo: "oro", costo } : { tipo: "pronta", costo };

@@ -20,9 +20,9 @@ const paginaRegistro = (st: StatoGioco, lingua: "it" | "en" = "it"): string[] =>
 const statistiche = (st: StatoGioco): string[] =>
   creaVistaPartita(st, ctx).pannelli.filter((p) => p.titoloChiave === "interfaccia.scheda.statistiche").flatMap((p) => p.righe).map((r: RigaVista) => traduciEvento(registro, "it", r));
 
-describe("Registro dei caduti (Piazza Napoleone, [R])", () => {
-  it("si entra da Piazza Napoleone con [R] (2 movimenti) e ha la sua scena di lapide di marmo", () => {
-    expect(vociMenu(registro, "citta:piazza-s").map((v) => v.tasto)).toContain("R");
+describe("Registro dei caduti (Piazza San Martino, [R])", () => {
+  it("si entra da Piazza San Martino con [R] (2 movimenti; fino alla 0.18.1 era in Piazza Napoleone) e ha la sua scena di lapide di marmo", () => {
+    expect(vociMenu(registro, "citta:piazza-m").map((v) => v.tasto)).toContain("R");
     const m = registro.moduli.find((x) => x.id === "registro");
     expect(m?.interfaccia?.illustrazioniContesto?.["luogo:registro"]).toBe("scena.registro");
     expect(m?.interfaccia?.titoliContesto?.["luogo:registro"]).toBe("registro.luogo");

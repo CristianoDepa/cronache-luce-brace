@@ -10,6 +10,7 @@ export const PARAMETRI_LAPIDE = {
     foresta: { scenaId: "scena.foresta" },
     palude: { scenaId: "scena.palude" },
     cimitero: { scenaId: "scena.cimitero" },
+    valle: { scenaId: "scena.valle" },
   },
 } as const;
 

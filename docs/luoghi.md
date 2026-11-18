@@ -96,3 +96,12 @@ Ogni porta ha una sua architettura: **San Pietro** (arco tondo, mattone rosso), 
 
 ## La capanna di Sibilla (0.17.0)
 A **Porta San Pietro**, accanto alla Locanda (`[C]`, 2 movimenti, 0 azioni): vi abita Sibilla Brace, l'Incantatrice (rito sull'arma; vedi `game-design.md` §57).
+
+## Porte Santa Maria e San Jacopo (0.17.2)
+Secondo la geografia, **Porta Santa Maria** (nord) mostra la **valle del Serchio** (fiume e nebbia) e **Porta San Jacopo alla Tomba** (nord-est) i **campi** della piana di Capannori.
+
+## La valle del Serchio (0.18.0)
+Fuori da **Porta Santa Maria**, dal livello 8 (`[V]`): rive di fango, croci e nebbia lungo il Serchio, con il **Ponte del Diavolo** sullo sfondo. Di giorno corvi, anguille, ladri di tombe e disertori; di notte anche annegati, dame della nebbia e, raro, il **Traghettatore**. **Porta San Jacopo alla Tomba** (nord-est) è la porta della piana di Capannori (ancora chiusa).
+
+## Piazza San Martino (0.19.0)
+A **3 movimenti** da Piazza Napoleone e **4** da San Michele: la **Cattedrale di San Martino** (`[C]`, Padre Bartolomeo e la protezione divina) e il **Registro dei caduti** (`[R]`, spostato qui dalla Piazza Napoleone). In **Piazza Napoleone** c'è ora il **Palazzo degli Anziani** (`[A]`): i bandi del Gonfaloniere. Dietro **Porta Santa Maria** la mappa mostra il Serchio con il Ponte del Diavolo.

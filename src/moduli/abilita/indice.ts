@@ -6,6 +6,7 @@ import { ID_MANA } from "../mana/indice";
 import { azioneUsaAbilita } from "./azioni";
 import { ABILITA } from "./dati";
 import { interfacciaAbilita } from "./interfaccia";
+import { regolaFurto } from "./regole";
 import { TESTI_ABILITA } from "./testi";
 import { ID_ABILITA, tipoAbilita } from "./tipi";
 
@@ -20,6 +21,7 @@ export const moduloAbilita: DefinizioneModulo = {
   tipiContenuto: [tipoAbilita],
   contenuti: ABILITA,
   azioni: [azioneUsaAbilita],
+  regole: [regolaFurto],
   testi: TESTI_ABILITA,
   interfaccia: interfacciaAbilita,
 };

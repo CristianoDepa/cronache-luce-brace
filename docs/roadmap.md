@@ -2,7 +2,7 @@
 
 **Documento vivo:** si aggiorna a ogni consegna o decisione (si cambiano i numeri di versione, si spostano le voci, si aggiungono le versioni nuove man mano che il gioco evolve). La cronologia di ciò che è già consegnato sta in `CHANGELOG.md`; le regole di verifica in `processo-di-rilascio.md`; le idee non pianificate in `idee.md`.
 
-Ultima versione consegnata: **0.17.0** (Sibilla Brace, l'Incantatrice, e il forziere che si apre). Prima: 0.16.3 (schermata di scoperta, porte con architetture diverse, scrigno nello zaino). Prima: 0.16.2 (nuove grafiche: zaino, Via Fillungo, sei porte), 0.16.1 (lapide unica trovata esplorando, registro dei caduti, tetti di Fortuna per classe, scasso del Ladro), 0.16.0 (lapide, comandi di prova, rifiniture), 0.15.0 (Fortuna, forziere, amuleti), 0.14.2 (rifiniture dei tornei), 0.14.1 (tornei più severi, bacheca dei trofei), 0.14.0 (tornei), 0.13.1 (scheda), 0.13.0 (Cronache della città, Via Fillungo, uscita dalle porte).
+Ultima versione consegnata: **0.19.0** (Piazza San Martino, cattedrale e Padre Bartolomeo, Palazzo degli Anziani). Prima: 0.18.1 (correzioni della 0.18.0: livelli fino all'11, valle più morbida, grafiche). Prima: 0.18.0 (livello 8 e valle del Serchio). Prima: 0.17.2 (solo grafica: scena della valle del Serchio, porte scambiate). Prima: 0.17.1 (sprite della valle), 0.17.0 (Sibilla Brace, l'Incantatrice, e il forziere che si apre). Prima: 0.16.3 (schermata di scoperta, porte con architetture diverse, scrigno nello zaino). Prima: 0.16.2 (nuove grafiche: zaino, Via Fillungo, sei porte), 0.16.1 (lapide unica trovata esplorando, registro dei caduti, tetti di Fortuna per classe, scasso del Ladro), 0.16.0 (lapide, comandi di prova, rifiniture), 0.15.0 (Fortuna, forziere, amuleti), 0.14.2 (rifiniture dei tornei), 0.14.1 (tornei più severi, bacheca dei trofei), 0.14.0 (tornei), 0.13.1 (scheda), 0.13.0 (Cronache della città, Via Fillungo, uscita dalle porte).
 
 **Versione LIVE** (Vercel, build di produzione): https://cronache-luce-brace.vercel.app/
 
@@ -16,8 +16,12 @@ Ultima versione consegnata: **0.17.0** (Sibilla Brace, l'Incantatrice, e il forz
 | **0.16.2** | **FATTA**: nuove grafiche: zaino rifatto, Via Fillungo rifatta sulla foto, una scena per ciascuna delle sei porte (vedi CHANGELOG) | Realizzata | Leggera |
 | **0.16.3** | **FATTA**: schermata di scoperta (lapide e forziere), sei porte con architetture diverse, scrigno nello zaino (vedi CHANGELOG) | Realizzata | Critica |
 | **0.17.0** | **FATTA**: Sibilla Brace e la capanna, rito sull'arma (danno magico), schermata di apertura del forziere, `[B]` che mostra la schermata (vedi CHANGELOG) | Realizzata | Critica |
-| **0.18.0** | **Livello 8 e la prima nuova porta (Porta Santa Maria, valle del Serchio)**: capogilda del livello 8, abilità, bivio, e la **seconda zona** (la prima delle quattro porte ancora chiuse) | Da progettare | Critica |
+| **0.17.1** | **FATTA** (solo grafica): sette sprite della valle del Serchio (corvi, anguilla, ladro di tombe, disertore, annegato, dama della nebbia, Traghettatore), non ancora usati | Realizzata | Leggera |
+| **0.17.2** | **FATTA** (solo grafica): scena della valle del Serchio (non ancora usata) e scene delle porte Santa Maria e San Jacopo scambiate | Realizzata | Leggera |
+| **0.18.0** | **FATTA**: livello 8 (tre capigilda nuovi, tre abilità `[G]`), valle del Serchio da Porta Santa Maria (sei creature, Traghettatore, scena e sprite), correzioni dal collaudo della 0.17.0 (vedi CHANGELOG) | Realizzata | Critica |
+| **0.18.1** | **FATTA**: correzioni dal collaudo della 0.18.0 (livelli fino all'11, valle più morbida, nome del capogilda, messaggi, nome delle abilità nei menu, nuove grafiche, comando di prova `[D]`; vedi CHANGELOG) | Realizzata | Critica |
 | **0.19.0** | **Piazza San Martino**: nuova piazza con il registro dei caduti (spostato), la cattedrale con l'arciprete (nuovo PNG, intercessione) e, se serve, il Palazzo degli Anziani in Piazza Napoleone (notizie) | Da progettare | Critica |
+| **0.19.0** | **FATTA**: Piazza San Martino (cattedrale, Padre Bartolomeo e la protezione divina, registro spostato) e Palazzo degli Anziani con i bandi (vedi CHANGELOG) | Realizzata | Critica |
 | **0.20.0** | **Eventi e stati**: scippo del ladro in viaggio, incontri non di combattimento, veleno, paura e antidoto | Da dettagliare | Critica |
 | **0.21.0** | **Spedizioni e tesori** (RINVIATE per scelta del game designer del 12-11-2026: nuove logiche; il nome «tutto al rischio» va cambiato; era la 0.16.1): spedizione nel cimitero a 5 profondità con tutto al rischio (da definire), risalita gratuita; forzieri difficili alle profondità 3 e 5; scena della cripta. **Le versioni seguenti sono già rinumerate** | Chiuso nelle linee, da dettagliare | Critica |
 | **0.22.0 e oltre** | **Le altre porte e i livelli fino al 20**: una area per porta, con mostri, scene e livelli propri (vedi sotto); si possono fare una per versione o a coppie | Da progettare | Critica |
@@ -78,7 +82,12 @@ Il game designer misura il consumo dal contatore (sessione e settimana). Si aggi
 
 | Versione | Tipo | Sessione | Settimana |
 |---|---|---|---|
-| 0.17.0 | Grande (modulo nuovo con rito, danno magico nel combattimento, scena, sprite, simulazione, suite completa, delta) | da misurare | da misurare |
+| 0.19.0 | Grande (due moduli nuovi, regola della protezione nel combattimento, tre scene, mappa ridisegnata, 730 test) | da misurare | da misurare |
+| 0.18.1 | Grande (livelli, taratura con simulazioni, difetti e testi, cinque sprite e il ponte, fumo animato, comando di prova, 716 test) | 14% (a fine consegna, 14-11-2026; azzeramento alle 12:00; valore assoluto) | 21% (idem; azzeramento venerdì 14:00) |
+| 0.18.0 | Molto grande (livello 8, tre capigilda con sprite, tre abilità con meccaniche nuove, valle del Serchio con sette creature e boss, taratura con simulazioni, 700 test) | 21% (a fine consegna, 13-11-2026; azzeramento sab 02:40; valore assoluto) | 11% (idem; azzeramento venerdì 14:00: la nuova settimana era appena iniziata) |
+| 0.17.2 | Piccolo (solo arte: scena della valle, porte scambiate) | da misurare | da misurare |
+| 0.17.1 | Piccolo (solo arte: 7 sprite, un modulo di sole illustrazioni, test, delta) | da misurare | da misurare |
+| 0.17.0 | Grande (modulo nuovo con rito, danno magico nel combattimento, scena, sprite, simulazione, suite completa, delta) | 53% (a fine consegna, 12-11-2026; azzeramento ven 01:10; valore assoluto) | 96% (idem; azzeramento venerdì 14:00) |
 | 0.16.3 | Medio-grande (modulo nuovo con schermata, due sprite, sei porte ridisegnate, suite completa, delta) | 42% (contatore a fine consegna, 12-11-2026: valore assoluto, non il solo consumo della versione) | 88% (idem; azzeramento venerdì 14:00) |
 | 0.16.2 | Medio (solo arte: 8 scene nuove, test, delta) | da misurare | da misurare |
 | 0.16.1 | Grande (lapide unica con scoperta, registro con scena nuova, scasso nei livelli, tetti per classe, suite completa, delta) | da misurare | da misurare |

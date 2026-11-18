@@ -13,7 +13,8 @@ export const CONTESTO_SFIDA = "gilda:sfida";
 const contestoDi = (g: Gilda): string => DEFINIZIONI_SITI.find((s) => s.id === g.sito)?.contesto ?? g.sito;
 const idSali = (g: Gilda): string => `gilde.sali.${g.sito}`;
 const idSfida = (g: Gilda): string => `gilde.sfida.${g.sito}`;
-const nomeCapogilda = (g: Gilda): string => `gilde.capogilda.${g.classe}.breve`;
+// Il nome breve del capogilda di un livello chiave: «cavaliere» per il 4, «cavaliere8» per l'8, ecc. (come i testi delle creature).
+const nomeCapogilda = (g: Gilda, livelloChiave: number): string => `gilde.capogilda.${g.classe}${livelloChiave === 4 ? "" : String(livelloChiave)}.breve`;
 const SOGLIA_FERITO = 0.7;
 
 // La gilda della classe del giocatore.
@@ -30,7 +31,7 @@ function rigaUltimoTentativo(stato: StatoGioco, ctx: Contesto, g: Gilda): RigaVi
   const statistiche = id ? statoCombattimento.leggi(stato).statistiche[id] : undefined;
   const capogilda = id ? leggiContenuto(ctx.registro, tipoCreatura, id) : undefined;
   if (!statistiche || statistiche.incontri === 0 || !capogilda) return [];
-  return [{ chiave: "gilde.pannello.ultimoTentativo", parametri: { capogildaChiave: nomeCapogilda(g), danno: statistiche.ultimoInflitto, hp: capogilda.hp } }];
+  return [{ chiave: "gilde.pannello.ultimoTentativo", parametri: { capogildaChiave: nomeCapogilda(g, stato.personaggio.livello + 1), danno: statistiche.ultimoInflitto, hp: capogilda.hp } }];
 }
 
 function righeStato(stato: StatoGioco, ctx: Contesto, g: Gilda): RigaVista[] {
@@ -40,9 +41,9 @@ function righeStato(stato: StatoGioco, ctx: Contesto, g: Gilda): RigaVista[] {
   const prossimo = p.livello + 1;
   const righe: RigaVista[] = [{ chiave: "gilde.pannello.esperienza", parametri: { esperienza: p.esperienza, necessaria: esperienzaPerSalire(p.livello), livello: prossimo } }];
   if (!eLivelloChiave(prossimo)) return [...righe, { chiave: "gilde.pannello.retta", parametri: { oro: rettaAttuale(stato) } }];
-  righe.push({ chiave: "gilde.pannello.capogilda", parametri: { capogildaChiave: nomeCapogilda(g), oro: rettaAttuale(stato), ridotta: rettaPerLivello(prossimo, 1) } });
+  righe.push({ chiave: "gilde.pannello.capogilda", parametri: { capogildaChiave: nomeCapogilda(g, prossimo), oro: rettaAttuale(stato), ridotta: rettaPerLivello(prossimo, 1) } });
   righe.push(...rigaUltimoTentativo(stato, ctx, g));
-  if (maestroPersoOggi(stato)) righe.push({ chiave: "gilde.pannello.riprovaDomani", parametri: { capogildaChiave: nomeCapogilda(g) }, tono: "negativo" });
+  if (maestroPersoOggi(stato)) righe.push({ chiave: "gilde.pannello.riprovaDomani", parametri: { capogildaChiave: nomeCapogilda(g, prossimo) }, tono: "negativo" });
   return righe;
 }
 
@@ -54,7 +55,7 @@ function pannelliSfida(stato: StatoGioco, ctx: Contesto, g: Gilda): readonly Pan
   const { hpMax } = calcolaStatistiche(stato, ctx);
   const costo = rettaAttuale(stato);
   const righe: RigaVista[] = [
-    { chiave: "gilde.sfida.capogilda", parametri: { capogildaChiave: nomeCapogilda(g), hp: capogilda.hp, forza: capogilda.forza, difesa: capogilda.difesa, velocita: capogilda.velocita } },
+    { chiave: "gilde.sfida.capogilda", parametri: { capogildaChiave: nomeCapogilda(g, stato.personaggio.livello + 1), hp: capogilda.hp, forza: capogilda.forza, difesa: capogilda.difesa, velocita: capogilda.velocita } },
     { chiave: "gilde.sfida.tu", parametri: { hp: p.hp, hpMax } },
     { chiave: "gilde.sfida.retta", parametri: { oro: costo, tuoOro: p.oro } },
     { chiave: "gilde.sfida.regole" },
@@ -78,7 +79,8 @@ export const interfacciaGilde: InterfacciaModulo = {
   illustrazioni(stato, ctx: Contesto): Readonly<Record<string, Raster>> {
     const g = gildaCorrente(stato);
     const scena = g ? leggiContenuto(ctx.registro, tipoIllustrazione, g.scenaId) : undefined;
-    const sprite = g ? leggiContenuto(ctx.registro, tipoIllustrazione, g.spriteId) : undefined;
+    const prossimo = g ? leggiContenuto(ctx.registro, tipoCreatura, g.capogilda[stato.personaggio.livello + 1] ?? "") : undefined;
+    const sprite = g ? leggiContenuto(ctx.registro, tipoIllustrazione, prossimo?.immagineId ?? g.spriteId) : undefined;
     if (!g || !scena || !sprite) return {};
     const { x, y } = posizioneSprite(scena, sprite);
     const raster = sovrapponi(rasterizza(scena), rasterizza(sprite), x, y);

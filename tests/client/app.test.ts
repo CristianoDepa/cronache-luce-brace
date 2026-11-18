@@ -71,7 +71,7 @@ async function vai(app: ReturnType<typeof creaApp>, categoria: string, luogo: st
 // Raggiunge un edificio: cammina fino al suo luogo ospite (dalla mappa) e vi entra con il tasto d'ingresso.
 // Armeria e Sartoria: Piazza dell'Anfiteatro (lettere A e S); Banca: San Michele (B); Guaritore: Napoleone (U); Locanda: Porta San Pietro (L).
 async function entraIn(app: ReturnType<typeof creaApp>, edificio: "armeria" | "sartoria" | "banca" | "guaritore" | "locanda"): Promise<void> {
-  const dove = { armeria: ["4", "A"], sartoria: ["4", "S"], banca: ["2", "B"], guaritore: ["3", "U"], locanda: [undefined, "L"] } as const;
+  const dove = { armeria: ["5", "A"], sartoria: ["5", "S"], banca: ["2", "B"], guaritore: ["3", "U"], locanda: [undefined, "L"] } as const;
   const [piazza, tasto] = dove[edificio];
   if (piazza !== undefined) await vai(app, "3", piazza);
   await app.premiTasto(tasto);
@@ -860,7 +860,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     await vai(app, "1", "1"); // Porta Santa Maria: 19 movimenti
     expect(dx(app.schermata())).toContain("Luogo: Porta Santa Maria");
     await app.premiTasto("E");
-    expect(sx(app.schermata())).toContain("colline di Monte Pisano. Strada ancora da esplorare.");
+    expect(sx(app.schermata())).toContain("il Serchio scende dalla Media Valle tra nebbie e ponti antichi");
     expect(app.schermata().chiave).toBe("gioco:citta:porta-n");
   });
 
@@ -877,11 +877,11 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(sx(app.schermata())).toContain("[V] Comandi di prova");
     await app.premiTasto("V");
     expect(sx(app.schermata())).toContain("Comandi di prova");
-    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "0", "I", "O"]); // il 9 è "Avvia il torneo"; A, B, C: amuleto, forziere, Fortuna 20
+    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "0", "I", "O"]); // il 9 è "Avvia il torneo"; A, B, C: amuleto, forziere, Fortuna 20; D: prepara il duello (0.18.1)
     // vai a un luogo: gratis, senza consumare azioni
     await app.premiTasto("4");
     await app.premiTasto("3"); // piazze e torre
-    await app.premiTasto("5"); // Torre Guinigi (dopo Via Fillungo)
+    await app.premiTasto("6"); // Torre Guinigi (dopo Piazza San Martino e Via Fillungo)
     expect(app.schermata().chiave).toBe("gioco:citta:torre");
     expect(dx(app.schermata())).toContain("Luogo: Torre Guinigi");
     expect(dx(app.schermata())).toContain("Azioni 50/50");

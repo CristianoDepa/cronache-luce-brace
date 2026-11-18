@@ -321,11 +321,11 @@ def zaino():
         q.rett(x, 40, x + 4, 50, col); q.rett(x + 1, 36, x + 3, 39, "perg"); q.rett(x + 1, 34, x + 3, 35, "marr_l"); q.rett(x, 40, x, 50, "bianco")
     # lo scrigno aperto, con l'interno di velluto e vuoto: il posto degli oggetti magici (oggi l'amuleto, domani anche altro)
     q.rett(63, 51, 93, 52, "ombra")
-    q.rett(66, 22, 90, 35, "marr_s"); q.rett(66, 22, 90, 23, "marr_l"); q.rett(68, 25, 88, 34, "rosso")        # il coperchio alzato, con l'interno di velluto
+    q.rett(66, 22, 90, 35, "marr_s"); q.rett(66, 22, 90, 23, "marr_l"); q.rett(68, 25, 88, 34, "ver")        # il coperchio alzato, con l'interno di velluto
     q.rett(66, 22, 67, 35, "marr"); q.rett(89, 22, 90, 35, "marr"); q.set(70, 29, "oro_l"); q.set(86, 29, "oro_l")
     q.rett(65, 38, 91, 50, "marr"); q.rett(65, 38, 91, 39, "marr_l"); q.rett(65, 49, 91, 50, "marr_s")         # il corpo dello scrigno
     q.rett(65, 38, 66, 50, "marr_s"); q.rett(90, 38, 91, 50, "marr_s"); q.rett(65, 43, 91, 44, "acc_s")
-    q.rett(67, 35, 89, 38, "rosso"); q.rett(69, 36, 87, 37, "rosso_s")                                        # l'imbottitura vuota, in vista
+    q.rett(67, 35, 89, 38, "ver"); q.rett(69, 36, 87, 37, "ver_s")                                        # l'imbottitura vuota, in vista
     q.rett(76, 43, 80, 47, "oro"); q.set(78, 45, "nero"); q.rett(76, 43, 80, 43, "oro_l")                     # la serratura
     return q
 

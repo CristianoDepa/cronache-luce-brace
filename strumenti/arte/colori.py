@@ -33,6 +33,7 @@ COL = {
     "legno_s": ("#3d2812", None), "legno": ("#6a4628", None), "legno_l": ("#9a6a3a", None),
     # finestre illuminate (di giorno scure) e fuoco
     "fin": ("#ffd84a", "#3a4a6a"), "fin_c": ("#ff9a2a", "#2a3a5a"), "fin_o": ("#1a1a22", "#1a1a22"),
+    "fu1": ("#f2f2f6", "#e8eaf2"), "fu2": ("#c4c6d2", "#c8ccd8"), "fu3": ("#9a9cae", "#a6aab9"), "fu4": ("#6e7088", "#8890a6"),
     "f1": ("#7a0a0a", None), "f2": ("#c81e1e", None), "f3": ("#ff6a1a", None), "f4": ("#ffb02a", None), "f5": ("#ffe36a", None), "f6": ("#fff6c0", None),
     # metalli
     "acc_s": ("#555a63", None), "acc": ("#a0a7b2", None), "acc_l": ("#e6eaee", None),

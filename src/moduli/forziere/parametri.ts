@@ -20,6 +20,7 @@ export const PARAMETRI_FORZIERE = {
     foresta: { scenaId: "scena.foresta", probabilita: 0.01, oroMin: 20, oroMax: 50, contesto: "citta:porta-s" },
     palude: { scenaId: "scena.palude", probabilita: 0.02, oroMin: 50, oroMax: 120, contesto: "citta:porta-so" },
     cimitero: { scenaId: "scena.cimitero", probabilita: 0.03, oroMin: 90, oroMax: 200, contesto: "citta:porta-so" },
+    valle: { scenaId: "scena.valle", probabilita: 0.04, oroMin: 140, oroMax: 300, contesto: "citta:porta-n" },
   } satisfies Readonly<Record<string, ParametriZonaForziere>>,
 } as const;
 

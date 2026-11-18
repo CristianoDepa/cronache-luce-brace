@@ -320,10 +320,10 @@ describe("abilità di classe", () => {
     const registro = registroDa([...MODULI_ATTIVI, moduloProva, benedizione, moduloColpiSicuri]);
     const ctx = creaContestoDiProva(registro, 1);
     const stato = eseguiOk(con(registro, "ladro"), inizia("sacco"), ctx).stato;
-    // la prima abilità del Ladro è la Pugnalata, la seconda la Schivata (dal 4° livello); la benedizione è la terza
-    const uso = eseguiOk(stato, abilita(3), ctx);
+    // la prima abilità del Ladro è la Pugnalata, la seconda la Schivata (dal 4° livello), la terza il Furto (dall'8°); la benedizione è la quarta
+    const uso = eseguiOk(stato, abilita(4), ctx);
     expect(statoCombattimento.leggi(uso.stato).scontro?.effetti[0]?.colpi).toBe(3);
-    const ancora = eseguiAzione(uso.stato, abilita(3), ctx);
+    const ancora = eseguiAzione(uso.stato, abilita(4), ctx);
     expect(ancora.ok ? "" : ancora.errore.chiave).toBe("abilita.errore.gia_attiva");
     // dopo due attacchi l'effetto dura ancora (3 colpi), dopo il terzo scade
     let corrente = uso.stato;
@@ -347,8 +347,10 @@ describe("abilità di classe", () => {
     const { stato } = prova("ladro");
     const seconda = eseguiAzione(stato, abilita(2), ctxR); // la Schivata esiste, ma si sblocca al 4° livello
     expect(seconda.ok ? "" : seconda.errore.chiave).toBe("abilita.errore.livello");
-    const terza = eseguiAzione(stato, abilita(3), ctxR);
-    expect(terza.ok ? "" : terza.errore.chiave).toBe("abilita.errore.nessuna_abilita");
+    const terza = eseguiAzione(stato, abilita(3), ctxR); // il Furto esiste (dal livello 8)
+    expect(terza.ok ? "" : terza.errore.chiave).toBe("abilita.errore.livello");
+    const quarta = eseguiAzione(stato, abilita(4), ctxR);
+    expect(quarta.ok ? "" : quarta.errore.chiave).toBe("abilita.errore.nessuna_abilita");
     const senzaClasse = eseguiOk(con(registroSicuro, null), inizia("sacco"), ctxR).stato;
     const nessuna = eseguiAzione(senzaClasse, abilita(), ctxR);
     expect(nessuna.ok ? "" : nessuna.errore.chiave).toBe("abilita.errore.nessuna_abilita");
@@ -357,7 +359,7 @@ describe("abilità di classe", () => {
   it("un'abilità aggiunta solo con dati compare nelle abilità della classe e funziona (Sfida: danno x3)", () => {
     const { stato, registro } = prova("cavaliere");
     const normale = eseguiOk(stato, { tipo: "attacca" }, creaContestoDiProva(registro, 4));
-    const sfida = eseguiOk(stato, abilita(3), creaContestoDiProva(registro, 4));
+    const sfida = eseguiOk(stato, abilita(4), creaContestoDiProva(registro, 4));
     expect(chiavi(sfida.eventi)[0]).toBe("abilita.usata");
     expect(dannoInflitto(sfida.eventi)).toBe(dannoInflitto(normale.eventi) * 3);
   });
@@ -472,13 +474,13 @@ describe("abilità evidenziate nel registro e nel pannello", () => {
     const stato = eseguiOk(con(registroSicuro, "mistico"), inizia("sacco"), ctxR).stato;
     expect(pannelloCombattimento(stato, registroSicuro)).toEqual([]);
     const concentrato = eseguiOk(stato, abilita(), creaContestoDiProva(registroSicuro, 1)).stato;
-    expect(pannelloCombattimento(concentrato, registroSicuro)).toEqual(["★ Attivo: Concentrazione - prossimo colpo con probabilità e danno ×2"]);
+    expect(pannelloCombattimento(concentrato, registroSicuro)).toEqual(["★ Attivo: Concentrazione - prossimo colpo con probabilità e danno ×2 (ancora 1 colpo)"]); // dalla 0.18.1 la riga dice quanti colpi restano
     const c = creaContestoDiProva(registroSicuro, 1);
     const riga = registroSicuro.moduli.flatMap((m) => m.interfaccia?.pannelli?.(concentrato, c) ?? []).find((x) => x.titoloChiave === "combattimento.pannello.titolo")?.righe.find((r) => r.chiave === "combattimento.pannello.effettoAttivo");
     expect(riga?.tono).toBe("speciale");
     const dopo = eseguiOk(concentrato, { tipo: "attacca" }, creaContestoDiProva(registroSicuro, 2)).stato;
     expect(pannelloCombattimento(dopo, registroSicuro)).toEqual([]);
     // il pannello è tradotto anche in inglese
-    expect(traduciEvento(registroSicuro, "en", riga!)).toBe("★ Active: Focus - next hit with double chance and double damage");
+    expect(traduciEvento(registroSicuro, "en", riga!)).toBe("★ Active: Focus - next hit with double chance and double damage (1 hit left)");
   });
 });

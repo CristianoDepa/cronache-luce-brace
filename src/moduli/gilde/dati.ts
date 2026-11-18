@@ -12,9 +12,9 @@ export interface Gilda {
 }
 
 export const GILDE: readonly Gilda[] = [
-  { sito: "gilda-cavaliere", classe: "cavaliere", scenaId: "scena.gilda.cavaliere", spriteId: "sprite.capogilda.cavaliere", capogilda: { 4: "capogilda-cavaliere-4" } },
-  { sito: "gilda-mistico", classe: "mistico", scenaId: "scena.gilda.mistico", spriteId: "sprite.capogilda.mistico", capogilda: { 4: "capogilda-mistico-4" } },
-  { sito: "gilda-ladro", classe: "ladro", scenaId: "scena.gilda.ladro", spriteId: "sprite.capogilda.ladro", capogilda: { 4: "capogilda-ladro-4" } },
+  { sito: "gilda-cavaliere", classe: "cavaliere", scenaId: "scena.gilda.cavaliere", spriteId: "sprite.capogilda.cavaliere", capogilda: { 4: "capogilda-cavaliere-4", 8: "capogilda-cavaliere-8" } },
+  { sito: "gilda-mistico", classe: "mistico", scenaId: "scena.gilda.mistico", spriteId: "sprite.capogilda.mistico", capogilda: { 4: "capogilda-mistico-4", 8: "capogilda-mistico-8" } },
+  { sito: "gilda-ladro", classe: "ladro", scenaId: "scena.gilda.ladro", spriteId: "sprite.capogilda.ladro", capogilda: { 4: "capogilda-ladro-4", 8: "capogilda-ladro-8" } },
 ];
 
 // I capigilda sono creature: non si può fuggire, perdere non uccide (si resta a 1 HP) e battere il capogilda è l'unico premio
@@ -30,4 +30,8 @@ export const CAPIGILDA: readonly VoceContenuto[] = [
   capogilda("capogilda-cavaliere-4", "cavaliere", "sprite.capogilda.cavaliere", 117, 16, 6, 7),
   capogilda("capogilda-mistico-4", "mistico", "sprite.capogilda.mistico", 55, 28, 3, 9),
   capogilda("capogilda-ladro-4", "ladro", "sprite.capogilda.ladro", 48, 27, 3, 14),
+  // Livello 8 (0.18.0): valori di partenza, da tarare con la simulazione (circa 70% di vittorie per un personaggio di livello 7 con equipaggiamento di classe 6-7).
+  capogilda("capogilda-cavaliere-8", "cavaliere8", "sprite.capogilda.cavaliere8", 105, 29, 14, 7),
+  capogilda("capogilda-mistico-8", "mistico8", "sprite.capogilda.mistico8", 72, 31, 6, 10),
+  capogilda("capogilda-ladro-8", "ladro8", "sprite.capogilda.ladro8", 86, 29, 6, 16),
 ];

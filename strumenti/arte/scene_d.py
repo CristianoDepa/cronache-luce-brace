@@ -15,8 +15,9 @@ def sulla_cinta(theta, rx=RX, ry=RY):
 # Porte con l'angolo (gradi da nord) e se sono aperte
 PORTE = {"porta-n": (0, False), "porta-ne": (50, False), "porta-e": (100, False), "porta-s": (180, True), "porta-so": (235, False), "porta-no": (305, False)}
 # Posizioni (x, y) dei luoghi interni
-INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "fillungo": (65, 42), "stamperia": (73, 41), "torre": (84, 31), "sartoria": (52, 34), "armeria": (80, 44),
-           "banca": (80, 54), "guaritore": (44, 64), "speziale": (53, 72), "registro": (70, 70), "locanda": (63, 78), "capanna": (50, 84),
+INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "fillungo": (65, 42), "stamperia": (73, 41), "torre": (84, 31), "sartoria": (46, 31), "armeria": (80, 44),
+           "banca": (80, 54), "guaritore": (44, 64), "speziale": (53, 72), "registro": (91, 66), "locanda": (63, 78), "capanna": (50, 84),
+           "piazza-m": (92, 58), "cattedrale": (98, 52), "palazzo-anziani": (66, 57),
            "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65)}
 
 def coordinate():
@@ -56,6 +57,19 @@ def fiume(q):
             x, y = round(x0 + (x1 - x0) * t), round(y0 + (y1 - y0) * t)
             q.set(x + (k % 2), y, "acq_a" if (i + k) % 2 == 0 else "acq_b"); q.set(x - 1 + (k % 2), y + 2, "acq_b" if (i + k) % 2 == 0 else "acq_a")
 
+def fiume_nord(q):
+    # Il Serchio che arriva da nord (0.19.0): un ramo del fiume lungo il bordo alto della mappa, con il Ponte del Diavolo sulla strada che esce da Porta Santa Maria
+    # e un po' di nebbia sulle rive: la porta nord ha ora il suo paesaggio, la valle del Serchio.
+    pf = [(104, 1), (92, 3), (80, 4), (68, 4), (56, 3), (44, 2), (34, 1)]
+    for (x0, y0), (x1, y1) in zip(pf, pf[1:]):
+        q.linea(x0, y0, x1, y1, "acqua", 3); q.linea(x0, y0 - 1, x1, y1 - 1, "acqua_l", 1)
+    for i, x in enumerate(range(38, 100, 7)): q.set(x, 5 + (i % 2), "acq_a" if i % 2 == 0 else "acq_b")
+    # il ponte a schiena d'asino, con le arcate
+    q.rett(58, 1, 70, 5, "pietra_l"); q.rett(58, 1, 70, 1, "pietra_c"); q.rett(58, 5, 70, 5, "pietra_s")
+    for cx in (61, 64, 67): q.rett(cx - 1, 3, cx + 1, 5, "ombra"); q.set(cx, 3, "ombra")
+    q.linea(64, 6, 64, 10, "terra", 1)                                         # la strada dalla porta al ponte
+    for x in (44, 52, 76, 86): q.rett(x, 7, x, 8, "perg_s"); q.set(x + 1, 8, "perg_s")   # canne sulle rive
+
 def paludi(q):
     for x in range(3, 26):
         for y in range(64, 86):
@@ -89,7 +103,12 @@ def sim_cavalieri(q, x, y): q.rett(x - 1, y - 1, x + 1, y + 1, "rosso_l"); q.set
 def sim_mistici(q, x, y): q.rett(x - 1, y - 1, x + 1, y + 1, "viola_l"); q.set(x, y, "oro_l"); q.set(x - 1, y - 1, "oro_l"); q.set(x + 1, y + 1, "oro_l")
 def sim_ladri(q, x, y): q.rett(x - 1, y - 1, x + 1, y + 1, "ombra"); q.set(x, y - 1, "oro"); q.set(x, y, "oro_s")
 
-ICONE = {"sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
+def sim_cattedrale(q, x, y):                                       # una croce chiara sul tetto di marmo (0.19.0)
+    q.rett(x - 1, y - 1, x + 1, y + 1, "bianco"); [q.set(x + a, y + b, "pietra_s") for a, b in ((0, -1), (-1, 0), (0, 0), (1, 0), (0, 1))]
+def sim_anziani(q, x, y):                                          # i colori rossi e bianchi della Repubblica (0.19.0)
+    q.rett(x - 1, y - 1, x + 1, y + 1, "perg_l"); q.set(x - 1, y - 1, "rosso"); q.set(x, y - 1, "bianco"); q.set(x + 1, y - 1, "rosso")
+
+ICONE = {"cattedrale": ("pietra_s", "bianco", sim_cattedrale), "sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
          "guaritore": ("ver", "ver_l", sim_guaritore), "speziale": ("cian_s", "cian", sim_speziale), "locanda": ("marr", "marr_l", sim_locanda),
          "gilda-cavaliere": ("rosso_s", "rosso", sim_cavalieri), "gilda-mistico": ("viola_s", "viola", sim_mistici), "gilda-ladro": ("grigio", "acc_s", sim_ladri)}
 
@@ -101,15 +120,15 @@ def mappa():
     pos = coordinate()
     # esterno: colline a nord-ovest, fiume a est, paludi a ovest, foresta a sud, strada a est
     for cx, base, w, h in ((14, 24, 24, 15), (36, 21, 20, 12), (54, 17, 16, 9), (9, 40, 16, 9)): collina(q, cx, base, w, h)
-    fiume(q); paludi(q)
+    fiume(q); fiume_nord(q); paludi(q)
     for x in range(36, 96, 6): pino_mini(q, x, 92 + (x // 6) % 2)
     ex, ey = (round(v) for v in sulla_cinta(100)); q.linea(ex + 4, ey, 124, ey + 3, "terra", 1)
     for x in range(ex + 8, 118, 6): q.set(x, ey + 1 + (x - ex) * 3 // (124 - ex), "terra_s")
     # interno della città e case sparse (evitano strade, piazze e edifici)
     q.ell(CENTRO[0], CENTRO[1], RX - 3, RY - 3, "perg_l")
-    strade = [("porta-n", "piazza-n"), ("piazza-n", "piazza-c"), ("piazza-c", "piazza-s"), ("piazza-s", "porta-s"), ("porta-e", "piazza-c"), ("porta-no", "piazza-c"), ("porta-ne", "piazza-n"), ("porta-so", "piazza-s")]
+    strade = [("porta-n", "piazza-n"), ("piazza-n", "piazza-c"), ("piazza-c", "piazza-s"), ("piazza-s", "piazza-m"), ("piazza-c", "piazza-m"), ("piazza-s", "porta-s"), ("porta-e", "piazza-c"), ("porta-no", "piazza-c"), ("porta-ne", "piazza-n"), ("porta-so", "piazza-s")]
     cr = random.Random(7)
-    liberi = [(x, y, 7) for x, y in pos.values()]
+    liberi = [(x, y, 9) for x, y in pos.values()]      # un po' di respiro attorno a ogni luogo (0.19.0)
     for gx in range(CENTRO[0] - RX + 4, CENTRO[0] + RX - 4, 5):
         for gy in range(CENTRO[1] - RY + 4, CENTRO[1] + RY - 4, 4):
             x, y = gx + cr.randint(0, 2), gy + cr.randint(0, 1)
@@ -137,6 +156,7 @@ def mappa():
     q.ell(67, 36, 9, 5, "malta"); q.ell(67, 36, 6, 3, "perg_l")                  # Anfiteatro
     q.rett(60, 44, 68, 52, "pietra_l"); q.rett(61, 45, 67, 51, "pietra_c")      # San Michele
     q.rett(54, 59, 68, 65, "pietra_l"); q.rett(55, 60, 67, 64, "pietra_c")      # Napoleone
+    q.rett(86, 55, 98, 61, "pietra_l"); q.rett(87, 56, 97, 60, "pietra_c")      # San Martino (0.19.0)
     q.rett(82, 30, 86, 36, "mattone"); q.rett(82, 30, 82, 36, "mattone_l"); q.rett(86, 30, 86, 36, "mattone_s")  # Torre Guinigi
     q.disco(84, 27, 3, "pino_m"); q.disco(83, 26, 1.2, "pino_l"); q.rett(81, 29, 87, 29, "pino_s")
     for nome, (tetto, chiaro, simbolo) in ICONE.items():

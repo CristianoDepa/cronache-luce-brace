@@ -27,8 +27,9 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
       "[1] Piazza dell'Anfiteatro - 14 movimenti, 1 azione",
       "[2] Piazza San Michele - 10 movimenti, 1 azione",
       "[3] Piazza Napoleone - 6 movimenti, 0 azioni",
-      "[4] Via Fillungo - 12 movimenti, 1 azione",
-      "[5] Torre Guinigi - 14 movimenti, 1 azione",
+      "[4] Piazza San Martino - 9 movimenti, 1 azione",
+      "[5] Via Fillungo - 12 movimenti, 1 azione",
+      "[6] Torre Guinigi - 14 movimenti, 1 azione",
     ]);
   });
 
@@ -45,9 +46,9 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
   it("entrare in un edificio non svela altre piazze; la Torre e i luoghi senza edifici non mostrano nulla in più", () => {
     const dentro = eseguiOk(eseguiOk(partenza(), viaggia("piazza-s"), ctx).stato, entra("guaritore"), ctx).stato;
     expect(statoCitta.leggi(dentro).visitati).toEqual(["porta-s", "piazza-s", "guaritore"]);
-    expect(lista(dentro, "piazze")[2]).toBe("[3] Piazza Napoleone: Guaritore, Registro dei caduti, Speziale, Gilda dei Ladri - sei qui"); // da dentro, "sei qui" è la piazza ospite
+    expect(lista(dentro, "piazze")[2]).toBe("[3] Piazza Napoleone: Guaritore, Palazzo degli Anziani, Speziale, Gilda dei Ladri - sei qui"); // da dentro, "sei qui" è la piazza ospite
     const torre = eseguiOk(partenza(), viaggia("torre"), ctx).stato;
-    expect(lista(torre, "piazze")[4]).toBe("[5] Torre Guinigi - sei qui");
+    expect(lista(torre, "piazze")[5]).toBe("[6] Torre Guinigi - sei qui");
   });
 
   it("il teletrasporto di prova e la rinascita segnano il luogo come visitato", () => {

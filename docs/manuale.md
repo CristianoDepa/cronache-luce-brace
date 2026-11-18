@@ -21,6 +21,10 @@ In scheda: «HP massimi: N». Valore teorico con classe e livelli (senza oggetti
 | 5 | 50 | 30 | 40 |
 | 6 | 55 | 33 | 44 |
 | 7 | 60 | 36 | 48 |
+| 8 | 65 | 39 | 52 |
+| 9 | 70 | 42 | 56 |
+| 10 | 75 | 45 | 60 |
+| 11 | 80 | 48 | 64 |
 
 ## Forza
 
@@ -39,6 +43,10 @@ In scheda: «Forza: N (base B, bonus +X)». Valore teorico con classe e livelli:
 | 5 | 9 | 8 | 6 |
 | 6 | 10 | 8 | 6 |
 | 7 | 11 | 8 | 6 |
+| 8 | 12 | 8 | 6 |
+| 9 | 13 | 8 | 6 |
+| 10 | 14 | 8 | 6 |
+| 11 | 15 | 8 | 6 |
 
 ## Difesa
 
@@ -57,6 +65,10 @@ In scheda: «Difesa: N (base B, bonus +X)». Valore teorico con classe e livelli
 | 5 | 5 | 6 | 2 |
 | 6 | 5 | 7 | 2 |
 | 7 | 5 | 8 | 2 |
+| 8 | 5 | 9 | 2 |
+| 9 | 5 | 10 | 2 |
+| 10 | 5 | 11 | 2 |
+| 11 | 5 | 12 | 2 |
 
 ## Velocità
 
@@ -75,6 +87,10 @@ In scheda: «Velocità: N (base B, bonus +X)». Valore teorico con classe e live
 | 5 | 6 | 11 | 19 |
 | 6 | 6 | 11 | 20 |
 | 7 | 6 | 11 | 21 |
+| 8 | 6 | 11 | 22 |
+| 9 | 6 | 11 | 23 |
+| 10 | 6 | 11 | 24 |
+| 11 | 6 | 11 | 25 |
 
 ## Mana
 
@@ -93,6 +109,10 @@ Serve alle abilità. Solo chi ne ha: **classe**: Cavaliere 0, Mistico +10, Ladro
 | 5 | 0 | 18 | 0 |
 | 6 | 0 | 20 | 0 |
 | 7 | 0 | 22 | 0 |
+| 8 | 0 | 24 | 0 |
+| 9 | 0 | 26 | 0 |
+| 10 | 0 | 28 | 0 |
+| 11 | 0 | 30 | 0 |
 
 ## Fortuna
 
@@ -100,7 +120,7 @@ Agisce SOLO su bottino e scoperte (pozioni trovate dopo una vittoria, forzieri, 
 
 **Classe**: Cavaliere +2, Mistico +3, Ladro +5; **livelli**: +1 ogni 2 livelli. **Pozione della fortuna**: +5 per 5 + d6 turni di combattimento (la durata non si vede mai). **Amuleto** (medaglione della fortuna): bronzo +2, argento +4, oro +6. Se ne indossa uno solo.
 
-**Forziere**: compare dopo una vittoria (foresta 1%, palude 2%, cimitero 3%); si apre al 60% (più lo scasso del Ladro, vedi la pagina Scasso), con la Fortuna fino al tetto della classe; un solo tentativo; dentro oro o una pozione.
+**Forziere**: compare dopo una vittoria (foresta 1%, palude 2%, cimitero 3%, valle 4%); si apre al 60% (più lo scasso del Ladro, vedi la pagina Scasso), con la Fortuna fino al tetto della classe; un solo tentativo; dentro oro o una pozione.
 
 In scheda: «Fortuna: N (base B, bonus +X)». Effetto della Fortuna:
 
@@ -122,6 +142,10 @@ Valore teorico con classe e livelli:
 | 5 | 4 | 5 | 7 |
 | 6 | 5 | 6 | 8 |
 | 7 | 5 | 6 | 8 |
+| 8 | 6 | 7 | 9 |
+| 9 | 6 | 7 | 9 |
+| 10 | 7 | 8 | 10 |
+| 11 | 7 | 8 | 10 |
 
 ## Scasso
 
@@ -138,3 +162,7 @@ Probabilità di aprire un forziere, per classe e livello (con la Fortuna di clas
 | 5 | 67.2% | 69.0% | 77.4% |
 | 6 | 69.0% | 70.8% | 80.6% |
 | 7 | 69.0% | 70.8% | 81.8% |
+| 8 | 70.0% | 72.6% | 85.0% |
+| 9 | 70.0% | 72.6% | 85.0% |
+| 10 | 70.0% | 74.4% | 85.0% |
+| 11 | 70.0% | 74.4% | 85.0% |

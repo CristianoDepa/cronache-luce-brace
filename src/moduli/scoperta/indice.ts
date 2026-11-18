@@ -10,7 +10,7 @@ export type { StatoScoperta, TipoScoperta } from "./tipi";
 
 const CONTESTO_SCOPERTA = "scoperta";
 // Lo sfondo della schermata è quello degli incontri della zona dove è avvenuta la scoperta.
-const SCENE_DELLA_ZONA: Readonly<Record<string, string>> = { foresta: "scena.foresta", palude: "scena.palude", cimitero: "scena.cimitero" };
+const SCENE_DELLA_ZONA: Readonly<Record<string, string>> = { foresta: "scena.foresta", palude: "scena.palude", cimitero: "scena.cimitero", valle: "scena.valle" };
 // Lo sprite per ogni tipo di scoperta (un forziere fallito resta chiuso).
 const SPRITE: Readonly<Record<TipoScoperta, string>> = { lapide: "sprite.lapide", forziere: "sprite.forziere", "apertura-riuscita": "sprite.forziere_aperto", "apertura-fallita": "sprite.forziere" };
 

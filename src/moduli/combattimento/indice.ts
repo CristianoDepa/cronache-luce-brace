@@ -10,7 +10,7 @@ import { ID_COMBATTIMENTO, statoCombattimento, tipoCreatura } from "./tipi";
 // API pubblica del modulo: ciò che altri moduli possono usare.
 export { ID_COMBATTIMENTO, STATISTICHE_VUOTE, TIPI_DANNO, statoCombattimento, tipoCreatura } from "./tipi";
 export type { Creatura, NaturaCreatura, Potenziamento, ScontroAttivo, StatoCombattimento, TipoDanno } from "./tipi";
-export { puntoDanno, puntoFineRound, puntoFineScontro, puntoFuga, puntoOro, puntoPrecisione, puntoTipoDanno, puntoTipoSecondario, puntoVelocita } from "./punti";
+export { puntoDanno, puntoFineRound, puntoFineScontro, puntoFuga, puntoOro, puntoPrecisione, puntoProtezione, puntoTipoDanno, puntoTipoSecondario, puntoVelocita } from "./punti";
 export type { CalcoloDanno, CalcoloFineScontro, CalcoloFuga, CalcoloOro, CalcoloPrecisione, CalcoloRound, CalcoloTipoDanno, CalcoloVelocita } from "./punti";
 export { convalidaEffettoScontro } from "./tipi";
 export { calcolaDannoBase, dannoMinimo, moltiplicatoreTipo } from "./calcolo";

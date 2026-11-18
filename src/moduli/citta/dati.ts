@@ -81,17 +81,21 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     "porta-n",
     { it: "Porta Santa Maria", en: "Santa Maria Gate" },
     { it: "La porta nord della città, sulla piazza omonima. Da qui parte Via Fillungo verso il cuore di Lucca.", en: "The city's north gate, opening onto its square. Via Fillungo starts here and leads to the heart of the city." },
-    [{ verso: "piazza-n", distanza: 6 }, { verso: "mura-n", distanza: 2 }],
+    [{ verso: "piazza-n", distanza: 6 }, { verso: "mura-n", distanza: 2 }, { verso: "valle", distanza: 0 }],
     { it: "Esci dalla Porta Santa Maria", en: "Leave through Santa Maria Gate" },
-    { chiusa: { it: "Oltre la porta si stendono le colline di Monte Pisano. Strada ancora da esplorare.", en: "Beyond the gate lie the hills of Monte Pisano. Road still to be explored." } },
+    {
+      areaId: "valle",
+      livelloMin: 8,
+      chiusa: { it: "Oltre la porta il Serchio scende dalla Media Valle tra nebbie e ponti antichi. È la strada per chi ha già battuto il secondo capogilda (livello 8): per ora è chiusa.", en: "Beyond the gate the Serchio runs down from the Media Valle between fog and ancient bridges. It is the road for those who have already beaten the second guildmaster (level 8): for now it is closed." },
+    },
   ),
   porta(
     "porta-ne",
     { it: "Porta San Jacopo alla Tomba", en: "San Jacopo alla Tomba Gate" },
-    { it: "La porta più recente delle mura, aperta per i collegamenti con la valle del Serchio.", en: "The newest gate in the walls, opened to connect with the Serchio valley." },
+    { it: "La porta più recente delle mura, aperta verso la piana di Capannori e i paesi vicini.", en: "The newest gate in the walls, opened towards the Capannori plain and the nearby villages." },
     [{ verso: "piazza-n", distanza: 7 }, { verso: "mura-ne", distanza: 2 }],
     { it: "Esci dalla Porta San Jacopo", en: "Leave through San Jacopo Gate" },
-    { chiusa: { it: "Oltre la porta scorre il Serchio, verso la Garfagnana. Strada ancora da esplorare.", en: "Beyond the gate flows the Serchio, towards the Garfagnana. Road still to be explored." } },
+    { chiusa: { it: "Oltre la porta si apre la piana di Capannori, con i campi e le querce antiche. Strada ancora da esplorare.", en: "Beyond the gate lies the Capannori plain, with its fields and ancient oaks. Road still to be explored." } },
   ),
   porta(
     "porta-e",
@@ -161,7 +165,16 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     contesto: "citta:piazza-s",
     nome: { it: "Piazza Napoleone", en: "Napoleon Square" },
     descrizione: { it: "Una grande piazza aperta voluta da Elisa Baciocchi, vicino alla cattedrale.", en: "A large open square created by Elisa Baciocchi, near the cathedral." },
-    collegamenti: [{ verso: "guaritore", distanza: 2 }, { verso: "speziale", distanza: 2 }, { verso: "gilda-ladro", distanza: 2 }, { verso: "registro", distanza: 2 }],
+    collegamenti: [{ verso: "guaritore", distanza: 2 }, { verso: "speziale", distanza: 2 }, { verso: "gilda-ladro", distanza: 2 }, { verso: "palazzo-anziani", distanza: 2 }],
+  },
+  {
+    id: "piazza-m",
+    categoria: "piazza",
+    ospitaNpc: true,
+    contesto: "citta:piazza-m",
+    nome: { it: "Piazza San Martino", en: "St Martin's Square" },
+    descrizione: { it: "La piazza della cattedrale: la facciata di marmo bianco con le loggette, il campanile di mattoni e, accanto, il registro dei caduti.", en: "The cathedral square: the white marble front with its small loggias, the brick bell tower and, nearby, the Register of the Fallen." },
+    collegamenti: [{ verso: "piazza-s", distanza: 3 }, { verso: "piazza-c", distanza: 4 }, { verso: "cattedrale", distanza: 2 }, { verso: "registro", distanza: 2 }],
   },
   {
     id: "fillungo",
@@ -186,7 +199,11 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
   { id: "banca", tasto: "B", dove: { it: "in Banca", en: "at the Bank" }, categoria: "edificio", ospite: "piazza-c", ingresso: { it: "Entra in Banca", en: "Enter the Bank" }, contesto: "luogo:banca", nome: { it: "Banca", en: "Bank" }, descrizione: { it: "Qui l'oro è al sicuro, anche dalla morte.", en: "Here your gold is safe, even from death." }, collegamenti: [] },
   { id: "guaritore", tasto: "U", dove: { it: "dal Guaritore", en: "at the Healer" }, categoria: "edificio", ospite: "piazza-s", ingresso: { it: "Vai dal Guaritore", en: "Visit the Healer" }, contesto: "luogo:guaritore", nome: { it: "Guaritore", en: "Healer" }, descrizione: { it: "Unguenti e infusi per curare ogni ferita.", en: "Salves and infusions to heal any wound." }, collegamenti: [] },
   // Il registro dei caduti (0.16.1): dice se c'è una lapide a nome del giocatore e dove. Per ora a Piazza Napoleone; si sposterà in una nuova zona di Lucca.
-  { id: "registro", tasto: "R", dove: { it: "al registro dei caduti", en: "at the Register of the Fallen" }, categoria: "edificio", ospite: "piazza-s", ingresso: { it: "Vai al registro dei caduti", en: "Visit the Register of the Fallen" }, contesto: "luogo:registro", nome: { it: "Registro dei caduti", en: "Register of the Fallen" }, descrizione: { it: "Una grande lapide di marmo con i nomi incisi di chi è caduto fuori dalle mura.", en: "A large marble stone with the names of those who fell outside the walls." }, collegamenti: [] },
+  // La cattedrale di San Martino (0.19.0): Padre Bartolomeo, l'arciprete, e la protezione divina.
+  { id: "cattedrale", tasto: "C", dove: { it: "alla cattedrale di San Martino", en: "at St Martin's Cathedral" }, categoria: "edificio", ospite: "piazza-m", ingresso: { it: "Entra nella cattedrale", en: "Enter the cathedral" }, contesto: "luogo:cattedrale", nome: { it: "Cattedrale di San Martino", en: "St Martin's Cathedral" }, descrizione: { it: "La navata fresca e silenziosa della cattedrale: candele all'altare e, davanti, Padre Bartolomeo, l'arciprete.", en: "The cool, silent nave of the cathedral: candles at the altar and, in front of it, Father Bartolomeo, the archpriest." }, collegamenti: [] },
+  // Il Palazzo degli Anziani (0.19.0): la sede del governo della Repubblica; i bandi del Gonfaloniere.
+  { id: "palazzo-anziani", tasto: "A", dove: { it: "al Palazzo degli Anziani", en: "at the Palace of the Elders" }, categoria: "edificio", ospite: "piazza-s", ingresso: { it: "Vai al Palazzo degli Anziani", en: "Go to the Palace of the Elders" }, contesto: "luogo:palazzo", nome: { it: "Palazzo degli Anziani", en: "Palace of the Elders" }, descrizione: { it: "La sede del governo della Repubblica di Lucca: sul portale si affiggono i bandi del Gonfaloniere.", en: "The seat of the Republic of Lucca's government: the Gonfalonier's proclamations are posted on the portal." }, collegamenti: [] },
+  { id: "registro", tasto: "R", dove: { it: "al registro dei caduti", en: "at the Register of the Fallen" }, categoria: "edificio", ospite: "piazza-m", ingresso: { it: "Vai al registro dei caduti", en: "Visit the Register of the Fallen" }, contesto: "luogo:registro", nome: { it: "Registro dei caduti", en: "Register of the Fallen" }, descrizione: { it: "Una grande lapide di marmo con i nomi incisi di chi è caduto fuori dalle mura.", en: "A large marble stone with the names of those who fell outside the walls." }, collegamenti: [] },
   { id: "speziale", tasto: "S", dove: { it: "dallo Speziale", en: "at the Apothecary" }, categoria: "edificio", ospite: "piazza-s", ingresso: { it: "Vai dallo Speziale", en: "Visit the Apothecary" }, contesto: "luogo:speziale", nome: { it: "Speziale", en: "Apothecary" }, descrizione: { it: "Boccette di ogni colore su scaffali fino al soffitto: pozioni, ma lo speziale ne ha poche al giorno.", en: "Bottles of every color on shelves up to the ceiling: potions, but the apothecary has few each day." }, collegamenti: [] },
   { id: "stamperia", tasto: "T", dove: { it: "alla Stamperia", en: "at the Print Shop" }, categoria: "edificio", ospite: "fillungo", ingresso: { it: "Entra nella Stamperia", en: "Enter the Print Shop" }, contesto: "luogo:stamperia", nome: { it: "Stamperia", en: "Print Shop" }, descrizione: { it: "Un torchio, fogli appesi ad asciugare e odore d'inchiostro: qui escono le Cronache della città.", en: "A press, sheets hung out to dry and the smell of ink: this is where the city's Chronicles come out." }, collegamenti: [] },
   // La capanna di Sibilla Brace, l'Incantatrice (0.17.0): al limitare della foresta, a Porta San Pietro.
@@ -198,6 +215,8 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
   { id: "gilda-ladro", tasto: "G", dove: { it: "alla Gilda dei Ladri", en: "at the Thieves' Guild" }, categoria: "edificio", ospite: "piazza-s", ingresso: { it: "Entra nella Gilda dei Ladri", en: "Enter the Thieves' Guild" }, contesto: "luogo:gilda-ladro", nome: { it: "Gilda dei Ladri", en: "Thieves' Guild" }, descrizione: { it: "Mantelli appesi, grimaldelli in fila e una lanterna che fa poca luce: nessuno vi dirà che esiste.", en: "Hanging cloaks, lockpicks in a row and a lantern that gives little light: nobody will admit this place exists." }, collegamenti: [] },
   // L'area fuori dalla Porta San Pietro: la foresta (la sua schermata sta nel modulo foresta).
   { id: "paludi", categoria: "area", contesto: "luogo:paludi", nome: { it: "Le Paludi", en: "The Marshes" }, dove: { it: "nelle paludi", en: "in the marshes" }, descrizione: { it: "Paludi e nebbia fuori dalle mura. Tra le canne affiorano croci e lapidi: un antico cimitero inghiottito dall'acqua.", en: "Marshes and mist outside the walls. Crosses and gravestones surface among the reeds: an ancient cemetery swallowed by the water." }, collegamenti: [] },
+  // L'area fuori dalla Porta Santa Maria (dal livello 8): la valle del Serchio (la sua esplorazione sta nel modulo valle).
+  { id: "valle", categoria: "area", contesto: "luogo:valle", nome: { it: "La Valle del Serchio", en: "The Serchio Valley" }, dove: { it: "nella valle del Serchio", en: "in the Serchio valley" }, descrizione: { it: "Il Serchio scende tra rive di fango, croci e nebbia, fino al Ponte del Diavolo.", en: "The Serchio runs down between muddy banks, crosses and fog, all the way to the Devil's Bridge." }, collegamenti: [] },
   { id: "foresta", categoria: "area", contesto: "luogo:foresta", nome: { it: "La Foresta", en: "The Forest" }, descrizione: { it: "Una foresta fitta fuori dalle mura.", en: "A dense forest outside the walls." }, collegamenti: [] },
 ];
 

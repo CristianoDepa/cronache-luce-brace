@@ -19,6 +19,9 @@ import { moduloIncantatrice } from "./incantatrice/indice";
 import { moduloLapide } from "./lapide/indice";
 import { moduloRegistro } from "./registro/indice";
 import { moduloScoperta } from "./scoperta/indice";
+import { moduloValle } from "./valle/indice";
+import { moduloCattedrale } from "./cattedrale/indice";
+import { moduloBandi } from "./bandi/indice";
 import { moduloFortuna } from "./fortuna/indice";
 import { moduloMana } from "./mana/indice";
 import { moduloGilde } from "./gilde/indice";
@@ -55,6 +58,9 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloRegistro,
   moduloScoperta,
   moduloIncantatrice,
+  moduloValle,
+  moduloCattedrale,
+  moduloBandi,
   moduloAmuleti,
   moduloZara,
   moduloCronache,

@@ -24,7 +24,7 @@ describe("tre NPC al giorno", () => {
   });
 
   it("i luoghi che ospitano NPC sono 15: sei porte, sei tratti di mura e tre piazze (non negozi, locanda, torre)", () => {
-    expect(sitiOspitanti).toHaveLength(15);
+    expect(sitiOspitanti).toHaveLength(16); // 0.19.0: anche Piazza San Martino
     for (const s of ["torre", "armeria", "sartoria", "banca", "guaritore", "locanda", "foresta"]) expect(sitiOspitanti).not.toContain(s);
   });
 

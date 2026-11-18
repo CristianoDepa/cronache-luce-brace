@@ -4,7 +4,7 @@ import { calcolaDannoBase, calcolaOroPerso, moltiplicatoreTipo } from "./calcolo
 import { PARAMETRI_COMBATTIMENTO } from "./parametri";
 import { aggiungiEffetti, applicaMoltiplicatoreDanno, calcolaPrecisione, consumaColpi, modificatoriAttaccante } from "./effetti";
 import type { Attaccante } from "./effetti";
-import { puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
+import { puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoProtezione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
 import { iniziativaContro } from "./velocita";
 import type { Creatura, EffettoScontro, Potenziamento, ScontroAttivo, TipoDanno } from "./tipi";
 import { registraStatistiche, impostaScontro } from "./statistiche";
@@ -279,12 +279,16 @@ function concludiVittoria(
 // La penalità di esperienza sarà aggiunta dal modulo di progressione tramite una regola (M4).
 function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id, ctx: Contesto, eventi: readonly EventoGioco[]): Esito {
   const p = stato.personaggio;
-  if (creatura.nonLetale) {
-    // Duello non letale: si resta vivi a 1 HP, senza perdere monete né esperienza.
-    const vivo: StatoGioco = { ...stato, personaggio: { ...p, hp: 1 } };
+  // La protezione divina (0.19.0) salva dalla morte vera, non serve nei duelli (già non letali).
+  const protezione = creatura.nonLetale ? undefined : applicaRegole(ctx, puntoProtezione, { stato, protetta: false, eventi: [] });
+  if (creatura.nonLetale || protezione?.protetta) {
+    // Duello non letale (o grazia ricevuta): si resta vivi a 1 HP, senza perdere monete né esperienza, e lo scontro finisce.
+    const base = protezione?.protetta ? protezione.stato : stato;
+    const vivo: StatoGioco = { ...base, personaggio: { ...base.personaggio, hp: 1 } };
     const registrato = registraStatistiche(impostaScontro(vivo, null), creaturaId, { perse: 1 });
     const fine = applicaRegole(ctx, puntoFineScontro, { stato: registrato, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato) });
-    return esitoOk(fine.stato, [...eventi, { chiave: creatura.messaggioSconfittaChiave ?? "combattimento.sconfittaNonLetale", tono: "negativo" }, ...fine.eventi]);
+    const messaggio: EventoGioco[] = protezione?.protetta ? [...protezione.eventi] : [{ chiave: creatura.messaggioSconfittaChiave ?? "combattimento.sconfittaNonLetale", tono: "negativo" }];
+    return esitoOk(fine.stato, [...eventi, ...messaggio, ...fine.eventi]);
   }
   const oroPerso = calcolaOroPerso(p.oro, PARAMETRI_COMBATTIMENTO.penalitaOroMorte);
   const morto: StatoGioco = {

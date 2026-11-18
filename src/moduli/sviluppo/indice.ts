@@ -1,4 +1,4 @@
-import type { DefinizioneModulo, InterfacciaModulo, Risultato, VoceMenu } from "../../core/indice";
+import type { DefinizioneModulo, InterfacciaModulo, Risultato, StatoGioco, VoceMenu } from "../../core/indice";
 import { VERSIONE_API, applicaGiorno, calcolaStatistiche, chiudi, elencaContenuti, leggiContenuto, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
 import { ID_AZIONI, ripristinaAzioni } from "../azioni/indice";
 
@@ -7,7 +7,7 @@ import type { CategoriaSito } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_MANA, ripristinaMana } from "../mana/indice";
 import { ID_PALUDE } from "../palude/indice";
-import { ID_LIVELLI, PARAMETRI_LIVELLI, esperienzaPerSalire, salitaDiLivello } from "../livelli/indice";
+import { ID_LIVELLI, PARAMETRI_LIVELLI, esperienzaPerSalire, rettaPerLivello, salitaDiLivello, statoLivelli } from "../livelli/indice";
 import { ID_MURA, presenzeOggi, tipoNpc } from "../mura/indice";
 import { ID_AMULETI } from "../amuleti/indice";
 import { ID_FORTUNA } from "../fortuna/indice";
@@ -126,6 +126,27 @@ const azioneSaliLivello = definisciAzione(
   consentite,
 );
 
+// Prepara il prossimo duello con un capogilda (livelli 4 e 8): livello prima del livello chiave, esperienza e monete bastanti, HP al massimo e
+// il duello perso oggi azzerato. Poi basta andare alla propria gilda e premere «Sfida il capogilda».
+const azionePreparaDuello = definisciAzione(
+  "devPreparaDuello",
+  nessunDato,
+  (stato, _d, ctx) => {
+    const chiave = PARAMETRI_LIVELLI.livelliChiave.find((k) => k > stato.personaggio.livello && k <= PARAMETRI_LIVELLI.livelloMax);
+    if (chiave === undefined) return esitoErrore("gilde.errore.nessuna_sfida");
+    const livello = chiave - 1;
+    const p = stato.personaggio;
+    const pronto: StatoGioco = {
+      ...stato,
+      personaggio: { ...p, livello, esperienza: Math.max(p.esperienza, esperienzaPerSalire(livello)), oro: Math.max(p.oro, rettaPerLivello(chiave, 0) + 100) },
+    };
+    const azzerato = statoLivelli.scrivi(pronto, { ...statoLivelli.leggi(pronto), maestroPerso: false, tentativi: 0 });
+    const { hpMax } = calcolaStatistiche(azzerato, ctx);
+    return esitoOk({ ...azzerato, personaggio: { ...azzerato.personaggio, hp: hpMax } }, [{ chiave: "sviluppo.duelloPronto", parametri: { livello: chiave }, tono: "positivo" }]);
+  },
+  consentite,
+);
+
 function menu(): readonly VoceMenu[] {
   const voci: VoceMenu[] = [
     { id: "sviluppo.giorno", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.giorno", tasto: "1", ordine: 1, comando: { tipo: "azione", azione: { tipo: "devGiornoDopo" } } },
@@ -135,6 +156,7 @@ function menu(): readonly VoceMenu[] {
     { id: "sviluppo.npc", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.npc", tasto: "6", ordine: 6, comando: { tipo: "azione", azione: { tipo: "devMostraNpc" } } },
     { id: "sviluppo.esperienza", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.esperienza", tasto: "7", ordine: 7, comando: { tipo: "azione", azione: { tipo: "devEsperienza" } } },
     { id: "sviluppo.livello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.livello", tasto: "8", ordine: 8, comando: { tipo: "azione", azione: { tipo: "devLivello" } } },
+    { id: "sviluppo.duello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.duello", tasto: "D", ordine: 23, comando: { tipo: "azione", azione: { tipo: "devPreparaDuello" } } },
     { id: "sviluppo.mostro", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.mostro", tasto: "5", ordine: 5, comando: { tipo: "naviga", verso: CONTESTO_MOSTRI } },
   ];
   CATEGORIE.forEach((c, i) => {
@@ -173,7 +195,7 @@ export const moduloSviluppo: DefinizioneModulo = {
   id: ID_SVILUPPO,
   versioneApi: VERSIONE_API,
   dipende: [ID_AMULETI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LIVELLI, ID_PALUDE],
-  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneDaiEsperienza, azioneSaliLivello, ...AZIONI_PROVA],
+  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, ...AZIONI_PROVA],
   regole: [regolaFortunaProva],
   stato: statoSviluppo,
   testi: {
@@ -190,6 +212,8 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.npc": "Mostra dove sono gli NPC di oggi",
       "sviluppo.menu.esperienza": "Dai l'esperienza per salire di livello",
       "sviluppo.menu.livello": "Sali di un livello (senza gilda)",
+      "sviluppo.menu.duello": "Prepara il duello con il capogilda",
+      "sviluppo.duelloPronto": "Sei pronto per il duello del livello {livello}: esperienza, monete e HP bastano; vai alla tua gilda e premi «Sfida il capogilda» (comando di prova).",
       "sviluppo.esperienza": "Ricevi {punti} punti esperienza (comando di prova).",
       "sviluppo.npc": "Oggi {npcChiave} si trova qui: {luogoChiave} (comando di prova).",
       "sviluppo.npcFatto": "{npcChiave} è qui: {luogoChiave}, ma ci hai già parlato (comando di prova).",
@@ -210,6 +234,8 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.npc": "Show where today's NPCs are",
       "sviluppo.menu.esperienza": "Give the experience to level up",
       "sviluppo.menu.livello": "Go up one level (no guild)",
+      "sviluppo.menu.duello": "Get ready for the guildmaster duel",
+      "sviluppo.duelloPronto": "You are ready for the level {livello} duel: experience, coins and HP are enough; go to your guild and press \"Challenge the guildmaster\" (test command).",
       "sviluppo.esperienza": "You receive {punti} experience points (test command).",
       "sviluppo.npc": "Today {npcChiave} is at: {luogoChiave} (test command).",
       "sviluppo.npcFatto": "{npcChiave} is at: {luogoChiave}, but you already talked to them (test command).",

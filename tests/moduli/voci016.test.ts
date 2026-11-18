@@ -53,7 +53,7 @@ describe("0.16.0: comandi di prova (?dev=1)", () => {
   it("i menu: [A] amuleto (3 qualità, poi 6 tipi), [B] forziere (3 zone), [C] Fortuna 20", () => {
     expect(vociMenu(registro, "sviluppo:amuleto").map((v) => v.tasto)).toEqual(["1", "2", "3"]);
     for (const q of QUALITA_AMULETO) expect(vociMenu(registro, `sviluppo:amuleto:${q}`).map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6"]);
-    expect(vociMenu(registro, "sviluppo:forziere").map((v) => v.tasto)).toEqual(["1", "2", "3"]);
+    expect(vociMenu(registro, "sviluppo:forziere").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]); // foresta, palude, cimitero, valle (0.18.0)
     expect(TIPI_AMULETO).toHaveLength(6);
     expect(idAmuleto("vita", "argento")).toBe("amuleto.vita.argento");
   });

@@ -75,3 +75,12 @@ export const puntoPrecisione = definisciPuntoRegola<CalcoloPrecisione>("combatti
 export const puntoVelocita = definisciPuntoRegola<CalcoloVelocita>("combattimento.velocita");
 export const puntoOro = definisciPuntoRegola<CalcoloOro>("combattimento.oro");
 export const puntoFineScontro = definisciPuntoRegola<CalcoloFineScontro>("combattimento.fineScontro");
+
+// La protezione divina (0.19.0): prima di morire, chi ha la grazia di Padre Bartolomeo può essere salvato. Una regola mette `protetta` a vero (e consuma la grazia
+// nello stato): il personaggio resta vivo a 1 HP, non perde monete, non nasce nessuna lapide e lo scontro finisce, come in una sconfitta non letale.
+export interface CalcoloProtezione {
+  readonly stato: StatoGioco;
+  readonly protetta: boolean;
+  readonly eventi: readonly EventoGioco[];
+}
+export const puntoProtezione = definisciPuntoRegola<CalcoloProtezione>("combattimento.protezione");

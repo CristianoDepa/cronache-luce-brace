@@ -101,6 +101,18 @@ Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`. Per vedere s
 | Lapide: quota recuperata (base e tetto), probabilità di trovarla esplorando, scena delle zone | `src/moduli/lapide/parametri.ts` | 50%, 75%, 25% (provvisoria) |
 | Comandi di prova nuovi (`?dev=1` → `[O]` → `[V]`) | `[A]` amuleto, `[B]` forziere, `[C]` Fortuna 20 | acceso/spento |
 | Incantatrice: livelli minimi (giocatore, arma), quota del prezzo, probabilità del bonus e del +2 | `src/moduli/incantatrice/parametri.ts` | 5, 4, 0,5, 0,3, 0,3 |
+| Capigilda del livello 8 (HP, forza, difesa, velocità) | `src/moduli/gilde/dati.ts` | Orlando 105/29/14/7, Teodora 72/31/6/10, Falco Rosso 86/29/6/16 |
+| **Comando di prova `[D]`** (`?dev=1`): «Prepara il duello con il capogilda» | `src/moduli/sviluppo/indice.ts` | porta alla vigilia del duello 4 o 8 |
+| Offerta della protezione divina (50 monete per livello) | `src/moduli/cattedrale/parametri.ts` | 50 |
+| Tasti nuovi: cattedrale `[C]` e registro `[R]` in Piazza San Martino; Palazzo degli Anziani `[A]` in Piazza Napoleone | `src/moduli/citta/dati.ts` | |
+| Rette dei livelli 9, 10 e 11 (1.500, 1.800, 2.200) e tetto a 11 | `src/moduli/livelli/parametri.ts` | |
+| Creature della valle del Serchio e del Traghettatore | `src/moduli/valle/dati.ts` | vedi il file |
+| Pesi, solo notte e premio notturno della valle; soglie del pericolo | `src/moduli/valle/dati.ts` | premio notte ×1,25 |
+| Tetto dei livelli (8) e retta del livello 8 (1.200) | `src/moduli/livelli/parametri.ts` | |
+| Abilità dell'8° (Cura 30%, Furto +50%, Dardo magico ×1,5, 4 mana) | `src/moduli/abilita/dati.ts` | tasto `[G]` in combattimento |
+| Amuleto del Traghettatore (qualità) | `src/moduli/amuleti/parametri.ts` | `bossValle: "argento"` |
+| Esplorazione della valle `[V]` a Porta Santa Maria | `src/moduli/citta/dati.ts` (`porta-n`, `livelloMin: 8`) | dal livello 8 (`[V]` + `[8]` a Sali di livello) |
+| Comando di prova `[B]` | zona «Valle del Serchio» tra le zone (tasto 4) | |
 | Comando di prova `[B]` (Trova un forziere) | mostra la schermata di forziere trovato (dalla 0.17.0) | |
 | Tasto nuovo: capanna di Sibilla `[C]` a Porta San Pietro | `src/moduli/citta/dati.ts` (luogo `capanna`) | sempre visibile; il rito è la voce `[1]` e compare solo se Sibilla è pronta |
 | Tasto nuovo: registro dei caduti `[R]` a Piazza Napoleone | `src/moduli/citta/dati.ts` (luogo `registro`) | sempre visibile; la lapide NON ha più tasti |

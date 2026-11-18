@@ -20,6 +20,10 @@ export interface Abilita {
   readonly usiPerScontro?: number;
   // "attacco": il round è un attacco con gli effetti; "attesa": il giocatore salta l'attacco (es. si concentra).
   readonly azione: "attacco" | "attesa";
+  // Cura (0.18.0): quota degli HP massimi recuperata subito (es. 0,3 = il 30%).
+  readonly cura?: number;
+  // Furto (0.18.0): quota in più dell'oro dello scontro, se lo si vince dopo averla usata (es. 0,5 = +50%).
+  readonly furto?: number;
   // Effetti aggiunti prima del round (valgono già per questo attacco) e subito dopo l'azione del giocatore.
   readonly prima: readonly EffettoScontro[];
   readonly dopo: readonly EffettoScontro[];
@@ -55,6 +59,8 @@ export const tipoAbilita: TipoContenuto<Abilita> = {
       prima: convalidaEffetti(o["prima"], "prima", errori),
       dopo: convalidaEffetti(o["dopo"], "dopo", errori),
       ...(usi !== undefined ? { usiPerScontro: usi } : {}),
+      ...(o["cura"] !== undefined ? { cura: numero(o, "cura", errori, { min: 0 }) } : {}),
+      ...(o["furto"] !== undefined ? { furto: numero(o, "furto", errori, { min: 0 }) } : {}),
     };
     return chiudi(errori, abilita);
   },

@@ -809,3 +809,30 @@ Titoli ricavati dall'albo (nessun campo `titolo` nello stato); `aspetto` nello s
 - **`combattimento`**: punto di regola `puntoTipoSecondario` e `moltiplicatoreDelColpo` (se un effetto impone un tipo, es. la Concentrazione, conta quello; altrimenti il migliore tra primo e secondo tipo).
 - **`scoperta`**: tipi `apertura-riuscita` e `apertura-fallita` (sprite `sprite.forziere_aperto` o chiuso); `apriForziere` imposta la schermata; il comando di prova `devForziere` ora imposta quella di forziere trovato.
 - **Test:** 683 (nuovo `incantatrice`; aggiornati menu, città, mappa, scoperta).
+
+## 50. Sprite della valle del Serchio (0.17.1)
+- Modulo **`valle`** (nessuna dipendenza, solo `contenuti`: sette illustrazioni `sprite.corvi`, `sprite.anguilla`, `sprite.ladro_di_tombe`, `sprite.disertore`, `sprite.annegato`, `sprite.dama_della_nebbia`, `sprite.traghettatore`) disegnate in `strumenti/arte/scene_l.py` ed esportate in `valle/grafica.ts`. Nessuna regola: la 0.18.0 vi aggancerà le creature. Test `valle.test.ts` (685 test in tutto).
+
+## 51. Valle del Serchio, capigilda dell'8° e abilità (0.18.0)
+- **`valle`**: creature (`valle/dati.ts`, famiglie animali, umanoidi, spiriti, boss), luogo `valle` (soloNotte per spiriti e boss, premio notte ×1,25), esplorazione `[V]` al contesto `citta:porta-n` (visibile dal livello minimo scritto nel sito della porta, 8), pannello con il pericolo (soglie in `dati.ts`), regola `regolaBossValle` su `puntoFineScontro` (amuleto d'argento, `PARAMETRI_AMULETI.fonti.bossValle`). Sito area `valle` in `citta/dati.ts`; `porta-n` ha `areaId: "valle"` e `livelloMin: 8`.
+- **`gilde`**: `capogilda[8]` e tre creature nuove; la scena della gilda mostra l'immagine del capogilda del prossimo livello chiave. **`livelli`**: `livelloMax: 8`, retta 1200.
+- **`abilita`**: `Abilita.cura` (quota degli HP massimi, subito) e `Abilita.furto` (quota in più dell'oro, `regolaFurto` su `puntoOro` se `usiScontro("furto")` > 0); tasto `[G]` per la terza abilità (posizione 3); le tre abilità dell'8° sono dati.
+- **`incantatrice`**: «Chiedi il rito» sempre disponibile; `situazione` ha anche `senzaArma`; le risposte di rifiuto sono eventi dell'azione, non righe del pannello.
+- **Zone:** `valle` aggiunta a lapide, forziere (`probabilita: 0.04`, 140-300 monete), schermata di scoperta e comandi di prova.
+- **Test:** 700 (nuovi `livello8` e `bilanciamentoValle`; aggiornati livelli, gilde, abilità, città, menu).
+
+## 52. Correzioni della 0.18.1
+- **Etichette dinamiche delle abilità:** `abilita/interfaccia.ts` → `etichette(stato, ctx)` (meccanismo già del nucleo, `InterfacciaModulo.etichette`) restituisce per `abilita.usa`, `abilita.usa2`, `abilita.usa3` la riga `abilita.menu.voce` con il nome dell'abilità; nessuna modifica al nucleo.
+- **Riga «Attivo»:** `combattimento/interfaccia.ts` passa anche `colpi` all'effetto attivo; il testo usa il plurale del nucleo (`{colpi#colpo|colpi}`).
+- **Gilde:** `nomeCapogilda(g, livelloChiave)` ricava il nome breve dal livello del duello (`cavaliere` per il 4, `cavaliere8` per l'8).
+- **Livelli:** `livelloMax: 11` e `rette` fino all'11 in `livelli/parametri.ts`.
+- **Comando di prova** `devPreparaDuello` in `sviluppo/indice.ts` (tasto `D`): livello prima del prossimo livello chiave (4 o 8), esperienza e monete, HP al massimo, `maestroPerso` azzerato.
+- **Arte:** `strumenti/arte/scene_l.py` (corvi, anguilla, ladro di tombe, annegato, dama della nebbia, ponte nella scena `valle()`), `scene_i.py` (camino e fumo della capanna), `colori.py` (`fu1`-`fu4`), `quadro.py` (`CICLO_FUMO`).
+- **Test:** 713 (`livello8` esteso, `bilanciamentoValle` con gli HP persi e i livelli 9-11, `valle` con le grafiche).
+
+## 53. Piazza San Martino, cattedrale e Palazzo degli Anziani (0.19.0)
+- **`cattedrale`** (dipende da combattimento): stato `{ attiva, richiestaOggi, svanita }` (`tipi.ts`), azione `chiediIntercessione` (`azioni.ts`: la voce c'è sempre; se la grazia c'è già o mancano le monete risponde con una battuta), `parametri.ts` (`offertaPerLivello: 50`), regole `regolaProtezioneDivina` (su `puntoProtezione`) e `regolaFineGiornoCattedrale` (su `puntoInizioGiorno`), pannelli del contesto `luogo:cattedrale` e della scheda.
+- **`combattimento`**: nuovo punto di regola `puntoProtezione` (`CalcoloProtezione { stato, protetta, eventi }`), interrogato in `concludiSconfitta` prima della morte vera (non per i duelli): se una regola mette `protetta`, lo scontro finisce come una sconfitta non letale (1 HP, nessuna perdita, niente lapide) e si mostrano gli eventi della regola.
+- **`bandi`** (dipende da cacciatore, cronache, torneo): pannello del contesto `luogo:palazzo` con giorno, torneo, Gran Campione, incarico di Castruccio (testi con plurale `{giorni#giorno|giorni}`).
+- **`citta/dati.ts`**: siti `piazza-m` (collegata a `piazza-s` 3 e `piazza-c` 4), `cattedrale` (`C`), `palazzo-anziani` (`A`, ospite `piazza-s`); il registro ha `ospite: "piazza-m"`; scena `scena.piazza-m` in `SCENA_PER_SITO`. Coordinate e disegno della mappa in `strumenti/arte/scene_d.py` (fiume a nord, ponte, icona della cattedrale; il Palazzo non ha icona).
+- **Test:** 730 (nuovo `cattedrale.test.ts`; aggiornati città, mappa, registro, app, salvataggio).
