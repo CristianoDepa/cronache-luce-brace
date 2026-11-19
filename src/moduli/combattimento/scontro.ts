@@ -4,7 +4,7 @@ import { calcolaDannoBase, calcolaOroPerso, moltiplicatoreTipo } from "./calcolo
 import { PARAMETRI_COMBATTIMENTO } from "./parametri";
 import { aggiungiEffetti, applicaMoltiplicatoreDanno, calcolaPrecisione, consumaColpi, modificatoriAttaccante } from "./effetti";
 import type { Attaccante } from "./effetti";
-import { puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoProtezione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
+import { puntoColpoSubito, puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoProtezione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
 import { iniziativaContro } from "./velocita";
 import type { Creatura, EffettoScontro, Potenziamento, ScontroAttivo, TipoDanno } from "./tipi";
 import { registraStatistiche, impostaScontro } from "./statistiche";
@@ -249,7 +249,10 @@ function colpoNemico(
   const eventi = [...eventiPrecedenti, colpo];
   const subito = stato.personaggio.hp - hp;
   const colpito = registraStatistiche({ ...stato, personaggio: { ...stato.personaggio, hp } }, creaturaId, { dannoSubito: subito });
-  return hp === 0 ? concludiSconfitta(colpito, creatura, creaturaId, ctx, eventi) : esitoOk(colpito, eventi);
+  if (hp === 0) return concludiSconfitta(colpito, creatura, creaturaId, ctx, eventi);
+  // Chi è ancora in piedi può subire un effetto del colpo (veleno, paura...): lo decidono le regole dei moduli.
+  const effetto = applicaRegole(ctx, puntoColpoSubito, { stato: colpito, creaturaId, danno: subito, eventi: [] });
+  return esitoOk(effetto.stato, [...eventi, ...effetto.eventi]);
 }
 
 function concludiVittoria(

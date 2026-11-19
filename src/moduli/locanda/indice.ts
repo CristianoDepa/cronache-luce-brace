@@ -17,6 +17,7 @@ import {
 } from "../../core/indice";
 import { ID_AZIONI, consumaAzioni, leggiAzioniResidue } from "../azioni/indice";
 
+import { ID_STATI, curaStati, èAvvelenato, èSpaventato } from "../stati/indice";
 import { ILLUSTRAZIONI_LOCANDA } from "./grafica";
 
 export const ID_LOCANDA = "locanda";
@@ -56,13 +57,15 @@ const azioneDormi = definisciAzione("dormi", nessunDato, (stato, _dati, ctx) => 
   const { hpMax } = calcolaStatistiche(stato, ctx);
   const mancanti = Math.max(0, hpMax - stato.personaggio.hp);
   const manaMancante = manaMassimo(stato, ctx) - manaAttuale(stato, ctx);
-  if (mancanti === 0 && manaMancante === 0) return esitoErrore("locanda.errore.in_salute");
-  // Anche solo per recuperare il mana si consuma almeno un incontro.
-  const incontri = Math.max(incontriPerDormire(mancanti), manaMancante > 0 ? 1 : 0);
+  const conStati = èAvvelenato(stato) || èSpaventato(stato);
+  if (mancanti === 0 && manaMancante === 0 && !conStati) return esitoErrore("locanda.errore.in_salute");
+  // Anche solo per recuperare il mana (o per far passare veleno e paura) si consuma almeno un incontro.
+  const incontri = Math.max(incontriPerDormire(mancanti), manaMancante > 0 || conStati ? 1 : 0);
   const dopoIncontri = consumaAzioni(stato, incontri);
   if (!dopoIncontri) return esitoErrore("locanda.errore.incontri_insufficienti", String(incontri));
-  const curato = ripristinaMana({ ...dopoIncontri, personaggio: { ...dopoIncontri.personaggio, hp: hpMax } }, ctx);
-  return esitoOk(curato, [{ chiave: "locanda.dormito", parametri: { hp: mancanti, incontri }, tono: "positivo" }]);
+  const curato = curaStati(ripristinaMana({ ...dopoIncontri, personaggio: { ...dopoIncontri.personaggio, hp: hpMax } }, ctx));
+  const passati = conStati ? [{ chiave: "locanda.statiPassati", tono: "positivo" as const }] : [];
+  return esitoOk(curato, [{ chiave: "locanda.dormito", parametri: { hp: mancanti, incontri }, tono: "positivo" }, ...passati]);
 });
 
 const azioneMangia = definisciAzione("mangia", nessunDato, (stato, _dati, ctx) => {
@@ -96,6 +99,7 @@ const testi: DizionarioTesti = {
     "locanda.pannello.dormire": "Dormire ti costerebbe {incontri} {incontri#azione|azioni}.",
     "locanda.dormito": "Dormi un sonno ristoratore: recuperi {hp} HP e consumi {incontri} {incontri#azione|azioni}.",
     "locanda.mangiato": "Mangi un pasto caldo: recuperi {hp} HP per {prezzo} {prezzo#moneta|monete} (pasti oggi: {pasti}/{pastiMax}).",
+    "locanda.statiPassati": "Il riposo ti libera da veleno e paura.",
     "locanda.errore.in_salute": "Sei già in piena salute.",
     "locanda.errore.incontri_insufficienti": "Non hai abbastanza azioni rimaste per dormire.",
     "locanda.errore.pasti_esauriti": "Hai già fatto tutti i pasti di oggi.",
@@ -111,6 +115,7 @@ const testi: DizionarioTesti = {
     "locanda.pannello.dormire": "Sleeping would cost you {incontri} {incontri#action|actions}.",
     "locanda.dormito": "You sleep soundly: you recover {hp} HP and use {incontri} {incontri#action|actions}.",
     "locanda.mangiato": "You eat a hot meal: you recover {hp} HP for {prezzo} {prezzo#coin|coins} (meals today: {pasti}/{pastiMax}).",
+    "locanda.statiPassati": "The rest frees you from poison and fear.",
     "locanda.errore.in_salute": "You are already in perfect health.",
     "locanda.errore.incontri_insufficienti": "You do not have enough actions left to sleep.",
     "locanda.errore.pasti_esauriti": "You have already had all of today's meals.",
@@ -159,7 +164,7 @@ const interfaccia: InterfacciaModulo = {
 export const moduloLocanda: DefinizioneModulo = {
   id: ID_LOCANDA,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AZIONI, ID_MANA],
+  dipende: [ID_AZIONI, ID_MANA, ID_STATI],
   contenuti: ILLUSTRAZIONI_LOCANDA,
   azioni: [azioneDormi, azioneMangia],
   regole: [regolaPastiGiornalieri],

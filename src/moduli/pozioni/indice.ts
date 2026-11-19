@@ -1,3 +1,4 @@
+import { ID_STATI } from "../stati/indice";
 import type { DefinizioneModulo } from "../../core/indice";
 import { VERSIONE_API } from "../../core/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
@@ -26,7 +27,7 @@ export { CONTESTO_SPEZIALE } from "./interfaccia";
 export const moduloPozioni: DefinizioneModulo = {
   id: ID_POZIONI,
   versioneApi: VERSIONE_API,
-  dipende: [ID_COMBATTIMENTO, ID_FORTUNA, ID_INVENTARIO, ID_MANA],
+  dipende: [ID_COMBATTIMENTO, ID_FORTUNA, ID_INVENTARIO, ID_MANA, ID_STATI],
   contenuti: [...OGGETTI_POZIONI, ...ILLUSTRAZIONI_POZIONI],
   azioni: [azioneCompraPozione, azioneUsaOggetto, azioneVendiPozione],
   regole: [regolaStatistichePozioni, regolaVelocitaPozioni, regolaTurnoPozioni, regolaGiornoPozioni, regolaBottinoPozioni, regolaFortunaPozioni],

@@ -214,7 +214,8 @@ export function creaApp(
         // Se l'azione ha spostato il giocatore (es. un viaggio) si riparte dalla schermata del nuovo luogo,
         // con nel registro solo gli eventi dell'arrivo.
         // Finito un contesto imposto (es. scelta la classe da una pagina descrittiva) si torna alla schermata di casa.
-        if (risposta.ok && eraForzato && corrente.vista?.contestoForzato === undefined) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE });
+        // Il registro riparte: restano solo gli eventi dell'ultima azione (0.23.0: dopo uno scontro, un forziere o un evento non si trascinano le righe di prima).
+        if (risposta.ok && eraForzato && corrente.vista?.contestoForzato === undefined) imposta({ navigazione: CONTESTO_INIZIALE, ritorno: CONTESTO_INIZIALE, log: logDaEventi(registro, corrente.lingua, [...risposta.eventi]) });
         // Alcune voci dicono dove andare dopo l'azione riuscita (es. scegliere un mostro e vederne la scheda).
         if (risposta.ok && c.poi !== undefined) return imposta({ navigazione: c.poi });
         // Un'azione fatta da una pagina libera durante uno scontro (es. bere dallo zaino) o che lo fa cominciare (comandi di prova) porta al combattimento, che è imposto.

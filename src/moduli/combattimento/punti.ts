@@ -80,6 +80,15 @@ export const puntoVelocita = definisciPuntoRegola<CalcoloVelocita>("combattiment
 export const puntoOro = definisciPuntoRegola<CalcoloOro>("combattimento.oro");
 export const puntoFineScontro = definisciPuntoRegola<CalcoloFineScontro>("combattimento.fineScontro");
 
+// Il nemico ha colpito il giocatore (e il giocatore è ancora in piedi): le regole dei moduli possono reagire (es. un morso avvelenato, un'apparizione che spaventa).
+export interface CalcoloColpoSubito {
+  readonly stato: StatoGioco;
+  readonly creaturaId: Id;
+  readonly danno: number;
+  readonly eventi: readonly EventoGioco[];
+}
+export const puntoColpoSubito = definisciPuntoRegola<CalcoloColpoSubito>("combattimento.colpoSubito");
+
 // La protezione divina (0.19.0): prima di morire, chi ha la grazia di Padre Bartolomeo può essere salvato. Una regola mette `protetta` a vero (e consuma la grazia
 // nello stato): il personaggio resta vivo a 1 HP, non perde monete, non nasce nessuna lapide e lo scontro finisce, come in una sconfitta non letale.
 export interface CalcoloProtezione {

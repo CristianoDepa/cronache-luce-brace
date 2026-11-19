@@ -83,7 +83,9 @@ describe("scorta dello Speziale", () => {
     const GIORNI = 600;
     for (let i = 1; i <= GIORNI; i++) {
       const s = { ...pg(), ultimoReset: i * 86400000 + 12345 };
-      const oggi = tipiDelGiorno(s, ctx);
+      const tutte = tipiDelGiorno(s, ctx);
+      expect(tutte[tutte.length - 1]).toBe("antidoto"); // l'antidoto c'è sempre, in fondo (0.23.0)
+      const oggi = tutte.filter((t) => t !== "antidoto");
       expect(oggi.length).toBeGreaterThanOrEqual(1);
       expect(oggi.length).toBeLessThanOrEqual(3);
       expect(new Set(oggi).size).toBe(oggi.length); // tutte diverse
@@ -94,7 +96,7 @@ describe("scorta dello Speziale", () => {
         pezzi += scortaDelGiorno(s, t, ctx);
         tipi++;
       }
-      for (const t of TIPI.filter((x) => !oggi.includes(x))) expect(scortaDelGiorno(s, t, ctx)).toBe(0);
+      for (const t of TIPI.filter((x) => x !== "antidoto" && !oggi.includes(x))) expect(scortaDelGiorno(s, t, ctx)).toBe(0);
     }
     expect(visti.size).toBe(6); // il Cavaliere non ha mana: prima o poi compaiono tutte le altre sei
     expect(visti.has("mana")).toBe(false); // ma mai la pozione di mana
@@ -386,7 +388,7 @@ describe("effetti delle pozioni: turni nascosti, messaggio di fine, mana solo pe
     expect(visteDa("cavaliere").has("mana")).toBe(false);
     expect(visteDa("ladro").has("mana")).toBe(false);
     expect(visteDa("mistico").has("mana")).toBe(true);
-    expect(visteDa("mistico").size).toBe(7);
+    expect(visteDa("mistico").size).toBe(8); // le sette pozioni a caso più l'antidoto, sempre in vendita
   });
 });
 

@@ -2,7 +2,7 @@ import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from quadro import *
-import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_n
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n
 
 SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
 INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
@@ -32,6 +32,7 @@ modulo("scoperta", "ILLUSTRAZIONI_SCOPERTA", [scene_i.lapide().esporta("sprite.l
 modulo("cattedrale", "ILLUSTRAZIONI_CATTEDRALE", [scene_n.cattedrale().esporta("scena.cattedrale")])
 modulo("bandi", "ILLUSTRAZIONI_BANDI", [scene_n.palazzo_anziani().esporta("scena.palazzo")])
 modulo("valle", "ILLUSTRAZIONI_VALLE", [f().esporta(i) for i, f in scene_l.SPRITE.items()] + [scene_l.valle().esporta("scena.valle")])
+modulo("eventi", "ILLUSTRAZIONI_EVENTI", [scene_m.grotta().esporta("scena.grotta"), scene_m.guado().esporta("scena.guado")] + [f().esporta(i) for i, f in scene_m.SPRITE.items()])
 modulo("incantatrice", "ILLUSTRAZIONI_INCANTATRICE", [scene_i.capanna().esporta("scena.capanna")])
 modulo("registro", "ILLUSTRAZIONI_REGISTRO", [scene_h.registro().esporta("scena.registro")])
 modulo("inventario", "ILLUSTRAZIONI_INVENTARIO", [scene_h.zaino().esporta("scena.zaino")])

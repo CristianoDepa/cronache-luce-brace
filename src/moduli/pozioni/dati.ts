@@ -1,13 +1,13 @@
 import type { VoceContenuto } from "../../core/indice";
 import { PARAMETRI_POZIONI } from "./parametri";
 
-export type TipoPozione = "forza" | "destrezza" | "corazza" | "fortuna" | "mana" | "curaLeggera" | "curaRobusta";
+export type TipoPozione = "forza" | "destrezza" | "corazza" | "fortuna" | "mana" | "curaLeggera" | "curaRobusta" | "antidoto";
 export type Statistica = "forza" | "velocita" | "difesa" | "fortuna";
 
 // Una pozione: cosa fa e quanto pesa nel bottino. Il prezzo delle cure dipende dal livello (vedi prezzoPozione).
 export interface DefinizionePozione {
   readonly tipo: TipoPozione;
-  readonly effetto: { readonly genere: "statistica"; readonly statistica: Statistica } | { readonly genere: "cura"; readonly dadi: number } | { readonly genere: "mana"; readonly dadi: number };
+  readonly effetto: { readonly genere: "statistica"; readonly statistica: Statistica } | { readonly genere: "cura"; readonly dadi: number } | { readonly genere: "mana"; readonly dadi: number } | { readonly genere: "antidoto" };
   // Peso nel bottino (probabilità proporzionale).
   readonly pesoBottino: number;
 }
@@ -21,6 +21,8 @@ export const POZIONI: readonly DefinizionePozione[] = [
   { tipo: "destrezza", effetto: { genere: "statistica", statistica: "velocita" }, pesoBottino: 10 },
   { tipo: "corazza", effetto: { genere: "statistica", statistica: "difesa" }, pesoBottino: 10 },
   { tipo: "fortuna", effetto: { genere: "statistica", statistica: "fortuna" }, pesoBottino: 10 },
+  // L'antidoto (0.23.0) cura il veleno: lo Speziale lo vende sempre (non è una delle pozioni a caso del giorno) e non si trova nel bottino.
+  { tipo: "antidoto", effetto: { genere: "antidoto" }, pesoBottino: 0 },
 ];
 
 export const FACCE_CURA = 6;
@@ -34,6 +36,7 @@ export const definizione = (tipo: TipoPozione): DefinizionePozione => POZIONI.fi
 export function prezzoPozione(tipo: TipoPozione, livello: number): number {
   const p = definizione(tipo);
   if (p.effetto.genere === "cura") return Math.round(livello * p.effetto.dadi * ((FACCE_CURA + 1) / 2) * PARAMETRI_POZIONI.moltiplicatorePrezzoCura);
+  if (p.effetto.genere === "antidoto") return PARAMETRI_POZIONI.prezzoAntidoto;
   return p.effetto.genere === "mana" ? PARAMETRI_POZIONI.prezzoMana : PARAMETRI_POZIONI.prezzoEffetto;
 }
 

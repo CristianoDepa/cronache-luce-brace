@@ -1,7 +1,8 @@
 import type { DefinizioneModulo, InterfacciaModulo, PannelloVista, RigaVista } from "../../core/indice";
 import { VERSIONE_API } from "../../core/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
-import { azioneChiediIntercessione, costoOfferta } from "./azioni";
+import { ID_STATI, statoStati } from "../stati/indice";
+import { azioneChiediIntercessione, azionePurifica, costoOfferta } from "./azioni";
 import { ILLUSTRAZIONI_CATTEDRALE } from "./grafica";
 import { regolaFineGiornoCattedrale, regolaProtezioneDivina } from "./regole";
 import { ID_CATTEDRALE, protezioneAttiva, statoCattedrale } from "./tipi";
@@ -17,7 +18,11 @@ const interfaccia: InterfacciaModulo = {
   titoliContesto: { [CONTESTO_CATTEDRALE]: "cattedrale.titolo" },
   illustrazioniContesto: { [CONTESTO_CATTEDRALE]: "scena.cattedrale" },
   // La voce c'è sempre: se la grazia c'è già o mancano le monete, Padre Bartolomeo risponde e non cambia nulla.
-  menu: [{ id: "cattedrale.intercessione", contesto: CONTESTO_CATTEDRALE, etichettaChiave: "cattedrale.menu.intercessione", tasto: "1", ordine: 1, comando: { tipo: "azione", azione: { tipo: "chiediIntercessione" } } }],
+  menu: [
+    { id: "cattedrale.intercessione", contesto: CONTESTO_CATTEDRALE, etichettaChiave: "cattedrale.menu.intercessione", tasto: "1", ordine: 1, comando: { tipo: "azione", azione: { tipo: "chiediIntercessione" } } },
+    { id: "cattedrale.purifica", contesto: CONTESTO_CATTEDRALE, etichettaChiave: "cattedrale.menu.purifica", tasto: "2", ordine: 2, comando: { tipo: "azione", azione: { tipo: "purificaCattedrale" } } },
+  ],
+  menuNascosto: (stato) => (statoStati.leggi(stato).veleno > 0 || statoStati.leggi(stato).paura > 0 ? [] : ["cattedrale.purifica"]),
   pannelli(stato): readonly PannelloVista[] {
     const s = statoCattedrale.leggi(stato);
     const righe: RigaVista[] = [{ chiave: "cattedrale.saluto", tono: "speciale" }];
@@ -33,9 +38,9 @@ const interfaccia: InterfacciaModulo = {
 export const moduloCattedrale: DefinizioneModulo = {
   id: ID_CATTEDRALE,
   versioneApi: VERSIONE_API,
-  dipende: [ID_COMBATTIMENTO],
+  dipende: [ID_COMBATTIMENTO, ID_STATI],
   contenuti: ILLUSTRAZIONI_CATTEDRALE,
-  azioni: [azioneChiediIntercessione],
+  azioni: [azioneChiediIntercessione, azionePurifica],
   regole: [regolaProtezioneDivina, regolaFineGiornoCattedrale],
   stato: statoCattedrale,
   interfaccia,
@@ -43,6 +48,10 @@ export const moduloCattedrale: DefinizioneModulo = {
     it: {
       "cattedrale.titolo": "La cattedrale di San Martino",
       "cattedrale.menu.intercessione": "Chiedi l'intercessione",
+      "cattedrale.menu.purifica": "Chiedi di essere purificato",
+      "cattedrale.nessunoStato": "«Il tuo spirito è limpido. Non c'è nulla da scacciare.»",
+      "cattedrale.oroPurifica": "«L'offerta per la purificazione è di {prezzo} monete. Torna quando potrai versarla.»",
+      "cattedrale.purificato": "Padre Bartolomeo posa la mano sulla tua fronte: veleno e paura ti lasciano. Offerta: {prezzo} monete.",
       "cattedrale.saluto": "Padre Bartolomeo ti guarda senza fretta. «Parla. Il tempo non manca, ma non è infinito.»",
       "cattedrale.proposta": "«Posso intercedere per te, per oggi. L'offerta è di {costo} monete.»",
       "cattedrale.oro": "«L'offerta è di {costo} monete. Torna quando potrai versarla.»",
@@ -56,6 +65,10 @@ export const moduloCattedrale: DefinizioneModulo = {
     en: {
       "cattedrale.titolo": "St Martin's Cathedral",
       "cattedrale.menu.intercessione": "Ask for intercession",
+      "cattedrale.menu.purifica": "Ask to be purified",
+      "cattedrale.nessunoStato": "\"Your spirit is clear. There is nothing to drive out.\"",
+      "cattedrale.oroPurifica": "\"The offering for purification is {prezzo} coins. Come back when you can pay it.\"",
+      "cattedrale.purificato": "Father Bartolomeo lays his hand on your brow: poison and fear leave you. Offering: {prezzo} coins.",
       "cattedrale.saluto": "Father Bartolomeo looks at you without haste. \"Speak. Time is not lacking, but neither is it infinite.\"",
       "cattedrale.proposta": "\"I can intercede for you, for today. The offering is {costo} coins.\"",
       "cattedrale.oro": "\"The offering is {costo} coins. Come back when you can pay it.\"",

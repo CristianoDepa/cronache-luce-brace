@@ -8,8 +8,10 @@ import {
   esitoErrore,
   esitoOk,
   fallisci,
+  ok,
 } from "../../core/indice";
 
+import { ID_STATI, curaStati, prezzoCuraGuaritore, statoStati } from "../stati/indice";
 import { ILLUSTRAZIONI_GUARITORE } from "./grafica";
 
 export const ID_GUARITORE = "guaritore";
@@ -45,12 +47,26 @@ const azioneCura = definisciAzione("curaGuaritore", validaQuantita, (stato, dati
   return esitoOk(nuovo, [{ chiave: "guaritore.cura", parametri: { hp: curati, prezzo: costo }, tono: "positivo" }]);
 });
 
+// «Cura veleno e paura»: a pagamento (monete per livello), cura entrambi gli stati. La voce si vede solo se si è avvelenati o spaventati.
+const nessunDato = (_dati: unknown): Risultato<null> => ok(null);
+const azioneCuraStati = definisciAzione("curaStatiGuaritore", nessunDato, (stato) => {
+  const s = statoStati.leggi(stato);
+  if (s.veleno === 0 && s.paura === 0) return esitoErrore("guaritore.errore.nessuno_stato");
+  const prezzo = prezzoCuraGuaritore(stato.personaggio.livello);
+  if (stato.personaggio.oro < prezzo) return esitoErrore("guaritore.errore.oro_insufficiente", String(prezzo));
+  const pagato = { ...stato, personaggio: { ...stato.personaggio, oro: stato.personaggio.oro - prezzo } };
+  return esitoOk(curaStati(pagato), [{ chiave: "guaritore.curaStati", parametri: { prezzo }, tono: "positivo" }]);
+});
+
 const testi: DizionarioTesti = {
   it: {
     "guaritore.luogo": "Il Guaritore",
     "guaritore.menu.vai": "Vai dal guaritore",
     "guaritore.menu.completa": "Cura completa",
     "guaritore.menu.piccola": "Cura 10 HP",
+    "guaritore.menu.stati": "Cura veleno e paura",
+    "guaritore.curaStati": "Il guaritore ti libera da veleno e paura per {prezzo} {prezzo#moneta|monete}.",
+    "guaritore.errore.nessuno_stato": "Non sei né avvelenato né spaventato.",
     "guaritore.pannello.titolo": "Il guaritore",
     "guaritore.pannello.mancanti": "HP mancanti: {mancanti}. Costo per HP: {costo} {costo#moneta|monete}.",
     "guaritore.pannello.totale": "Cura completa: {totale} {totale#moneta|monete}.",
@@ -63,6 +79,9 @@ const testi: DizionarioTesti = {
     "guaritore.menu.vai": "Go to the healer",
     "guaritore.menu.completa": "Full heal",
     "guaritore.menu.piccola": "Heal 10 HP",
+    "guaritore.menu.stati": "Cure poison and fear",
+    "guaritore.curaStati": "The healer frees you from poison and fear for {prezzo} {prezzo#coin|coins}.",
+    "guaritore.errore.nessuno_stato": "You are neither poisoned nor frightened.",
     "guaritore.pannello.titolo": "The healer",
     "guaritore.pannello.mancanti": "Missing HP: {mancanti}. Cost per HP: {costo} {costo#coin|coins}.",
     "guaritore.pannello.totale": "Full heal: {totale} {totale#coin|coins}.",
@@ -92,7 +111,16 @@ const interfaccia: InterfacciaModulo = {
       ordine: 2,
       comando: { tipo: "azione", azione: { tipo: "curaGuaritore", dati: { quantita: CURA_PICCOLA } } },
     },
+    {
+      id: "guaritore.stati",
+      contesto: CONTESTO_GUARITORE,
+      etichettaChiave: "guaritore.menu.stati",
+      tasto: "3",
+      ordine: 3,
+      comando: { tipo: "azione", azione: { tipo: "curaStatiGuaritore" } },
+    },
   ],
+  menuNascosto: (stato) => (statoStati.leggi(stato).veleno > 0 || statoStati.leggi(stato).paura > 0 ? [] : ["guaritore.stati"]),
   pannelli(stato, ctx): readonly PannelloVista[] {
     const { hpMax } = calcolaStatistiche(stato, ctx);
     const mancanti = Math.max(0, hpMax - stato.personaggio.hp);
@@ -112,9 +140,9 @@ const interfaccia: InterfacciaModulo = {
 export const moduloGuaritore: DefinizioneModulo = {
   id: ID_GUARITORE,
   versioneApi: VERSIONE_API,
-  dipende: [],
+  dipende: [ID_STATI],
   contenuti: ILLUSTRAZIONI_GUARITORE,
-  azioni: [azioneCura],
+  azioni: [azioneCura, azioneCuraStati],
   testi,
   interfaccia,
 };

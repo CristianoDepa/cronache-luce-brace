@@ -23,10 +23,12 @@ export function tipiDelGiorno(stato: StatoGioco, ctx: Contesto): readonly TipoPo
   const { tipiMin, tipiMax } = PARAMETRI_POZIONI;
   const seme = semeDelGiorno(stato);
   // La pozione di mana non si offre a chi non ha mana (Cavaliere e Ladro).
-  const offerte = manaMassimo(stato, ctx) > 0 ? POZIONI : POZIONI.filter((p) => p.effetto.genere !== "mana");
+  // L'antidoto non rientra nel sorteggio: si aggiunge sempre in fondo (vedi sotto).
+  const sorteggiabili = POZIONI.filter((p) => p.effetto.genere !== "antidoto");
+  const offerte = manaMassimo(stato, ctx) > 0 ? sorteggiabili : sorteggiabili.filter((p) => p.effetto.genere !== "mana");
   const quanti = Math.min(offerte.length, tipiMin + Math.floor(casuale(seme + 5) * (tipiMax - tipiMin + 1)));
   const scelti = offerte.map((p) => ({ tipo: p.tipo, chiave: casuale(seme + 101 + POZIONI.indexOf(p) * 7919) })).sort((a, b) => a.chiave - b.chiave).slice(0, quanti).map((x) => x.tipo);
-  return offerte.map((p) => p.tipo).filter((t) => scelti.includes(t));
+  return [...offerte.map((p) => p.tipo).filter((t) => scelti.includes(t)), "antidoto"];
 }
 
 // Scorta del giorno di un tipo (0 se oggi non c'è), prima delle vendite: da scortaMin a scortaMax pezzi.

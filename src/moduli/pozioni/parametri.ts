@@ -20,4 +20,7 @@ export const PARAMETRI_POZIONI = {
   quotaRiacquisto: 0.3,
   prezzoEffetto: 60,
   prezzoMana: 30,
+  // L'antidoto (0.23.0): prezzo fisso, sempre in vendita allo Speziale (un pezzo o due al giorno). I tasti dello Speziale diventano quattro.
+  prezzoAntidoto: 30,
+  slotSpeziale: 4,
 } as const;

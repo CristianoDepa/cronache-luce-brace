@@ -1,5 +1,34 @@
 # Cronologia delle versioni
 
+## 0.23.0 - Stati (veleno, paura, antidoto, patto del diavolo)
+- **Nuovo modulo `stati`:** due stati temporanei. **Veleno** (8 azioni, 1 HP per azione spesa, mai letale: si ferma a 1 HP). **Paura** (8 azioni, −1 forza e −1 difesa). Si scalano con le azioni; un nuovo giorno e il sonno in locanda li curano. Due nuovi punti del nucleo (`puntoDopoAzione`, `puntoColpoSubito`) li rendono possibili senza toccare altro.
+- **Chi li infligge:** a ogni colpo a segno, con probabilità 25% (visibile nel registro di guerra): veleno da serpe e rospo, paura da spettro, annegato e dama della nebbia. Anche la trappola può avvelenare (30%).
+- **Rimedi:** nuova pozione **Antidoto** (30 monete, sempre in vendita allo Speziale, cura il veleno; i tasti dello Speziale diventano quattro). **Guaritore** (8 monete per livello) e **chiesa** (5 per livello) curano entrambi gli stati a pagamento; la locanda li cura dormendo.
+- **Patto del diavolo:** nuova scelta del Diavolo del Ponte (valle, di notte), **una sola volta per partita**, rifiutabile. Tre patti: **Forza** (+3 forza, −6 HP massimi), **Difesa** (+3 difesa, −3 forza), **Fortuna** (+2 Fortuna, −25% delle monete lasciate dai mostri).
+- **Interfaccia:** gli stati compaiono nella colonna della scheda e nel registro; il **bestiario** mostra le abilità dei mostri («può avvelenare», «incute paura») una volta scoperti.
+- **Nuovo evento «Erbe medicinali»** (foresta, palude): antidoto gratis (60%) oppure ti pungi e ti avveleni. Eventi: ora 12 incontri (comando di prova `[E]`, 17 voci con i bivi).
+- **Ritocchi dal collaudo:** «circa N azioni» nei lavori; registro di guerra ripulito dopo un forziere, una scoperta o un evento; **esperienza nella riga del livello** anche nella scheda compatta (mappa).
+- **Correzioni dalla 0.22.1 (collaudo):** nella grotta i mostri stanno per terra; il mercante ambulante vende **una pozione a caso** al 50% del prezzo (quelle di mana solo a chi ha mana); il guado fa scivolare solo con probabilità 40% (prima sempre).
+- **Test:** 787 (+1 saltato), di cui 13 nuovi sugli stati.
+
+## 0.22.1 - Correzione degli eventi (correzioni dal collaudo)
+- **Etichette delle scelte «Continua», «Rifiuta», «Prosegui», «Passa oltre»:** comparivano come chiave di testo tra parentesi quadre (es. `[eventi.scelta.tesoro.continua]`) perché il menu cercava il testo proprio dell'evento invece di quello comune. Ora usano il testo comune. Nuovo test che controlla, per ogni evento e fase, che etichette e testi siano tradotti in italiano e inglese. 771 test (+1 saltato).
+- **Posto di blocco:** se scegli di combattere affronti la nuova creatura **Guardia** (tarata come un goblin: 20 HP, forza 7, difesa 2, 18 monete, 14 esperienza; sprite del disertore), non più la creatura della zona.
+- **Tutti gli eventi hanno un'immagine:** nuovi sprite per viandante, tesoro (forziere), trappola (tagliola), fonte, pozzo e bivio del sentiero; nuovi sfondi propri per il bivio della grotta (anche per lo scontro dentro la grotta, riutilizzabile) e per il guado (un fiume con le pietre, non più la palude). Lo scippo ora poggia i piedi sul selciato.
+- **Diavolo del Ponte:** a fine partita una schermata con il Diavolo e il maiale (vinto) o senza maiale (perso), con la cesta scelta sollevata; poi «Continua».
+- **Testi:** guado «Scivoli tra i flutti: perdi N HP.»; Lucida Mansi più chiara («perdi N HP e ricevi N monete d'oro»).
+- **Test:** 772 (+1 saltato); un test controlla che ogni evento abbia un'immagine esistente.
+
+## 0.22.0 - Eventi
+- **Nuovo modulo `eventi`** (stato `eventi`): circa il **15% delle esplorazioni** in una zona di caccia sostituisce il mostro con un incontro speciale (costa comunque 1 azione). Tabella pesata per zona; la **Fortuna** alza il peso degli eventi buoni (+5% per punto). Schermata a parte con sfondo della zona, personaggio (se c'è) e scelte numerate `[1]`-`[6]`.
+- **Undici incontri:** tesoro, trappola (danno diretto, mai letale), viandante (aiuto = 1 azione, ricompensa), pellegrino (offerta 5 monete, cura circa il 30% di HP e mana), mercante ambulante (pozione di cura leggera a -30%), cantastorie (leggenda: un poco di esperienza e +1 azione), posto di blocco (pedaggio 12% delle monete in tasca oppure scontro con una creatura della zona), fonte miracolosa (70% cura il 50% degli HP, 30% perde il 10%, mai letale), cacciatore ferito (aiuto = 1 azione, ricompensa in monete o una pozione), Lucida Mansi (cimitero, solo di notte, rara: il 20% degli HP in cambio di 3 monete per HP, mai letale), pozzo dei desideri (si gettano 10/25/50 monete; vince con probabilità 40/50/60%, alzata dalla Fortuna, un premio da 1 a 2 volte la somma).
+- **Tre bivi:** sentiero stretto (50% tesoro doppio, altrimenti scontro potenziato x1,3) o strada lunga (+1 azione, un poco di oro); grotta (50% tesoro triplo, altrimenti scontro; o si passa); guado (si guada perdendo il 5% degli HP, oppure il giro lungo costa 1 azione).
+- **Diavolo del Ponte:** valle del Serchio, solo di notte, raro. Gioco del maiale in tre passi: si gioca o si rifiuta, si sceglie la puntata (10/25/50/100/200), si sceglie una delle tre ceste: se si indovina si vince il doppio della puntata (netto), altrimenti si perde la puntata.
+- **Scippo del borseggiatore:** arrivando in un luogo della città, circa 5% (ridotto dalla Fortuna) di perdere il 10-20% delle monete in tasca; niente sotto le 30 monete; l'oro in banca è al sicuro; nessun combattimento. Schermata con lo sprite sopra Via Fillungo.
+- **Sette sprite nuovi** (`strumenti/arte/scene_m.py`): pellegrino, mercante, cantastorie, borseggiatore, diavolo con le tre ceste, cacciatore ferito, Lucida Mansi; il posto di blocco riusa il disertore.
+- **Comando di prova `[E]` «Provoca un evento»** (elenco dei 16 eventi, tasti 1-9, A, B, C, D, G, H, J).
+- Interno: nuovo punto d'uso di `puntoScoperta` (priorità 50, dopo la lapide) e di `puntoArrivo` (priorità 70, dopo i lavori); interruttore `impostaEventiCasuali` per i test (spento in `tests/aiuti.ts`). Tutti i valori sono in `src/moduli/eventi/parametri.ts`, da tarare dopo il collaudo. 770 test (+1 saltato).
+
 ## 0.21.0 - Oggetti magici e anelli
 - **Il modulo `amuleti` diventa `oggettimagici`** (id di stato `oggettiMagici`, testi `oggettiMagici.*`): due slot, **medaglione** e **anello**, uno per slot; gli effetti si **sommano** (anello forza +1 e medaglione forza +2 = +3; anello vita e medaglione fortuna agiscono ciascuno sulla propria statistica).
 - **Anelli:** sei tipi (forza, difesa, velocità, vita, mana, fortuna) in tre qualità con **metà dei punti** del medaglione: 1/2/3 punti (vita +5/+10/+15 HP). Medaglioni 2/4/6 punti.

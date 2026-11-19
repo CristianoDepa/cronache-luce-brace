@@ -120,3 +120,9 @@ I numeri delle Mura sulla mappa stanno accanto ai baluardi disegnati (non più s
 
 ## Novità 0.21.0
 Mappa: il 3 delle Mura sta fuori da Porta Elisa, tra i due bastioni; i numeri delle piazze San Michele, Napoleone e San Martino stanno dentro la piazza; il tetto della cattedrale ha la metà destra arancione. Zaino: seconda nicchia per l'anello.
+
+## Novità 0.22.0
+Le zone di caccia (foresta, palude, cimitero, valle) hanno ora gli **eventi** al posto di circa il 15% degli incontri; la città ha lo **scippo** del borseggiatore. La schermata di un evento usa la scena della zona (Via Fillungo per lo scippo) con il personaggio sopra.
+
+## Novità 0.23.0
+Nessun luogo nuovo. Speziale: quarto tasto (Antidoto). Guaritore, cattedrale e locanda: cura di veleno e paura. Valle del Serchio di notte: il Diavolo del Ponte propone anche il patto. Foresta e palude: evento «Erbe medicinali».

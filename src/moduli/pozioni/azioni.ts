@@ -1,6 +1,7 @@
 import type { Contesto, EventoGioco, Risultato, StatoGioco } from "../../core/indice";
 import { calcolaStatistiche, chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, numero, stringa } from "../../core/indice";
 import { caricaScontro, risolviRound } from "../combattimento/indice";
+import { curaStati, èAvvelenato } from "../stati/indice";
 import { aggiungiOggetto, oggettoInSlot, rimuoviOggetto } from "../inventario/indice";
 import { aggiungiMana, manaAttuale, manaMassimo } from "../mana/indice";
 import type { TipoPozione } from "./dati";
@@ -66,6 +67,10 @@ function applicaEffetto(stato: StatoGioco, tipo: TipoPozione, ctx: Contesto, inC
     const prima = manaAttuale(stato, ctx);
     const nuovo = aggiungiMana(stato, ctx, lancia(ctx, effetto.dadi, FACCE_MANA));
     return { stato: nuovo, eventi: [{ chiave: "pozioni.mana", parametri: { nomeChiave, mana: manaAttuale(nuovo, ctx) - prima }, tono: "positivo" }] };
+  }
+  if (effetto.genere === "antidoto") {
+    if (!èAvvelenato(stato)) return "pozioni.errore.non_avvelenato";
+    return { stato: curaStati(stato, ["veleno"]), eventi: [{ chiave: "pozioni.antidoto", parametri: { nomeChiave }, tono: "positivo" }] };
   }
   // Forza, destrezza e corazza non si cumulano: finché una è attiva non se ne beve un'altra.
   const pozioni = statoPozioni.leggi(stato);

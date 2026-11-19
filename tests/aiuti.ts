@@ -4,6 +4,11 @@ import { ID_COMBATTIMENTO, puntoPrecisione } from "../src/moduli/combattimento/i
 import type { ContenitoreStringhe } from "../src/adattatori/locale/archivioStorage";
 import type { Orologio } from "../src/porte/orologio";
 
+import { impostaEventiCasuali } from "../src/moduli/eventi/indice";
+
+// Gli eventi casuali (0.22.0) spostano la sequenza dei tiri: nei test sono spenti, salvo quelli che li provano (impostaEventiCasuali(true)).
+impostaEventiCasuali(false);
+
 export const LUGLIO = Date.UTC(2026, 6, 1, 12);
 export const NATALE = Date.UTC(2026, 11, 25, 12);
 

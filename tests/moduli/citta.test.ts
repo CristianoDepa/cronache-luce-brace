@@ -447,7 +447,7 @@ describe("comandi di prova (?dev=1)", () => {
   });
 
   it("le schermate di prova hanno menu, titoli e testi nelle due lingue", () => {
-    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L"]);
+    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "E"]);
     expect(vociMenu(registro, "sviluppo:vai").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]);
     expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(14); // 0.19.0: la cattedrale e il Palazzo degli Anziani
     expect(registro.contestiPadre.get("sviluppo:vai:porte")).toBe("sviluppo:vai");

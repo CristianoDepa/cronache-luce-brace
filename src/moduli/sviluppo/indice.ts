@@ -7,6 +7,7 @@ import type { CategoriaSito } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_MANA, ripristinaMana } from "../mana/indice";
 import { ID_PALUDE } from "../palude/indice";
+import { ID_EVENTI } from "../eventi/indice";
 import { ID_LIVELLI, PARAMETRI_LIVELLI, esperienzaPerSalire, rettaPerLivello, salitaDiLivello, statoLivelli } from "../livelli/indice";
 import { ID_LAVORI, offerteDelGiorno } from "../lavori/indice";
 import { ID_MURA, presenzeOggi, tipoNpc } from "../mura/indice";
@@ -210,7 +211,7 @@ const interfaccia: InterfacciaModulo = {
 export const moduloSviluppo: DefinizioneModulo = {
   id: ID_SVILUPPO,
   versioneApi: VERSIONE_API,
-  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE, ID_EVENTI],
   azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneMostraLavori, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, ...AZIONI_PROVA],
   regole: [regolaFortunaProva],
   stato: statoSviluppo,

@@ -13,7 +13,7 @@ export const CONTESTO_VENDI = "luogo:speziale:vendi";
 const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";
 
 // Speziale: al massimo tre pozioni diverse al giorno; i tasti 1, 2, 3 aprono quelle di oggi (senza buchi) e l'etichetta dice quale.
-const vociSpeziale: VoceMenu[] = Array.from({ length: PARAMETRI_POZIONI.tipiMax }, (_, i) => ({
+const vociSpeziale: VoceMenu[] = Array.from({ length: PARAMETRI_POZIONI.slotSpeziale }, (_, i) => ({
   id: `pozioni.compra.${i + 1}`,
   contesto: CONTESTO_SPEZIALE,
   etichettaChiave: "pozioni.menu.compra",
@@ -69,7 +69,7 @@ function vociNascoste(stato: StatoGioco, ctx: Contesto): string[] {
   const nonPozione = (s: string | null): boolean => s === null || tipoDaId(s) === undefined;
   const vuoti = slot.flatMap((s, i) => (nonPozione(s) ? [`pozioni.usa.${i + 1}`] : []));
   // Dello Speziale si vedono solo i tasti delle pozioni di oggi.
-  const dello = Array.from({ length: PARAMETRI_POZIONI.tipiMax }, (_, i) => i + 1).filter((n) => n > tipiDelGiorno(stato, ctx).length).map((n) => `pozioni.compra.${n}`);
+  const dello = Array.from({ length: PARAMETRI_POZIONI.slotSpeziale }, (_, i) => i + 1).filter((n) => n > tipiDelGiorno(stato, ctx).length).map((n) => `pozioni.compra.${n}`);
   const nonVendibili = slot.flatMap((s, i) => (nonPozione(s) ? [`pozioni.vendi.${i + 1}`] : []));
   return slot.every(nonPozione) ? [...vuoti, ...dello, ...nonVendibili, "pozioni.bevi"] : [...vuoti, ...dello, ...nonVendibili];
 }
