@@ -9,6 +9,9 @@ import { idOggetto, statoEquipaggiamento, tipoOggetto } from "./tipi";
 
 // Nel menu l'arma della propria classe si indica con questo nome speciale: si risolve nella linea riservata alla classe.
 export const LINEA_DI_CLASSE = "@classe";
+// Nel Fabbro: l'arma e l'armatura d'acciaio di brace della propria classe (0.25.0).
+export const LINEA_FUCINA_ARMA = "@fucina-arma";
+export const LINEA_FUCINA_ARMATURA = "@fucina-armatura";
 
 export interface OffertaOggetto {
   readonly oggetto: Oggetto;
@@ -33,10 +36,12 @@ export function slotEquipaggiato(stato: StatoGioco, tipo: Oggetto["tipo"]): Equi
 
 // Traduce il nome speciale "@classe" nella linea d'arma riservata alla classe del giocatore.
 export function risolviLinea(stato: StatoGioco, linea: Id): Id | undefined {
-  if (linea !== LINEA_DI_CLASSE) return linea;
+  if (linea !== LINEA_DI_CLASSE && linea !== LINEA_FUCINA_ARMA && linea !== LINEA_FUCINA_ARMATURA) return linea;
   const classe = statoClassi.leggi(stato).classeId;
   if (classe === null) return undefined;
-  return LINEE.find((l) => l.tipo === "arma" && l.classi?.includes(classe))?.id;
+  if (linea === LINEA_DI_CLASSE) return LINEE.find((l) => l.tipo === "arma" && !l.fucina && l.classi?.includes(classe))?.id;
+  const tipo = linea === LINEA_FUCINA_ARMA ? "arma" : "armatura";
+  return LINEE.find((l) => l.fucina && l.tipo === tipo && l.classi?.includes(classe))?.id;
 }
 
 function sottraiEffetti(a: EffettiOggetto, b: EffettiOggetto | undefined): EffettiOggetto {

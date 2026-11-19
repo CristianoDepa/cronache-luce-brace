@@ -18,7 +18,7 @@ PORTE = {"porta-n": (0, False), "porta-ne": (50, False), "porta-e": (100, False)
 INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "fillungo": (65, 42), "stamperia": (73, 41), "torre": (84, 31), "sartoria": (46, 31), "armeria": (80, 44),
            "banca": (80, 54), "guaritore": (44, 64), "speziale": (53, 72), "registro": (91, 66), "locanda": (63, 78), "capanna": (50, 84),
            "piazza-m": (92, 58), "cattedrale": (98, 52), "palazzo-anziani": (66, 57),
-           "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65)}
+           "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65), "fabbro": (74, 31)}
 
 def angoli_baluardi():
     """Angoli (gradi da nord) dei baluardi disegnati sulla cinta: 11 equidistanti, tranne quelli troppo vicini a una porta."""
@@ -119,7 +119,7 @@ def sim_cattedrale(q, x, y):                                       # una croce c
 def sim_anziani(q, x, y):                                          # i colori rossi e bianchi della Repubblica (0.19.0)
     q.rett(x - 1, y - 1, x + 1, y + 1, "perg_l"); q.set(x - 1, y - 1, "rosso"); q.set(x, y - 1, "bianco"); q.set(x + 1, y - 1, "rosso")
 
-ICONE = {"cattedrale": ("pietra_s", "arancio", sim_cattedrale), "sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
+ICONE = {"fabbro": ("rosso_s", "arancio", sim_armeria), "cattedrale": ("pietra_s", "arancio", sim_cattedrale), "sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
          "guaritore": ("ver", "ver_l", sim_guaritore), "speziale": ("cian_s", "cian", sim_speziale), "locanda": ("marr", "marr_l", sim_locanda),
          "gilda-cavaliere": ("rosso_s", "rosso", sim_cavalieri), "gilda-mistico": ("viola_s", "viola", sim_mistici), "gilda-ladro": ("grigio", "acc_s", sim_ladri), "palazzo-anziani": ("rosso_s", "rosso", sim_anziani)}
 

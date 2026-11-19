@@ -8,8 +8,8 @@ import type { AbilitaDellaClasse } from "./uso";
 import { abilitaDellaClasse } from "./uso";
 
 const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";
-// La prima abilità di classe si usa con S, la seconda (sbloccata al 4° livello) con D, la terza (8° livello) con G.
-const TASTI_ABILITA: readonly string[] = ["S", "D", "G"];
+// La prima abilità di classe si usa con S, la seconda (sbloccata al 4° livello) con D, la terza (8° livello) con G, la quarta (12° livello) con H.
+const TASTI_ABILITA: readonly string[] = ["S", "D", "G", "H"];
 
 const sbloccata = (stato: StatoGioco, a: AbilitaDellaClasse): boolean => stato.personaggio.livello >= a.abilita.livelloMin;
 
@@ -90,12 +90,20 @@ export const interfacciaAbilita: InterfacciaModulo = {
       ordine: 17,
       comando: { tipo: "azione", azione: { tipo: "usaAbilita", dati: { posizione: 3 } } },
     },
+    {
+      id: "abilita.usa4",
+      contesto: CONTESTO_COMBATTIMENTO,
+      etichettaChiave: "abilita.menu.usa4",
+      tasto: "H",
+      ordine: 18,
+      comando: { tipo: "azione", azione: { tipo: "usaAbilita", dati: { posizione: 4 } } },
+    },
   ],
   // Le voci [S], [D] e [G] portano il NOME dell'abilità («[S] Carica»), che dipende da classe e livello (0.18.1).
   etichette(stato, ctx) {
     const abilita = abilitaDellaClasse(stato, ctx);
     return Object.fromEntries(
-      ["abilita.usa", "abilita.usa2", "abilita.usa3"].flatMap((id, i) => {
+      ["abilita.usa", "abilita.usa2", "abilita.usa3", "abilita.usa4"].flatMap((id, i) => {
         const a = abilita[i];
         return a ? [[id, { chiave: "abilita.menu.voce", parametri: { abilitaChiave: a.abilita.nomeChiave } }]] : [];
       }),
@@ -104,7 +112,7 @@ export const interfacciaAbilita: InterfacciaModulo = {
   // Le abilità non ancora sbloccate non si mostrano: né nel pannello né nel menu (il tasto non fa nulla).
   menuNascosto(stato, ctx) {
     const abilita = abilitaDellaClasse(stato, ctx);
-    return ["abilita.usa", "abilita.usa2", "abilita.usa3"].filter((_, i) => !(abilita[i] && sbloccata(stato, abilita[i])));
+    return ["abilita.usa", "abilita.usa2", "abilita.usa3", "abilita.usa4"].filter((_, i) => !(abilita[i] && sbloccata(stato, abilita[i])));
   },
   pannelli(stato, ctx): readonly PannelloVista[] {
     return [...pannelloCombattimento(stato, ctx), ...pannelloScheda(stato, ctx), ...pannelliClassi(ctx)];

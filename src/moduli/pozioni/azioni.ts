@@ -5,7 +5,7 @@ import { curaStati, èAvvelenato } from "../stati/indice";
 import { aggiungiOggetto, oggettoInSlot, rimuoviOggetto } from "../inventario/indice";
 import { aggiungiMana, manaAttuale, manaMassimo } from "../mana/indice";
 import type { TipoPozione } from "./dati";
-import { FACCE_CURA, FACCE_MANA, POZIONI, definizione, idPozione, prezzoPozione, tipoDaId } from "./dati";
+import { FACCE_MANA, POZIONI, definizione, idPozione, prezzoPozione, tipoDaId } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
 import { scortaRimasta, tipiDelGiorno } from "./scorta";
 import { statoPozioni } from "./tipi";
@@ -58,7 +58,7 @@ function applicaEffetto(stato: StatoGioco, tipo: TipoPozione, ctx: Contesto, inC
   if (effetto.genere === "cura") {
     const { hpMax } = calcolaStatistiche(stato, ctx);
     if (stato.personaggio.hp >= hpMax) return "pozioni.errore.in_salute";
-    const curati = Math.min(hpMax - stato.personaggio.hp, lancia(ctx, effetto.dadi, FACCE_CURA));
+    const curati = Math.min(hpMax - stato.personaggio.hp, lancia(ctx, effetto.dadi, effetto.facce) + effetto.perLivello * stato.personaggio.livello);
     return { stato: { ...stato, personaggio: { ...stato.personaggio, hp: stato.personaggio.hp + curati } }, eventi: [{ chiave: "pozioni.cura", parametri: { nomeChiave, hp: curati }, tono: "positivo" }] };
   }
   if (effetto.genere === "mana") {

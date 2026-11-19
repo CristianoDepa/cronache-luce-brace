@@ -80,6 +80,14 @@ export const puntoVelocita = definisciPuntoRegola<CalcoloVelocita>("combattiment
 export const puntoOro = definisciPuntoRegola<CalcoloOro>("combattimento.oro");
 export const puntoFineScontro = definisciPuntoRegola<CalcoloFineScontro>("combattimento.fineScontro");
 
+// Le monete perse morendo (0.25.0): parte dal 25% dell'oro in tasca e le regole dei moduli possono cambiarle (la cripta non le toglie: perdi la borsa).
+export interface CalcoloPenalitaMorte {
+  readonly stato: StatoGioco;
+  readonly creaturaId: Id;
+  readonly oroPerso: number;
+}
+export const puntoPenalitaMorte = definisciPuntoRegola<CalcoloPenalitaMorte>("combattimento.penalitaMorte");
+
 // Il nemico ha colpito il giocatore (e il giocatore è ancora in piedi): le regole dei moduli possono reagire (es. un morso avvelenato, un'apparizione che spaventa).
 export interface CalcoloColpoSubito {
   readonly stato: StatoGioco;

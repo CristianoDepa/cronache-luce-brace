@@ -13,9 +13,11 @@ export const PARAMETRI_POZIONI = {
   scortaMax: 2,
   // Dopo ogni vittoria, probabilità di trovare una pozione a caso (con zaino pieno si lascia).
   probabilitaBottino: 0.02,
-  // Le cure costano il doppio del Guaritore a pari HP medi: il Guaritore chiede il livello per HP, quindi leggera (3,5 HP medi) 7 x livello,
-  // robusta (7 HP medi) 14 x livello.
-  moltiplicatorePrezzoCura: 2,
+  // Le cure (0.25.0) costano 1,55 volte il Guaritore a pari HP medi (il Guaritore chiede il livello per HP), arrotondate per eccesso alle 5 monete
+  // e con un tetto per tipo: a livello 11 la leggera costa 250 e la robusta 450, e da lì il prezzo non sale più.
+  moltiplicatorePrezzoCura: 1.55,
+  arrotondamentoPrezzoCura: 5,
+  tettoPrezzoCura: { curaLeggera: 250, curaRobusta: 450 },
   // Lo Speziale ricompra le pozioni sigillate (quelle nello zaino) a questa quota del loro valore (il prezzo di acquisto al tuo livello).
   quotaRiacquisto: 0.3,
   prezzoEffetto: 60,

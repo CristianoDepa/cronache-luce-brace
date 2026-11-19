@@ -35,10 +35,10 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
 
   it("dopo la prima visita la piazza mostra i suoi edifici, anche da lontano e in inglese", () => {
     const a = eseguiOk(partenza(), viaggia("piazza-n"), ctx).stato;
-    expect(lista(a, "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Gilda dei Cavalieri - sei qui");
+    expect(lista(a, "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Fabbro, Gilda dei Cavalieri - sei qui");
     expect(lista(a, "piazze")[1]).toBe("[2] Piazza San Michele - 4 movimenti, 1 azione"); // non ancora visitata: solo il nome
     const b = eseguiOk(a, viaggia("piazza-c"), ctx).stato;
-    expect(lista(b, "piazze")[0]).toMatch(/^\[1\] Piazza dell'Anfiteatro: Gilda dei Cavalieri - 4 movimenti/); // resta nota
+    expect(lista(b, "piazze")[0]).toMatch(/^\[1\] Piazza dell'Anfiteatro: Fabbro, Gilda dei Cavalieri - 4 movimenti/); // resta nota
     expect(lista(b, "piazze", "en")[1]).toBe("[2] San Michele Square: Bank, Mystics' Guild - you are here");
     expect(statoCitta.leggi(b).visitati).toEqual(["porta-s", "piazza-n", "piazza-c"]);
   });

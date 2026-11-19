@@ -154,7 +154,7 @@ describe("iniziativa nel round", () => {
     // al contrario: il nemico più veloce uccide per primo il giocatore, che non colpisce
     const fragile = personaggio("cavaliere", { armatura: "piastre" }, 1); // velocità 3 contro l'orco (6)
     const morto = eseguiOk(eseguiOk(fragile, inizia("orco"), ctx).stato, { tipo: "attacca" }, ctx);
-    expect(chiavi(morto.eventi)).toEqual(["combattimento.nemicoPrimo", "combattimento.colpoNemico", "combattimento.sconfitta"]);
+    expect(chiavi(morto.eventi)).toEqual(["combattimento.nemicoPrimo", "combattimento.colpoNemico", "combattimento.sconfittaSenzaOro"]);
     expect(morto.stato.personaggio.morto).toBe(true);
   });
 
@@ -188,10 +188,11 @@ describe("iniziativa nel round", () => {
 });
 
 describe("regole di progetto dell'equipaggiamento", () => {
-  const dello = (tipo: string) => LINEE.filter((l) => l.tipo === tipo);
+  const normali = LINEE.filter((l) => !l.fucina); // le linee d'acciaio di brace hanno regole proprie (base + un solo gradino)
+  const dello = (tipo: string) => normali.filter((l) => l.tipo === tipo);
 
   it("ogni linea dà i punti della sua classe di peso: leggera 2, media 3, pesante 4", () => {
-    for (const l of LINEE) {
+    for (const l of normali) {
       expect(calcolaPunti(l, 1), l.id).toBeCloseTo(PARAMETRI_EQUIPAGGIAMENTO.classiDiPeso[l.peso].punti, 5);
       expect(l.velocita, l.id).toBe(PARAMETRI_EQUIPAGGIAMENTO.classiDiPeso[l.peso].velocita);
     }
@@ -214,7 +215,7 @@ describe("regole di progetto dell'equipaggiamento", () => {
   });
 
   it("il livello successivo di una linea della stessa classe di peso non peggiora mai l'attuale", () => {
-    for (const a of LINEE) for (const b of LINEE) {
+    for (const a of normali) for (const b of normali) {
       if (a.tipo !== b.tipo || a.peso !== b.peso) continue;
       for (let n = 1; n < livelloMassimo(a); n++) {
         expect(calcolaPunti(a, n + 1), `${a.id} liv. ${n + 1} contro ${b.id} liv. ${n}`).toBeGreaterThan(calcolaPunti(b, n));

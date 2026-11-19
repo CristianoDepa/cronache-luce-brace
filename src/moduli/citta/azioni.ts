@@ -49,6 +49,8 @@ export const azioneEntra = definisciAzione("entra", validaSito, (stato, dati, ct
   const meta = leggiSito(ctx.registro, dati.sito);
   if (!dove || !meta || meta.categoria !== "edificio") return esitoErrore("citta.errore.sito_inesistente");
   if (meta.ospite !== dove.id) return esitoErrore("citta.errore.edificio_non_qui");
+  // Un edificio può restare chiuso finché non si ha il livello richiesto (il Fabbro, dal livello 12): il testo dice perché.
+  if (meta.livelloMin !== undefined && stato.personaggio.livello < meta.livelloMin) return esitoErrore(meta.chiusaChiave ?? "citta.errore.edificio_non_qui");
   const distanza = distanzeCitta(ctx.registro, dove.id).get(dati.sito);
   if (distanza === undefined) return esitoErrore("citta.errore.non_raggiungibile");
   const { movimenti } = statoCitta.leggi(stato);

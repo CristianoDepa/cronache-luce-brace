@@ -6,6 +6,7 @@ import { fortunaBase, puntoFortunaBonus } from "../fortuna/indice";
 import { ZONE_FORZIERE, statoForziere } from "../forziere/indice";
 import { aggiungiOggetto } from "../inventario/indice";
 import { impostaScoperta } from "../scoperta/indice";
+import { statoCripta } from "../cripta/indice";
 import { EVENTI, avviaEvento } from "../eventi/indice";
 
 // Comandi di prova della 0.16.0 (solo con ?dev=1): un oggetto magico a scelta (medaglione o anello), un forziere a scelta e la Fortuna a 20.
@@ -90,7 +91,13 @@ const azioneProvocaEvento = definisciAzione("devEvento", validaEvento, (stato, d
   return esitoOk(avvio.stato, avvio.eventi);
 }, consentite);
 
-export const AZIONI_PROVA = [azioneDaiAmuleto, azioneTrovaForziere, azioneFortuna, azioneProvocaEvento];
+// Apre subito la scalinata della cripta (0.24.0) come se l'avessi trovata nel cimitero: si scende dalla Porta Sant'Anna.
+const azioneTrovaCripta = definisciAzione("devCripta", nessunDato, (stato) => {
+  const aperta = statoCripta.scrivi(stato, { ...statoCripta.leggi(stato), aperta: true, rigettato: false });
+  return esitoOk(impostaScoperta(aperta, "cripta", "cimitero"), [{ chiave: "sviluppo.criptaTrovata", tono: "positivo" }]);
+}, consentite);
+
+export const AZIONI_PROVA = [azioneDaiAmuleto, azioneTrovaForziere, azioneFortuna, azioneProvocaEvento, azioneTrovaCripta];
 
 // Menu: [A] oggetto magico (prima lo slot, poi la qualità, poi il tipo), [B] forziere (la zona), [C] Fortuna 20 (acceso/spento).
 export function vociMenuProva(): readonly VoceMenu[] {
@@ -98,6 +105,7 @@ export function vociMenuProva(): readonly VoceMenu[] {
     { id: "sviluppo.amuleto", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.amuleto", tasto: "A", ordine: 20, comando: { tipo: "naviga", verso: CONTESTO_AMULETO } },
     { id: "sviluppo.forziere", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.forziere", tasto: "B", ordine: 21, comando: { tipo: "naviga", verso: CONTESTO_FORZIERE } },
     { id: "sviluppo.fortuna", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.fortuna", tasto: "C", ordine: 22, comando: { tipo: "azione", azione: { tipo: "devFortuna" } } },
+    { id: "sviluppo.cripta", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.cripta", tasto: "S", ordine: 26, comando: { tipo: "azione", azione: { tipo: "devCripta" } } },
     { id: "sviluppo.evento", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.evento", tasto: "E", ordine: 25, comando: { tipo: "naviga", verso: CONTESTO_EVENTO_PROVA } },
   ];
   EVENTI.forEach((e, i) => voci.push({ id: `sviluppo.evento.${e.id}`, contesto: CONTESTO_EVENTO_PROVA, etichettaChiave: `sviluppo.evento.${e.id}`, tasto: TASTI_EVENTI[i] ?? "0", ordine: i + 1, comando: { tipo: "azione", azione: { tipo: "devEvento", dati: { evento: e.id } } } }));
@@ -135,6 +143,8 @@ export const TESTI_PROVA = {
     "sviluppo.menu.forziere": "Trova un forziere",
     "sviluppo.menu.fortuna": "Fortuna 20 (acceso/spento)",
     "sviluppo.menu.evento": "Provoca un evento",
+    "sviluppo.menu.cripta": "Trova la scalinata della cripta",
+    "sviluppo.criptaTrovata": "La scalinata della cripta è aperta: scendi dalla Porta Sant'Anna (comando di prova).",
     "sviluppo.evento.titolo": "Quale evento?",
     "sviluppo.evento.tesoro": "Tesoro",
     "sviluppo.evento.trappola": "Trappola",
@@ -180,6 +190,8 @@ export const TESTI_PROVA = {
     "sviluppo.menu.forziere": "Find a chest",
     "sviluppo.menu.fortuna": "Luck 20 (on/off)",
     "sviluppo.menu.evento": "Trigger an event",
+    "sviluppo.menu.cripta": "Find the crypt stairway",
+    "sviluppo.criptaTrovata": "The crypt stairway is open: go down from Sant'Anna Gate (test command).",
     "sviluppo.evento.titolo": "Which event?",
     "sviluppo.evento.tesoro": "Treasure",
     "sviluppo.evento.trappola": "Trap",

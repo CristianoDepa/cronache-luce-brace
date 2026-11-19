@@ -133,7 +133,7 @@ describe("i lavori ai bastioni: svolgimento", () => {
     const debole = { ...arrivo.stato, personaggio: { ...arrivo.stato.personaggio, hp: 1, forzaBase: 1, difesaBase: 0 } };
     const persa = combattiFinoAllaFine(debole, { ...ctx, rng: { prossimo: () => 0.99, intero: (min) => min } });
     expect(lavoriOggi(persa.stato).attivo).toBeNull();
-    expect(persa.eventi.some((e) => e.chiave === "combattimento.sconfitta")).toBe(true);
+    expect(persa.eventi.some((e) => e.chiave.startsWith("combattimento.sconfitta"))).toBe(true);
     expect(persa.eventi.some((e) => e.chiave === "lavori.scorta.finita")).toBe(false);
   });
 

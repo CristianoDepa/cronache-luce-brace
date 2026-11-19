@@ -14,7 +14,7 @@ export const ABILITA: readonly VoceContenuto[] = [
       costoMana: 0,
       usiPerScontro: 1,
       azione: "attacco",
-      prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 2, deltaPrecisione: -0.2, colpi: 1 }],
+      prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 2, deltaPrecisione: -0.1, colpi: 1 }],
     },
   },
   {
@@ -121,6 +121,55 @@ export const ABILITA: readonly VoceContenuto[] = [
       livelloMin: 8,
       azione: "attacco",
       prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 1.5, moltiplicatorePrecisione: 2, colpi: 1, tipoDanno: "magico" }],
+    },
+  },
+  // --- Abilità del 12° livello (0.25.0): una per classe, la quarta ([H]), una volta per scontro. VALORI PROPOSTI, da tarare giocando. ---
+  {
+    // Salta il turno; per i prossimi 3 attacchi il nemico ha 30 punti in meno di probabilità di colpirti. Una volta per scontro.
+    tipo: "abilita",
+    id: "grido",
+    dati: {
+      nomeChiave: "abilita.grido",
+      descrizioneChiave: "abilita.grido.descrizione",
+      attivoChiave: "abilita.grido.attivo",
+      classi: ["cavaliere"],
+      costoMana: 0,
+      livelloMin: 12,
+      usiPerScontro: 1,
+      azione: "attesa",
+      dopo: [{ bersaglio: "nemico", deltaPrecisione: -0.3, colpi: 3 }],
+    },
+  },
+  {
+    // Un attacco; questo e i 2 successivi fanno il 40% di danno in più (la lama è avvelenata). Una volta per scontro.
+    tipo: "abilita",
+    id: "lamaavvelenata",
+    dati: {
+      nomeChiave: "abilita.lamaavvelenata",
+      descrizioneChiave: "abilita.lamaavvelenata.descrizione",
+      attivoChiave: "abilita.lamaavvelenata.attivo",
+      classi: ["ladro"],
+      costoMana: 0,
+      livelloMin: 12,
+      usiPerScontro: 1,
+      azione: "attacco",
+      prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 1.4, colpi: 3 }],
+    },
+  },
+  {
+    // Salta il turno; i prossimi 3 colpi del nemico fanno il 35% di danno in meno. Costa mana. Una volta per scontro.
+    tipo: "abilita",
+    id: "maledizione",
+    dati: {
+      nomeChiave: "abilita.maledizione",
+      descrizioneChiave: "abilita.maledizione.descrizione",
+      attivoChiave: "abilita.maledizione.attivo",
+      classi: ["mistico"],
+      costoMana: 5,
+      livelloMin: 12,
+      usiPerScontro: 1,
+      azione: "attesa",
+      dopo: [{ bersaglio: "nemico", moltiplicatoreDanno: 0.65, colpi: 3 }],
     },
   },
 ];

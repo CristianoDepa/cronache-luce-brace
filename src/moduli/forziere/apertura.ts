@@ -11,10 +11,15 @@ import { statoForziere } from "./tipi";
 // Probabilità di aprire il forziere: base, più lo scasso (la skill del Ladro, +1 punto per livello), poi la Fortuna fino al tetto della classe
 // (Cavaliere 70%, Mistico 75%, Ladro 85%; senza classe il tetto generale della Fortuna).
 export function probabilitaApertura(stato: StatoGioco, ctx: Contesto): number {
+  return probabilitaAperturaDa(stato, ctx, PARAMETRI_FORZIERE.aperturaBase);
+}
+
+// Come sopra, ma con una probabilità base data (es. i forzieri della cripta, più difficili da aprire).
+export function probabilitaAperturaDa(stato: StatoGioco, ctx: Contesto, base: number): number {
   const id = statoClassi.leggi(stato).classeId;
   const tetto = id === null ? PARAMETRI_FORTUNA.tetto : (leggiContenuto(ctx.registro, tipoClasse, id)?.modificatori.tettoForziere ?? PARAMETRI_FORTUNA.tetto);
   const scasso = guadagniDelGiocatore(stato).scasso / 100;
-  return conFortuna(Math.min(1, PARAMETRI_FORZIERE.aperturaBase + scasso), fortunaTotale(stato, ctx), tetto);
+  return conFortuna(Math.min(1, base + scasso), fortunaTotale(stato, ctx), tetto);
 }
 
 export interface EsitoApertura {

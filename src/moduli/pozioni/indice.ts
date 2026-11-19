@@ -15,10 +15,11 @@ import { ID_POZIONI, statoPozioni } from "./tipi";
 
 export { ID_POZIONI, statoPozioni } from "./tipi";
 export { POZIONI, prezzoPozione } from "./dati";
+export type { TipoPozione } from "./dati";
 export { prezzoRiacquisto } from "./azioni";
 export { pozioneCasuale } from "./regole";
 export { idPozione } from "./dati";
-export { consegnaPozioni } from "./consegna";
+export { consegnaPozioneTipo, consegnaPozioni } from "./consegna";
 export { scortaDelGiorno, scortaRimasta, tipiDelGiorno } from "./scorta";
 export { PARAMETRI_POZIONI } from "./parametri";
 export { CONTESTO_SPEZIALE } from "./interfaccia";

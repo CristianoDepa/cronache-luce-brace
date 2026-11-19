@@ -47,7 +47,7 @@ describe("vista e menu", () => {
     const scontro = eseguiOk(scelta.stato, { tipo: "esploraForesta", dati: { luogoId: "foresta" } }, ctx);
     const vista = creaVistaPartita(scontro.stato, ctx);
     expect(vista.contestoForzato).toBe("combattimento");
-    expect(vociMenu(registro, "combattimento").map((v) => v.tasto)).toEqual(["C", "A", "B", "T", "S", "D", "G", "F"]); // C = cambia arma (con una riserva), T = combatti fino alla fine
+    expect(vociMenu(registro, "combattimento").map((v) => v.tasto)).toEqual(["C", "A", "B", "T", "S", "D", "G", "H", "F"]); // C = cambia arma (con una riserva), T = combatti fino alla fine
     expect(vista.pannelli.some((p) => p.titoloChiave === "combattimento.pannello.titolo")).toBe(true);
   });
 

@@ -36,8 +36,8 @@ describe("livelli: calcoli puri", () => {
   it("la retta è intera al primo tentativo e metà dopo una sconfitta (senza ridimezzare ancora)", () => {
     expect([2, 3, 4].map((l) => rettaPerLivello(l, 0))).toEqual([60, 150, 300]);
     expect([rettaPerLivello(4, 1), rettaPerLivello(4, 2), rettaPerLivello(4, 5)]).toEqual([150, 150, 150]);
-    expect([8, 9, 10, 11].map((l) => rettaPerLivello(l, 0))).toEqual([1200, 1500, 1800, 2200]); // 0.18.1: fino al livello 11
-    expect(rettaPerLivello(12, 0)).toBe(0); // livelli senza retta definita
+    expect([8, 9, 10, 11, 12].map((l) => rettaPerLivello(l, 0))).toEqual([1200, 1500, 1800, 2200, 2600]); // 0.25.0: fino al livello 12
+    expect(rettaPerLivello(13, 0)).toBe(0); // livelli senza retta definita
   });
 
   it("crescita per classe fino al 4° livello (tre salite)", () => {
@@ -79,11 +79,11 @@ describe("l'avviso e l'esperienza nella colonna di destra", () => {
   it("l'esperienza a destra dice il totale necessario; l'avviso compare quando basta e sparisce al tetto", () => {
     expect(laterale(pg("ladro", 1, 0, "porta-s"))).toContain('"necessaria":150');
     expect(laterale(pg("ladro", 3, 0, "porta-s"))).toContain('"necessaria":600');
-    expect(laterale(pg("ladro", 11, 99999, "porta-s"))).not.toContain("esperienza"); // tetto provvisorio (livello 11)
+    expect(laterale(pg("ladro", 12, 99999, "porta-s"))).not.toContain("esperienza"); // tetto (livello 12)
     // a destra non c'è una riga d'avviso (cambierebbe l'altezza della scheda e la scala dell'immagine): l'avviso è in cima e nella riga del livello
     expect(laterale(pg("ladro", 1, 150, "porta-s"))).not.toContain("avviso");
     expect(puoSalire(pg("ladro", 3, 600, "porta-s"))).toBe(true);
-    expect(puoSalire(pg("ladro", 11, 99999, "porta-s"))).toBe(false);
+    expect(puoSalire(pg("ladro", 12, 99999, "porta-s"))).toBe(false);
     expect(puoSalire(pg("ladro", 4, 1000, "porta-s"))).toBe(true); // dal 4° si sale ancora (livelli 5-7)
   });
 
@@ -123,7 +123,7 @@ describe("la salita di livello in gilda (livelli senza duello)", () => {
     expect(errore(eseguiAzione(pg("ladro", 1, 150, gildaDi("cavaliere")), sali, ctx))).toBe("gilde.errore.non_tua");
     expect(errore(eseguiAzione(pg("ladro", 1, 150, "porta-s"), sali, ctx))).toBe("gilde.errore.non_in_gilda");
     expect(errore(eseguiAzione(pg("ladro", 1, 149, gildaDi("ladro")), sali, ctx))).toBe("gilde.errore.esperienza");
-    expect(errore(eseguiAzione(pg("ladro", 11, 99999, gildaDi("ladro")), sali, ctx))).toBe("gilde.errore.livello_massimo");
+    expect(errore(eseguiAzione(pg("ladro", 12, 99999, gildaDi("ladro")), sali, ctx))).toBe("gilde.errore.livello_massimo");
     expect(errore(eseguiAzione(pg("ladro", 3, 600, gildaDi("ladro")), sali, ctx))).toBe("gilde.errore.serve_sfida");
     const povero = pg("ladro", 1, 150, gildaDi("ladro"), 59);
     expect(errore(eseguiAzione(povero, sali, ctx))).toBe("gilde.errore.monete");
@@ -154,7 +154,7 @@ describe("la salita di livello in gilda (livelli senza duello)", () => {
     expect(delleGilde(pg("cavaliere", 1, 150, gildaDi("cavaliere")))).toEqual(["gilde.sfida.gilda-cavaliere"]);
     expect(delleGilde(pg("cavaliere", 3, 600, gildaDi("cavaliere")))).toEqual(["gilde.sali.gilda-cavaliere"]);
     expect(delleGilde(pg("cavaliere", 4, 1000, gildaDi("cavaliere")))).toEqual(["gilde.sfida.gilda-cavaliere"]); // livello 5: si sale con la sola retta
-    expect(delleGilde(pg("cavaliere", 11, 5000, gildaDi("cavaliere")))).toEqual(["gilde.sali.gilda-cavaliere", "gilde.sfida.gilda-cavaliere"]); // al tetto
+    expect(delleGilde(pg("cavaliere", 12, 5000, gildaDi("cavaliere")))).toEqual(["gilde.sali.gilda-cavaliere", "gilde.sfida.gilda-cavaliere"]); // al tetto
   });
 
   it("il pannello della gilda mostra esperienza, retta, capogilda e vantaggi", () => {
@@ -275,9 +275,9 @@ describe("comandi di prova per i livelli", () => {
     const conXp = eseguiOk(base, { tipo: "devEsperienza" }, ctx).stato;
     expect(conXp.personaggio.esperienza).toBe(150);
     let st = conXp;
-    for (let i = 0; i < 10; i++) st = eseguiOk(st, { tipo: "devLivello" }, ctx).stato;
-    expect(st.personaggio.livello).toBe(11);
+    for (let i = 0; i < 11; i++) st = eseguiOk(st, { tipo: "devLivello" }, ctx).stato;
+    expect(st.personaggio.livello).toBe(12);
     expect(errore(eseguiAzione(st, { tipo: "devLivello" }, ctx))).toBe("gilde.errore.livello_massimo");
-    expect(eseguiOk(st, { tipo: "devEsperienza" }, ctx).stato.personaggio.esperienza).toBe(25000); // anche al tetto: la soglia del livello dopo (il 12)
+    expect(eseguiOk(st, { tipo: "devEsperienza" }, ctx).stato.personaggio.esperienza).toBe(40000); // anche al tetto: la soglia del livello dopo (il 13)
   });
 });

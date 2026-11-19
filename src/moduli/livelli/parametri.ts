@@ -5,13 +5,13 @@ export const PARAMETRI_LIVELLI = {
   esperienzaTotale: [0, 150, 300, 600, 1000, 1500, 2500, 4000, 6000, 9000, 15000, 25000, 40000, 60000],
   // Retta in monete per salire AL livello indicato (si paga all'inizio, anche ai livelli senza duello). Ai livelli chiave il primo
   // tentativo costa la retta intera, i successivi (dopo una sconfitta) una quota (non si ridimezza ancora).
-  rette: { 2: 60, 3: 150, 4: 300, 5: 300, 6: 500, 7: 800, 8: 1200, 9: 1500, 10: 1800, 11: 2200 } as Readonly<Record<number, number>>,
+  rette: { 2: 60, 3: 150, 4: 300, 5: 300, 6: 500, 7: 800, 8: 1200, 9: 1500, 10: 1800, 11: 2200, 12: 2600 } as Readonly<Record<number, number>>,
   quotaRitentativo: 0.5,
   // Morendo contro una creatura si perde questa quota dell'esperienza necessaria per passare al livello successivo (non di quella
   // accumulata); l'esperienza non scende mai sotto la soglia del livello attuale.
   penalitaMorte: 0.1,
-  // Tetto provvisorio (0.18.1: 11, cioè fino al livello prima del prossimo livello chiave, il 12): si alza quando arrivano i capigilda e i mostri delle fasce successive (il Drago è al livello 20).
-  livelloMax: 11,
+  // Tetto del livello (0.25.0: 12, con il terzo capogilda; il Drago è al livello 20): si alza quando arrivano i capigilda e i mostri delle fasce successive.
+  livelloMax: 12,
   // Ai livelli chiave la gilda chiede di battere il proprio capogilda prima di salire.
   livelliChiave: [4, 8, 12],
 } as const;

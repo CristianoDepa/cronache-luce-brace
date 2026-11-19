@@ -44,7 +44,7 @@ describe("penalità di esperienza alla morte", () => {
     }
     expect(cur.personaggio).toMatchObject({ morto: true, livello: 2, esperienza: 185 });
     expect(chiavi(eventi)).toContain("livelli.penalita");
-    expect(eventi.some((e) => e.chiave === "combattimento.sconfitta")).toBe(true);
+    expect(eventi.some((e) => e.chiave.startsWith("combattimento.sconfitta"))).toBe(true);
   });
 
   it("un duello non letale perso non toglie esperienza", () => {

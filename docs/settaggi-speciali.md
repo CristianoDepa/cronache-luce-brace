@@ -52,6 +52,8 @@ Versione del gioco: compare alla scelta della lingua, nel menu iniziale e nelle 
 
 Con `?dev=1` → `[O]` → `[V]` → **`[E]` «Provoca un evento»** si apre l'elenco dei 17 eventi (tasti 1-9, A, B, C, D, G, H, J, K; dalla 0.23.0 con le erbe medicinali) e se ne vede subito uno (0.22.0). Gli NPC di oggi si vedono con `?dev=1` → Opzioni `[V]` → `[6]`; gli **incarichi di oggi ai bastioni** con `[V]` → `[L]` (0.20.0); `lavori/parametri.ts` (0.20.1) regola anche il Tagliaborse (`tagliaborse.fattore` 0,8, HP e forza per livello). Per vedere subito l'orco, in `foresta/dati.ts` si può mettere `orco: { peso: 40, potenzaMin: 0 }` (e poi ripristinare la riga originale).
 
+**Cripta (0.24.0):** `src/moduli/cripta/parametri.ts` → `PARAMETRI_CRIPTA`: `livelloMinimo 8`, `probabilitaIngresso 0.04` (zone palude e cimitero), `profonditaMax 5`, `bonusNemicoPerPiano 0.1`, `bonusMonetePerPiano 0.15`, `probabilitaOggetto [1%, 2%, 3,5%, 5%, 6%]`, `probabilitaPozione 0.08`, `pianoOggettoArgento 4`, `forzieri` (piano 3: apertura 0.45, oro ×2, bronzo; piano 5: 0.30, ×3,5, argento), `premioGuardiano 2`, `costoAzioni 1`, `pesiPerPiano`. Creature e Guardiano: `src/moduli/cripta/dati.ts`. Comando di prova: `?dev=1` → `[O]` → `[V]` → `[S]` «Trova la scalinata della cripta».
+
 **Stati (0.23.0):** `src/moduli/stati/parametri.ts` → `PARAMETRI_STATI`: veleno `azioni 8, hpPerAzione 1`; paura `azioni 8, forza 1, difesa 1`; `probabilitaColpo 0.25`; cure `curaGuaritorePerLivello 8`, `curaChiesaPerLivello 5`. Patti (Forza/Difesa/Fortuna) in `stati/dati.ts` → `PATTI`; creature che infliggono stati in `CREATURE_CHE_INFLIGGONO`. Antidoto: `pozioni/parametri.ts` → `prezzoAntidoto 30`. Eventi: `eventi/parametri.ts` → `trappola.probabilitaVeleno 0.3`, `erbe.probabilitaAntidoto 0.6`, `mercante.sconto 0.5`, `guado.probabilitaScivolata 0.4`.
 
 ## 5. Livelli e gilde (0.8.0)
@@ -133,3 +135,33 @@ Con `?dev=1` → `[O]` → `[V]` → **`[E]` «Provoca un evento»** si apre l'e
 
 | Lavori ai primi livelli (0.20.2): livello massimo «tranquillo» (2) e probabilità di imboscata ridotte (consegna 0,10, scorta 0,20) | `src/moduli/lavori/parametri.ts` → `livelloTranquillo`, `probabilitaImboscataTranquilla` | vedi a sinistra; da tarare |
 | Velocità del Tagliaborse (4: fuga 80% con velocità 10) | `src/moduli/lavori/dati.ts` → `velocita` | 4 |
+
+## 0.25.0 - Livello 12, Fabbro, cripta rivista
+| Cosa | Dove | Valore |
+|---|---|---|
+| Comando di prova **`[Q]`** «Equipaggiati al tuo livello» (`?dev=1` → `[O]` → `[V]`) | `src/moduli/sviluppo/indice.ts` | arma e armatura di classe |
+| Teletrasporto: lettere dei luoghi (senza `F`); il Fabbro è tra «Gli edifici» | `src/moduli/sviluppo/indice.ts` (`LETTERE_TELE`) | |
+| Tetto dei livelli (12) e retta del 12 | `src/moduli/livelli/parametri.ts` | 2.600 (provvisoria); esperienza del 12: 25.000 |
+| Capigilda del 12 (HP, forza, difesa, velocità) | `src/moduli/gilde/dati.ts` | Ruggero 140/34/16/7, Selene 85/34/7/11, Gufo Nero 98/32/7/17 |
+| Quarta abilità `[H]` (livello 12, 1 uso per scontro) | `src/moduli/abilita/dati.ts` | Grido −30% precisione, Lama avvelenata ×1,4, Maledizione ×0,65 (5 mana); 3 colpi |
+| Fabbro: tasto `[A]`, livello minimo, frase di chiusura | `src/moduli/citta/dati.ts` (`fabbro`) | livello 12 |
+| Acciaio di brace: punti, base, livelli massimi | `src/moduli/equipaggiamento/linee.ts` (linee `*-brace`) | 22 punti nella 0.25.0, **26 punti dalla 0.25.1**, 1 livello; prezzo fisso 5.500 (`PREZZO_BRACE` in `linee.ts`) |
+| Cripta: `bonusPremioPerPiano`, `esplorazioniPerPiano`, `fugaMinima`, `premioGuardiano` | `src/moduli/cripta/parametri.ts` | 0,4 / 3 / 0,25 / 4 |
+| Guardiano della cripta (natura magica 1,5; statistiche invariate) | `src/moduli/cripta/dati.ts` | HP 200 (0.25.1), forza 21, difesa 7, vel 6 |
+| Pozioni: cura leggera/robusta, prezzo e tetti | `src/moduli/pozioni/dati.ts`, `parametri.ts` | 1d6+L / 1d8+2L; tetti 250/450 |
+| Tariffe dei lavori (sorveglianza, consegna, scorta) | `src/moduli/lavori/parametri.ts` | 8 / 12 / 12 |
+
+**Attenzione agli aggiornamenti:** il delta sovrascrive `lavori/parametri.ts`, `cripta/parametri.ts`, `cripta/dati.ts`, `pozioni/parametri.ts`, `livelli/parametri.ts` e `gilde/dati.ts`: le modifiche a mano vanno rifatte.
+
+## 0.25.1 - Ritocchi
+| Cosa | Dove | Valore |
+|---|---|---|
+| Prezzo fisso dell'acciaio di brace | `src/moduli/equipaggiamento/linee.ts` (`PREZZO_BRACE`) | 5.500 |
+| Punti dell'acciaio di brace | `src/moduli/equipaggiamento/linee.ts` (linee `*-brace`, campo `base`) | 26 |
+| Carica: precisione | `src/moduli/abilita/dati.ts` (`carica`, `deltaPrecisione`) | −0,1 (danno ×2) |
+| Guardiano della cripta: HP | `src/moduli/cripta/dati.ts` | 200 |
+| Avviso di pericolo alla scalinata (soglie degli HP) | `src/moduli/cripta/parametri.ts` | `sogliaFerito` 0,5, `sogliaStanco` 0,8 |
+
+| Bonus di potenza dell'arma incantata nell'indicatore di pericolo (solo di notte) | `src/moduli/palude/pericolo.ts` (`BONUS_POTENZA_INCANTO_NOTTE`) | 0,15 |
+
+**Attenzione agli aggiornamenti:** il delta della 0.25.1 sovrascrive `equipaggiamento/linee.ts`, `abilita/dati.ts` e `cripta/dati.ts`, `cripta/parametri.ts`, `palude/pericolo.ts`: le tue modifiche a mano vanno rifatte.

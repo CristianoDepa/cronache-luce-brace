@@ -8,6 +8,9 @@ import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_MANA, ripristinaMana } from "../mana/indice";
 import { ID_PALUDE } from "../palude/indice";
 import { ID_EVENTI } from "../eventi/indice";
+import { ID_CRIPTA } from "../cripta/indice";
+import { statoClassi } from "../classi/indice";
+import { LINEE, livelloMassimo, statoEquipaggiamento } from "../equipaggiamento/indice";
 import { ID_LIVELLI, PARAMETRI_LIVELLI, esperienzaPerSalire, rettaPerLivello, salitaDiLivello, statoLivelli } from "../livelli/indice";
 import { ID_LAVORI, offerteDelGiorno } from "../lavori/indice";
 import { ID_MURA, presenzeOggi, tipoNpc } from "../mura/indice";
@@ -161,6 +164,29 @@ const azionePreparaDuello = definisciAzione(
   consentite,
 );
 
+// Le linee naturali di ogni classe (arma, armatura) per la prova «Equipaggiati al livello N».
+const LINEE_DELLA_CLASSE: Readonly<Record<string, readonly [string, string]>> = { cavaliere: ["spadone", "piastre"], ladro: ["pugnale", "cuoio"], mistico: ["bastone", "veste"] };
+
+// Dà arma e armatura della propria classe al livello del personaggio (al massimo quello della linea): serve per provare cripta e scontri
+// senza comprare tutto pezzo per pezzo. Non tocca monete né riserva.
+const azioneEquipaggiaAlLivello = definisciAzione(
+  "devEquipaggia",
+  nessunDato,
+  (stato) => {
+    const classe = statoClassi.leggi(stato).classeId;
+    const nomi = classe === null ? undefined : LINEE_DELLA_CLASSE[classe];
+    if (nomi === undefined) return esitoErrore("sviluppo.errore.senzaClasse");
+    const livello = (id: string): number => Math.min(stato.personaggio.livello, livelloMassimo(LINEE.find((l) => l.id === id)!));
+    const eq = statoEquipaggiamento.leggi(stato);
+    const nuovo = statoEquipaggiamento.scrivi(stato, { ...eq, arma: { linea: nomi[0], livello: livello(nomi[0]) }, armatura: { linea: nomi[1], livello: livello(nomi[1]) } });
+    return esitoOk(nuovo, [{ chiave: "sviluppo.equipaggiato", parametri: { livello: stato.personaggio.livello }, tono: "positivo" }]);
+  },
+  consentite,
+);
+
+// Lettere dei luoghi dal decimo in poi nel teletrasporto: senza la F (è di Fuggi e di «Addentrati nella foresta»).
+const LETTERE_TELE = "ABCDEGHIJKLMNOPQRSTUVWXYZ";
+
 function menu(): readonly VoceMenu[] {
   const voci: VoceMenu[] = [
     { id: "sviluppo.giorno", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.giorno", tasto: "1", ordine: 1, comando: { tipo: "azione", azione: { tipo: "devGiornoDopo" } } },
@@ -172,12 +198,13 @@ function menu(): readonly VoceMenu[] {
     { id: "sviluppo.esperienza", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.esperienza", tasto: "7", ordine: 7, comando: { tipo: "azione", azione: { tipo: "devEsperienza" } } },
     { id: "sviluppo.livello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.livello", tasto: "8", ordine: 8, comando: { tipo: "azione", azione: { tipo: "devLivello" } } },
     { id: "sviluppo.duello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.duello", tasto: "D", ordine: 23, comando: { tipo: "azione", azione: { tipo: "devPreparaDuello" } } },
+    { id: "sviluppo.equipaggia", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.equipaggia", tasto: "Q", ordine: 25, comando: { tipo: "azione", azione: { tipo: "devEquipaggia" } } },
     { id: "sviluppo.mostro", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.mostro", tasto: "5", ordine: 5, comando: { tipo: "naviga", verso: CONTESTO_MOSTRI } },
   ];
   CATEGORIE.forEach((c, i) => {
     voci.push({ id: `sviluppo.cat.${c.id}`, contesto: CONTESTO_VAI, etichettaChiave: `citta.cat.${c.id}`, tasto: String(i + 1), ordine: i + 1, comando: { tipo: "naviga", verso: `${CONTESTO_VAI}:${c.id}` } });
     DEFINIZIONI_SITI.filter((s) => s.categoria === c.categoria).forEach((s, k) => {
-      voci.push({ id: `sviluppo.tele.${s.id}`, contesto: `${CONTESTO_VAI}:${c.id}`, etichettaChiave: chiaveNome(s.id), tasto: k < 9 ? String(k + 1) : String.fromCharCode(65 + k - 9), ordine: k + 1, comando: { tipo: "azione", azione: { tipo: "devTeletrasporta", dati: { sito: s.id } } } });
+      voci.push({ id: `sviluppo.tele.${s.id}`, contesto: `${CONTESTO_VAI}:${c.id}`, etichettaChiave: chiaveNome(s.id), tasto: k < 9 ? String(k + 1) : LETTERE_TELE[k - 9] ?? "?", ordine: k + 1, comando: { tipo: "azione", azione: { tipo: "devTeletrasporta", dati: { sito: s.id } } } });
     });
   });
   MOSTRI.forEach(({ id, modulo }, i) => {
@@ -211,8 +238,8 @@ const interfaccia: InterfacciaModulo = {
 export const moduloSviluppo: DefinizioneModulo = {
   id: ID_SVILUPPO,
   versioneApi: VERSIONE_API,
-  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE, ID_EVENTI],
-  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneMostraLavori, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, ...AZIONI_PROVA],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE, ID_EVENTI, ID_CRIPTA],
+  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneMostraLavori, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, azioneEquipaggiaAlLivello, ...AZIONI_PROVA],
   regole: [regolaFortunaProva],
   stato: statoSviluppo,
   testi: {
@@ -232,6 +259,9 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.esperienza": "Dai l'esperienza per salire di livello",
       "sviluppo.menu.livello": "Sali di un livello (senza gilda)",
       "sviluppo.menu.duello": "Prepara il duello con il capogilda",
+      "sviluppo.menu.equipaggia": "Equipaggiati al tuo livello (arma e armatura di classe)",
+      "sviluppo.equipaggiato": "Arma e armatura della tua classe, al livello {livello} (o al massimo della linea).",
+      "sviluppo.errore.senzaClasse": "Prima scegli una classe.",
       "sviluppo.duelloPronto": "Sei pronto per il duello del livello {livello}: esperienza, monete e HP bastano; vai alla tua gilda e premi «Sfida il capogilda» (comando di prova).",
       "sviluppo.esperienza": "Ricevi {punti} punti esperienza (comando di prova).",
       "sviluppo.npc": "Oggi {npcChiave} si trova qui: {luogoChiave} (comando di prova).",
@@ -256,6 +286,9 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.esperienza": "Give the experience to level up",
       "sviluppo.menu.livello": "Go up one level (no guild)",
       "sviluppo.menu.duello": "Get ready for the guildmaster duel",
+      "sviluppo.menu.equipaggia": "Equip yourself at your level (class weapon and armour)",
+      "sviluppo.equipaggiato": "Your class weapon and armour, at level {livello} (or the line maximum).",
+      "sviluppo.errore.senzaClasse": "Choose a class first.",
       "sviluppo.duelloPronto": "You are ready for the level {livello} duel: experience, coins and HP are enough; go to your guild and press \"Challenge the guildmaster\" (test command).",
       "sviluppo.esperienza": "You receive {punti} experience points (test command).",
       "sviluppo.npc": "Today {npcChiave} is at: {luogoChiave} (test command).",

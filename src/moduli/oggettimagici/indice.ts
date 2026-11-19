@@ -15,7 +15,7 @@ export { ID_OGGETTI_MAGICI, statoOggettiMagici } from "./tipi";
 export { PARAMETRI_MAGICI } from "./parametri";
 export { QUALITA_OGGETTO, SLOT_MAGICI, TIPI_OGGETTO, bonusOggetto, idOggetto, nomeChiaveOggetto, oggettoMagicoDaId, puntiOggetto } from "./dati";
 export type { OggettoMagico, QualitaOggetto, SlotMagico, TipoOggetto } from "./dati";
-export { consegnaOggettoMagico } from "./consegna";
+export { consegnaOggettoMagico, consegnaOggettoMagicoId, sorteggiaOggettoMagico } from "./consegna";
 export { bonusIndossato } from "./regole";
 
 const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";

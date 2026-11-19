@@ -147,7 +147,7 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     contesto: "citta:piazza-n",
     nome: { it: "Piazza dell'Anfiteatro", en: "Amphitheatre Square" },
     descrizione: { it: "Una piazza ovale che segue la forma dell'antico anfiteatro romano, chiusa da case antiche e botteghe.", en: "An oval square that follows the shape of the old Roman amphitheatre, ringed by old houses and shops." },
-    collegamenti: [{ verso: "piazza-c", distanza: 4 }, { verso: "gilda-cavaliere", distanza: 2 }, { verso: "torre", distanza: 3 }],
+    collegamenti: [{ verso: "piazza-c", distanza: 4 }, { verso: "gilda-cavaliere", distanza: 2 }, { verso: "fabbro", distanza: 2 }, { verso: "torre", distanza: 3 }],
   },
   {
     id: "piazza-c",
@@ -194,6 +194,8 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     descrizione: { it: "Una torre medievale con delle querce in cima: il simbolo della città. Un portoncino conduce ai gradini; ai suoi piedi c'è un uomo in mantello scuro.", en: "A medieval tower with oak trees on top: the symbol of the city. A small door leads to the steps; at its foot stands a man in a dark cloak." },
     collegamenti: [],
   },
+  // Il Fabbro (0.25.0): chiuso finché non si ha il livello 12 (il terzo capogilda batte).
+  { id: "fabbro", tasto: "A", dove: { it: "dal Fabbro", en: "at the Master Smith" }, categoria: "edificio", ospite: "piazza-n", ingresso: { it: "Entra nella fucina del Fabbro", en: "Enter the Master Smith's forge" }, contesto: "luogo:fabbro", nome: { it: "Fabbro", en: "Master Smith" }, descrizione: { it: "Una fucina antica dove si lavora l'acciaio di brace, un metallo rosso come il tramonto.", en: "An ancient forge where ember steel is worked, a metal as red as sunset." }, chiusa: { it: "Un vecchio maestro fabbro ti sbarra il passo: «Questa fucina non è per chiunque. Torna quando la tua gilda ti riterrà degno.»", en: "An old master smith bars your way: \"This forge is not for just anyone. Come back when your guild deems you worthy.\"" }, livelloMin: 12, collegamenti: [] },
   { id: "armeria", tasto: "A", dove: { it: "all'Armeria", en: "at the Armory" }, categoria: "edificio", ospite: "fillungo", ingresso: { it: "Entra nell'Armeria", en: "Enter the Armory" }, contesto: "luogo:armeria", nome: { it: "Armeria", en: "Armory" }, descrizione: { it: "Il fabbro vende armi di ogni foggia.", en: "The smith sells weapons of every kind." }, collegamenti: [] },
   { id: "sartoria", tasto: "S", dove: { it: "alla Sartoria", en: "at the Tailor" }, categoria: "edificio", ospite: "fillungo", ingresso: { it: "Entra nella Sartoria", en: "Enter the Tailor" }, contesto: "luogo:sartoria", nome: { it: "Sartoria", en: "Tailor" }, descrizione: { it: "La sarta cuce armature e vesti su misura.", en: "The tailor sews armour and clothes to measure." }, collegamenti: [] },
   { id: "banca", tasto: "B", dove: { it: "in Banca", en: "at the Bank" }, categoria: "edificio", ospite: "piazza-c", ingresso: { it: "Entra in Banca", en: "Enter the Bank" }, contesto: "luogo:banca", nome: { it: "Banca", en: "Bank" }, descrizione: { it: "Qui l'oro è al sicuro, anche dalla morte.", en: "Here your gold is safe, even from death." }, collegamenti: [] },

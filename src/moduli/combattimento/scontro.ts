@@ -4,7 +4,7 @@ import { calcolaDannoBase, calcolaOroPerso, moltiplicatoreTipo } from "./calcolo
 import { PARAMETRI_COMBATTIMENTO } from "./parametri";
 import { aggiungiEffetti, applicaMoltiplicatoreDanno, calcolaPrecisione, consumaColpi, modificatoriAttaccante } from "./effetti";
 import type { Attaccante } from "./effetti";
-import { puntoColpoSubito, puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPrecisione, puntoProtezione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
+import { puntoColpoSubito, puntoDanno, puntoFineRound, puntoFineScontro, puntoOro, puntoPenalitaMorte, puntoPrecisione, puntoProtezione, puntoTipoDanno, puntoTipoSecondario } from "./punti";
 import { iniziativaContro } from "./velocita";
 import type { Creatura, EffettoScontro, Potenziamento, ScontroAttivo, TipoDanno } from "./tipi";
 import { registraStatistiche, impostaScontro } from "./statistiche";
@@ -297,12 +297,12 @@ function concludiSconfitta(stato: StatoGioco, creatura: Creatura, creaturaId: Id
     const messaggio: EventoGioco[] = protezione?.protetta ? [...protezione.eventi] : [{ chiave: creatura.messaggioSconfittaChiave ?? "combattimento.sconfittaNonLetale", tono: "negativo" }];
     return esitoOk(fine.stato, [...eventi, ...messaggio, ...fine.eventi]);
   }
-  const oroPerso = calcolaOroPerso(p.oro, PARAMETRI_COMBATTIMENTO.penalitaOroMorte);
+  const oroPerso = applicaRegole(ctx, puntoPenalitaMorte, { stato, creaturaId, oroPerso: calcolaOroPerso(p.oro, PARAMETRI_COMBATTIMENTO.penalitaOroMorte) }).oroPerso;
   const morto: StatoGioco = {
     ...stato,
     personaggio: { ...p, hp: 0, morto: true, oro: p.oro - oroPerso },
   };
   const finale = registraStatistiche(impostaScontro(morto, null), creaturaId, { morti: 1 });
   const fine = applicaRegole(ctx, puntoFineScontro, { stato: finale, creaturaId, esito: "sconfitta", eventi: [], ...potenziamentoDi(stato), ...scenaDi(stato), oroPerso });
-  return esitoOk(fine.stato, [...eventi, { chiave: "combattimento.sconfitta", parametri: { oroPerso }, tono: "negativo" }, ...fine.eventi]);
+  return esitoOk(fine.stato, [...eventi, { chiave: oroPerso > 0 ? "combattimento.sconfitta" : "combattimento.sconfittaSenzaOro", parametri: { oroPerso }, tono: "negativo" }, ...fine.eventi]);
 }

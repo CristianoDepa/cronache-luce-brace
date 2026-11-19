@@ -25,8 +25,8 @@ const pg = (classe: string, livello: number, hp?: number): StatoGioco => {
 const inizia = (st: StatoGioco, id = "rospo", c: Contesto = ctx): StatoGioco => eseguiOk(st, { tipo: "iniziaCombattimento", dati: { creaturaId: id } }, c).stato;
 
 describe("Livello 8 (0.18.0): tetto e capigilda", () => {
-  it("il tetto dei livelli è 11 (il 12 è il prossimo livello chiave), il livello 8 è chiave e c'è un capogilda nuovo per ogni classe", () => {
-    expect(PARAMETRI_LIVELLI.livelloMax).toBe(11);
+  it("il tetto dei livelli è 12 (0.25.0: il 12 è livello chiave con il terzo capogilda), il livello 8 è chiave e c'è un capogilda nuovo per ogni classe", () => {
+    expect(PARAMETRI_LIVELLI.livelloMax).toBe(12);
     expect(PARAMETRI_LIVELLI.livelliChiave).toContain(8);
     const nomi = ["Gran Maestro Orlando", "Arcimaga Teodora", "Falco Rosso"];
     for (const [i, g] of GILDE.entries()) {
@@ -147,7 +147,7 @@ describe("Il duello per il livello 8: si fa dal livello 7, nella propria gilda",
   it("a livello 8 non c'è nessun duello (il 9 non è un livello chiave) e a livello 11 il capogilda del 12 è «in missione»", () => {
     const r8 = eseguiAzione(inGilda("cavaliere", 8, 99999, 5000), { tipo: "sfidaCapogilda" }, ctx);
     expect(r8.ok).toBe(false);
-    const r11 = eseguiAzione(inGilda("cavaliere", 11, 99999, 9000), { tipo: "sfidaCapogilda" }, ctx);
+    const r11 = eseguiAzione(inGilda("cavaliere", 12, 99999, 9000), { tipo: "sfidaCapogilda" }, ctx);
     expect(r11.ok ? "" : r11.errore.chiave).toBe("gilde.errore.livello_massimo");
     for (const chiave of ["gilde.errore.livello_massimo", "gilde.errore.nessun_capogilda", "gilde.pannello.massimo"]) expect(traduci(registro, "it", chiave), chiave).toBe("Il capogilda è in missione: dovrai ripassare.");
     expect(traduci(registro, "en", "gilde.pannello.massimo")).toBe("The guildmaster is away on a mission: you will have to come back.");
@@ -212,8 +212,8 @@ describe("Comando di prova «Prepara il duello» (tasto D, ?dev=1)", () => {
     expect(otto.personaggio.oro).toBeGreaterThanOrEqual(1200);
     expect(otto.personaggio.hp).toBe(calcolaStatistiche(otto, ctx).hpMax);
   });
-  it("da livello 8 in su non c'è nessun duello da preparare", () => {
-    const r = eseguiAzione(pg("cavaliere", 8), { tipo: "devPreparaDuello" }, ctx);
+  it("da livello 12 (il tetto) non c'è nessun duello da preparare", () => {
+    const r = eseguiAzione(pg("cavaliere", 12), { tipo: "devPreparaDuello" }, ctx);
     expect(r.ok).toBe(false);
   });
   it("dopo il comando, nella propria gilda, «Sfida il capogilda» parte (anche dopo una sconfitta di oggi)", () => {

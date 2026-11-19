@@ -4,10 +4,13 @@ import { ID_COMBATTIMENTO, puntoPrecisione } from "../src/moduli/combattimento/i
 import type { ContenitoreStringhe } from "../src/adattatori/locale/archivioStorage";
 import type { Orologio } from "../src/porte/orologio";
 
+import { impostaIngressoCripta } from "../src/moduli/cripta/indice";
 import { impostaEventiCasuali } from "../src/moduli/eventi/indice";
 
 // Gli eventi casuali (0.22.0) spostano la sequenza dei tiri: nei test sono spenti, salvo quelli che li provano (impostaEventiCasuali(true)).
 impostaEventiCasuali(false);
+// Come gli eventi: la scalinata della cripta (0.24.0) è spenta nei test, salvo quelli che la provano (impostaIngressoCripta(true)).
+impostaIngressoCripta(false);
 
 export const LUGLIO = Date.UTC(2026, 6, 1, 12);
 export const NATALE = Date.UTC(2026, 11, 25, 12);
@@ -56,7 +59,7 @@ export function combattiFinoAllaFine(stato: StatoGioco, ctx: Contesto, tipoAzion
     const r = eseguiOk(corrente, { tipo: tipoAzione }, ctx);
     corrente = r.stato;
     eventi.push(...r.eventi);
-    if (r.eventi.some((e) => e.chiave === "combattimento.vittoria" || e.chiave === "combattimento.vittoriaSola" || e.chiave === "combattimento.sconfitta")) {
+    if (r.eventi.some((e) => e.chiave === "combattimento.vittoria" || e.chiave === "combattimento.vittoriaSola" || e.chiave.startsWith("combattimento.sconfitta"))) {
       return { stato: corrente, eventi };
     }
   }

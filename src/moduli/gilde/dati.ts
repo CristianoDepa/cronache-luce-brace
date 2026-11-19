@@ -12,9 +12,9 @@ export interface Gilda {
 }
 
 export const GILDE: readonly Gilda[] = [
-  { sito: "gilda-cavaliere", classe: "cavaliere", scenaId: "scena.gilda.cavaliere", spriteId: "sprite.capogilda.cavaliere", capogilda: { 4: "capogilda-cavaliere-4", 8: "capogilda-cavaliere-8" } },
-  { sito: "gilda-mistico", classe: "mistico", scenaId: "scena.gilda.mistico", spriteId: "sprite.capogilda.mistico", capogilda: { 4: "capogilda-mistico-4", 8: "capogilda-mistico-8" } },
-  { sito: "gilda-ladro", classe: "ladro", scenaId: "scena.gilda.ladro", spriteId: "sprite.capogilda.ladro", capogilda: { 4: "capogilda-ladro-4", 8: "capogilda-ladro-8" } },
+  { sito: "gilda-cavaliere", classe: "cavaliere", scenaId: "scena.gilda.cavaliere", spriteId: "sprite.capogilda.cavaliere", capogilda: { 4: "capogilda-cavaliere-4", 8: "capogilda-cavaliere-8", 12: "capogilda-cavaliere-12" } },
+  { sito: "gilda-mistico", classe: "mistico", scenaId: "scena.gilda.mistico", spriteId: "sprite.capogilda.mistico", capogilda: { 4: "capogilda-mistico-4", 8: "capogilda-mistico-8", 12: "capogilda-mistico-12" } },
+  { sito: "gilda-ladro", classe: "ladro", scenaId: "scena.gilda.ladro", spriteId: "sprite.capogilda.ladro", capogilda: { 4: "capogilda-ladro-4", 8: "capogilda-ladro-8", 12: "capogilda-ladro-12" } },
 ];
 
 // I capigilda sono creature: non si può fuggire, perdere non uccide (si resta a 1 HP) e battere il capogilda è l'unico premio
@@ -34,4 +34,8 @@ export const CAPIGILDA: readonly VoceContenuto[] = [
   capogilda("capogilda-cavaliere-8", "cavaliere8", "sprite.capogilda.cavaliere8", 105, 29, 14, 7),
   capogilda("capogilda-mistico-8", "mistico8", "sprite.capogilda.mistico8", 72, 31, 6, 10),
   capogilda("capogilda-ladro-8", "ladro8", "sprite.capogilda.ladro8", 86, 29, 6, 16),
+  // Livello 12 (0.25.0): valori di partenza, da tarare con la simulazione (tests/moduli/bilanciamentoLivelli12.test.ts) sull'equipaggiamento naturale a ~20 punti per pezzo.
+  capogilda("capogilda-cavaliere-12", "cavaliere12", "sprite.capogilda.cavaliere12", 140, 34, 16, 7),
+  capogilda("capogilda-mistico-12", "mistico12", "sprite.capogilda.mistico12", 85, 34, 7, 11),
+  capogilda("capogilda-ladro-12", "ladro12", "sprite.capogilda.ladro12", 98, 32, 7, 17),
 ];

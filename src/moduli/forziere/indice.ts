@@ -14,7 +14,7 @@ import { ID_FORZIERE, statoForziere } from "./tipi";
 
 export { ID_FORZIERE, statoForziere } from "./tipi";
 export { PARAMETRI_FORZIERE, ZONE_FORZIERE, parametriZona, zonaDellaScena } from "./parametri";
-export { probabilitaApertura, tentaApertura } from "./apertura";
+export { probabilitaApertura, probabilitaAperturaDa, tentaApertura } from "./apertura";
 
 // Il forziere si apre dalla porta da cui si accede alla zona: una voce per ogni porta, visibile solo se il forziere trovato è di una zona di quella porta.
 const CONTESTI_PORTE: readonly string[] = [...new Set(Object.values(PARAMETRI_FORZIERE.zone).map((z) => z.contesto))];

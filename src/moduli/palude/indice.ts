@@ -4,14 +4,15 @@ import { ID_AZIONI } from "../azioni/indice";
 import { ID_CITTA, leggiSito } from "../citta/indice";
 import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_FORESTA, avvisoFerito } from "../foresta/indice";
+import { ID_EQUIPAGGIAMENTO, statoEquipaggiamento } from "../equipaggiamento/indice";
 import { ID_LUOGHI, calcolaPotenza, faseDelGiorno } from "../luoghi/indice";
 import { LUOGHI_PALUDE, MOSTRI_PALUDE, SOGLIE_PERICOLO } from "./dati";
 import { ILLUSTRAZIONI_PALUDE } from "./grafica";
-import { livelloPericolo, pericoloConFerite, èFerito } from "./pericolo";
+import { livelloPericolo, pericoloConFerite, potenzaConIncanto, èFerito } from "./pericolo";
 import { TESTI_PALUDE } from "./testi";
 
 export const ID_PALUDE = "palude";
-export { livelloPericolo, pericoloConFerite, èFerito } from "./pericolo";
+export { BONUS_POTENZA_INCANTO_NOTTE, livelloPericolo, pericoloConFerite, potenzaConIncanto, èFerito } from "./pericolo";
 export { SOGLIE_PERICOLO } from "./dati";
 
 // La scelta tra palude e cimitero parte direttamente dalla Porta Sant'Anna, dal livello in cui la porta si apre (dalla 0.13.0).
@@ -43,9 +44,9 @@ const interfaccia: InterfacciaModulo = {
   pannelli(stato, ctx): readonly PannelloVista[] {
     if (!portaAperta(stato, ctx)) return [];
     const statistiche = calcolaStatistiche(stato, ctx);
-    const potenza = calcolaPotenza(statistiche);
-    const ferito = èFerito(stato.personaggio.hp, statistiche.hpMax);
     const fase = faseDelGiorno(ctx);
+    const potenza = potenzaConIncanto(calcolaPotenza(statistiche), statoEquipaggiamento.leggi(stato).arma?.incantata === true, fase);
+    const ferito = èFerito(stato.personaggio.hp, statistiche.hpMax);
     const righe: RigaVista[] = ESPLORAZIONI.map((z) => {
       const livello = pericoloConFerite(livelloPericolo(potenza, SOGLIE_PERICOLO[z]?.[fase] ?? { basso: 0, medio: 0 }), stato.personaggio.hp, statistiche.hpMax);
       return { chiave: ferito ? "palude.pericoloFerito" : "palude.pericolo", parametri: { zonaChiave: `palude.zona.${z}`, livelloChiave: `palude.livello.${livello}` }, ...(livello === "basso" ? { tono: "positivo" as const } : livello === "alto" ? { tono: "negativo" as const } : {}) };
@@ -57,7 +58,7 @@ const interfaccia: InterfacciaModulo = {
 export const moduloPalude: DefinizioneModulo = {
   id: ID_PALUDE,
   versioneApi: VERSIONE_API,
-  dipende: [ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_LUOGHI],
+  dipende: [ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_EQUIPAGGIAMENTO, ID_FORESTA, ID_LUOGHI],
   contenuti: [...MOSTRI_PALUDE, ...LUOGHI_PALUDE, ...ILLUSTRAZIONI_PALUDE],
   testi: TESTI_PALUDE,
   interfaccia,

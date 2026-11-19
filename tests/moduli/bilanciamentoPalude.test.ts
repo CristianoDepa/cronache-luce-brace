@@ -44,7 +44,7 @@ function mortalita(st: StatoGioco, creaturaId: string, mistico = false): number 
         }
       }
       cur = r.stato;
-      if (r.eventi.some((e) => e.chiave === "combattimento.sconfitta")) {
+      if (r.eventi.some((e) => e.chiave.startsWith("combattimento.sconfitta"))) {
         morti++;
         break;
       }

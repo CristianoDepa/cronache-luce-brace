@@ -61,7 +61,7 @@ describe("inventario", () => {
     const st = conPozione(pg(), "curaLeggera");
     const vista = creaVistaPartita(st, ctx);
     const righe = vista.pannelli.filter((p) => p.contesti?.includes("info:inventario")).flatMap((p) => p.righe).map((r) => traduciEvento(registro, "it", r));
-    expect(righe[0]).toBe("[1] Pozione di cura leggera: +1d6 HP");
+    expect(righe[0]).toBe("[1] Pozione di cura leggera: +1d6 HP, più 1 per livello");
     expect(righe[1]).toBe("[2] (vuoto)");
     expect(vista.menuNascosto).not.toContain("pozioni.usa.1");
     expect(vista.menuNascosto).toContain("pozioni.usa.2");
@@ -116,10 +116,12 @@ describe("scorta dello Speziale", () => {
 });
 
 describe("acquisto dallo Speziale", () => {
-  it("le cure costano il doppio del Guaritore a pari HP medi (7 e 14 per livello), effetto 60, mana 30", () => {
-    for (const livello of [1, 4, 8]) {
-      expect(prezzoPozione("curaLeggera", livello)).toBe(7 * livello); // 1d6 = 3,5 HP medi x livello x 2
-      expect(prezzoPozione("curaRobusta", livello)).toBe(14 * livello); // 2d6 = 7 HP medi
+  it("le cure costano 1,55 x livello x cura media (arrotondato a 5 per eccesso), con tetto 250 e 450; effetto 60, mana 30", () => {
+    // cura media: leggera 3,5 + livello; robusta 4,5 + 2 x livello
+    const attesi: Record<number, [number, number]> = { 1: [10, 15], 4: [50, 80], 8: [145, 255], 11: [250, 450], 12: [250, 450] };
+    for (const [livello, [leggera, robusta]] of Object.entries(attesi)) {
+      expect(prezzoPozione("curaLeggera", Number(livello))).toBe(leggera);
+      expect(prezzoPozione("curaRobusta", Number(livello))).toBe(robusta);
     }
     for (const t of ["forza", "destrezza", "corazza"] as const) expect(prezzoPozione(t, 5)).toBe(60);
     expect(prezzoPozione("mana", 5)).toBe(30);
@@ -129,7 +131,7 @@ describe("acquisto dallo Speziale", () => {
     const s = giornoConScorta("curaLeggera", 2);
     const prima = scortaRimasta(s, "curaLeggera", ctx);
     const r = eseguiOk(s, { tipo: "compraPozione", dati: { tipo: "curaLeggera" } }, ctx);
-    expect(r.stato.personaggio.oro).toBe(s.personaggio.oro - 28); // livello 4: 7 x 4
+    expect(r.stato.personaggio.oro).toBe(s.personaggio.oro - 50); // livello 4: 1,55 x 4 x 7,5 = 46,5 -> 50
     expect(oggettoInSlot(r.stato, 0)).toBe("pozione.curaLeggera");
     expect(scortaRimasta(r.stato, "curaLeggera", ctx)).toBe(prima - 1);
     const r2 = eseguiOk(r.stato, { tipo: "compraPozione", dati: { tipo: "curaLeggera" } }, ctx);
@@ -170,13 +172,14 @@ describe("acquisto dallo Speziale", () => {
 });
 
 describe("uso delle pozioni", () => {
-  it("la cura recupera 1d6 (leggera) o 2d6 (robusta) HP, mai oltre il massimo; non si spreca da sani", () => {
+  it("la cura recupera 1d6+livello (leggera) o 1d8+2xlivello (robusta) HP, mai oltre il massimo; non si spreca da sani", () => {
     const base = conPozione(conPozione(pg(), "curaLeggera"), "curaRobusta");
     const ferito = { ...base, personaggio: { ...base.personaggio, hp: 5 } };
     const leggera = eseguiOk(ferito, { tipo: "usaOggetto", dati: { posizione: 1 } }, ctx);
     const guadagno = leggera.stato.personaggio.hp - 5;
-    expect(guadagno).toBeGreaterThanOrEqual(1);
-    expect(guadagno).toBeLessThanOrEqual(6);
+    const livello = ferito.personaggio.livello;
+    expect(guadagno).toBeGreaterThanOrEqual(1 + livello);
+    expect(guadagno).toBeLessThanOrEqual(6 + livello);
     expect(oggettoInSlot(leggera.stato, 0)).toBeNull(); // consumata
     const quasiSano = { ...base, personaggio: { ...base.personaggio, hp: calcolaStatistiche(base, ctx).hpMax - 1 } };
     expect(eseguiOk(quasiSano, { tipo: "usaOggetto", dati: { posizione: 2 } }, ctx).stato.personaggio.hp).toBe(calcolaStatistiche(base, ctx).hpMax);
@@ -186,12 +189,12 @@ describe("uso delle pozioni", () => {
     for (let seme = 1; seme <= 60; seme++) {
       const r = eseguiOk(ferito, { tipo: "usaOggetto", dati: { posizione: 2 } }, creaContestoDiProva(registro, seme));
       const g = r.stato.personaggio.hp - 5;
-      expect(g).toBeGreaterThanOrEqual(2);
-      expect(g).toBeLessThanOrEqual(12);
+      expect(g).toBeGreaterThanOrEqual(1 + 2 * livello);
+      expect(g).toBeLessThanOrEqual(8 + 2 * livello);
       somma2d6 += g;
     }
-    expect(somma2d6 / 60).toBeGreaterThan(6);
-    expect(somma2d6 / 60).toBeLessThan(8);
+    expect(somma2d6 / 60).toBeGreaterThan(4.5 + 2 * livello - 1.2);
+    expect(somma2d6 / 60).toBeLessThan(4.5 + 2 * livello + 1.2);
   });
 
   it("la pozione di mana dà 1d4 mana al Mistico (mai oltre il massimo) e non serve a chi non ha mana", () => {
@@ -396,9 +399,9 @@ describe("lo Speziale ricompra le pozioni sigillate al 30% del valore", () => {
   it("il riacquisto è il 30% del prezzo di acquisto al tuo livello (almeno 1 moneta) e non conviene mai comprare per rivendere", () => {
     expect(prezzoRiacquisto("mana", 4)).toBe(9); // 30 x 0,3
     expect(prezzoRiacquisto("forza", 4)).toBe(18); // 60 x 0,3
-    expect(prezzoRiacquisto("curaLeggera", 4)).toBe(8); // 28 x 0,3 = 8,4
-    expect(prezzoRiacquisto("curaRobusta", 4)).toBe(16); // 56 x 0,3 = 16,8
-    expect(prezzoRiacquisto("curaLeggera", 1)).toBe(2); // 7 x 0,3 = 2,1
+    expect(prezzoRiacquisto("curaLeggera", 4)).toBe(15); // 50 x 0,3
+    expect(prezzoRiacquisto("curaRobusta", 4)).toBe(24); // 80 x 0,3
+    expect(prezzoRiacquisto("curaLeggera", 1)).toBe(3); // 10 x 0,3
     for (const livello of [1, 2, 4, 7, 12]) for (const t of TIPI) {
       expect(prezzoRiacquisto(t, livello), `${t} ${livello}`).toBeGreaterThanOrEqual(1);
       expect(prezzoRiacquisto(t, livello), `${t} ${livello}`).toBeLessThan(prezzoPozione(t, livello));

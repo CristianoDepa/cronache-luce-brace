@@ -65,6 +65,8 @@ export function salitaDiLivello(stato: StatoGioco, ctx: Contesto): { readonly st
   const conMana = g.mana > 0 ? statoMana.scrivi(conHp, { attuale: statoMana.leggi(conHp).attuale + g.mana }) : conHp;
   const finale = statoLivelli.scrivi(conMana, { ...statoLivelli.leggi(conMana), tentativi: 0 }); // il nuovo livello riparte da zero tentativi
   const eventi: EventoGioco[] = [{ chiave: "livelli.salito", parametri: { livello: nuovo }, tono: "positivo" }, ...righeGuadagni(g).map((r) => ({ ...r, tono: "positivo" as const }))];
+  // Il terzo capogilda è battuto: le gilde ti ritengono degno dei migliori equipaggiamenti della città (si sblocca il fabbro).
+  if (nuovo === PARAMETRI_LIVELLI.livelloMax) eventi.push({ chiave: "livelli.degno", tono: "speciale", importante: true });
   return { stato: finale, eventi };
 }
 
@@ -179,6 +181,7 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.scheda.prossimo": "Esperienza: {esperienza}/{necessaria} per il livello {livello}.",
       "livelli.scheda.massimo": "Hai raggiunto il livello massimo per ora.",
       "livelli.salito": "Sali al livello {livello}!",
+      "livelli.degno": "Ora sei degno di accedere ai migliori equipaggiamenti della città.",
       "livelli.penalita": "Nella sconfitta perdi {punti} punti esperienza.",
       "livelli.scheda.prossimoGuadagno": "Al prossimo livello:",
       "livelli.scheda.alLivello": "Al livello {livello}:",
@@ -209,6 +212,7 @@ export const moduloLivelli: DefinizioneModulo = {
       "livelli.scheda.prossimo": "Experience: {esperienza}/{necessaria} for level {livello}.",
       "livelli.scheda.massimo": "You have reached the highest level for now.",
       "livelli.salito": "You reach level {livello}!",
+      "livelli.degno": "You are now worthy of the finest equipment in the city.",
       "livelli.penalita": "In defeat you lose {punti} experience points.",
       "livelli.scheda.prossimoGuadagno": "At the next level:",
       "livelli.scheda.alLivello": "At level {livello}:",

@@ -18,3 +18,10 @@ export function èFerito(hp: number, hpMax: number): boolean {
   return hp * 2 < hpMax;
 }
 
+// L'arma incantata (0.25.1) rende i colpi anche magici: di notte, quando escono gli spiriti (che resistono ai colpi normali e temono
+// la magia), cambia molto lo scontro. L'indicatore ne tiene conto con un aumento della potenza (valore provvisorio, da tarare).
+export const BONUS_POTENZA_INCANTO_NOTTE = 0.15;
+
+export function potenzaConIncanto(potenza: number, incantata: boolean, fase: "giorno" | "notte"): number {
+  return incantata && fase === "notte" ? potenza * (1 + BONUS_POTENZA_INCANTO_NOTTE) : potenza;
+}

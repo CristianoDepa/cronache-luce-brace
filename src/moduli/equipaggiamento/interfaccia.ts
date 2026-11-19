@@ -3,7 +3,7 @@ import { comeOggetto, elencaContenuti, leggiContenuto } from "../../core/indice"
 import { contestoClasse, statoClassi, tipoClasse } from "../classi/indice";
 import { CONTESTO_COMBATTIMENTO, statoCombattimento, tipoCreatura } from "../combattimento/indice";
 import type { SlotAcquisto } from "./acquisto";
-import { LINEA_DI_CLASSE, ammessoDallaClasse, calcolaOfferta, risolviLinea, riservaEquipaggiata, slotEquipaggiato } from "./acquisto";
+import { LINEA_DI_CLASSE, LINEA_FUCINA_ARMA, LINEA_FUCINA_ARMATURA, ammessoDallaClasse, calcolaOfferta, risolviLinea, riservaEquipaggiata, slotEquipaggiato } from "./acquisto";
 import { LINEE } from "./linee";
 import type { EffettiOggetto, Oggetto, TipoOggetto } from "./tipi";
 import { idOggetto, statoEquipaggiamento, tipoOggetto } from "./tipi";
@@ -12,6 +12,9 @@ export const CONTESTO_ARMERIA = "luogo:armeria";
 export const CONTESTO_SARTORIA = "luogo:sartoria";
 // L'arma di riserva si compra da una pagina dell'Armeria con lo stesso elenco di linee.
 export const CONTESTO_RISERVA = "luogo:armeria:riserva";
+export const CONTESTO_FABBRO = "luogo:fabbro";
+export const CONTESTO_BESTIARIO = "luogo:armeria:bestiario";
+const ID_VOCE_BESTIARIO = "equipaggiamento.bestiario";
 const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";
 
 // Tasti della Sartoria: lo stesso tasto è condiviso da due linee che nessuna classe vede insieme (la Maglia per Cavalieri e Ladri,
@@ -76,7 +79,7 @@ function vociArmi(contesto: string, slot: SlotAcquisto): VoceMenu[] {
 }
 
 function vociSartoria(): VoceMenu[] {
-  const armature = LINEE.filter((l) => l.tipo === "armatura");
+  const armature = LINEE.filter((l) => l.tipo === "armatura" && !l.fucina);
   return armature.map((l) => {
     const tasto = TASTI_SARTORIA[l.id] ?? "?";
     const condivisa = armature.filter((x) => TASTI_SARTORIA[x.id] === tasto).length > 1;
@@ -90,8 +93,13 @@ function vociMenu(): VoceMenu[] {
   return [
     ...armi,
     { id: "equipaggiamento.riserva", contesto: CONTESTO_ARMERIA, etichettaChiave: "equipaggiamento.menu.riserva", tasto: tastoRiserva, ordine: Number(tastoRiserva), comando: { tipo: "naviga", verso: CONTESTO_RISERVA } },
+    // Sotto la riserva: la guida «quali armi contro quali mostri» (compare solo se hai già incontrato mostri che reagiscono in modo diverso dal normale).
+    { id: ID_VOCE_BESTIARIO, contesto: CONTESTO_ARMERIA, etichettaChiave: "equipaggiamento.menu.bestiario", tasto: String(armi.length + 2), ordine: armi.length + 2, comando: { tipo: "naviga", verso: CONTESTO_BESTIARIO } },
     ...vociArmi(CONTESTO_RISERVA, "riserva"),
     ...vociSartoria(),
+    // Il Fabbro (0.25.0): l'arma e l'armatura d'acciaio di brace della propria classe.
+    voceCompra(CONTESTO_FABBRO, "1", LINEA_FUCINA_ARMA, "equipaggiamento.menu.armaBrace", "principale"),
+    voceCompra(CONTESTO_FABBRO, "2", LINEA_FUCINA_ARMATURA, "equipaggiamento.menu.armaturaBrace", "principale"),
     // Cambiare arma: gratis dalla scheda del personaggio, al costo del turno in combattimento (compare solo con una riserva).
     { id: "equipaggiamento.cambia.scheda", contesto: CONTESTO_INFO_PERSONAGGIO, etichettaChiave: "equipaggiamento.menu.cambia", tasto: "1", ordine: 1, comando: { tipo: "azione", azione: { tipo: "scambiaArma" } } },
     { id: "equipaggiamento.cambia.combattimento", contesto: CONTESTO_COMBATTIMENTO, etichettaChiave: "equipaggiamento.menu.cambiaCombattimento", tasto: "C", ordine: 5, comando: { tipo: "azione", azione: { tipo: "scambiaArma" } } },
@@ -99,11 +107,12 @@ function vociMenu(): VoceMenu[] {
 }
 
 // Voci da non mostrare ora: le armature non permesse alla classe e il cambio d'arma senza riserva.
-function vociNascoste(stato: StatoGioco): string[] {
+function vociNascoste(stato: StatoGioco, ctx: Contesto): string[] {
   const classe = statoClassi.leggi(stato).classeId;
-  const nascoste = LINEE.filter((l) => l.classi && (classe === null || !l.classi.includes(classe)) && l.tipo === "armatura").map((l) => `equipaggiamento.compra.${l.id}`);
+  const nascoste = LINEE.filter((l) => !l.fucina && l.classi && (classe === null || !l.classi.includes(classe)) && l.tipo === "armatura").map((l) => `equipaggiamento.compra.${l.id}`);
   const senzaRiserva = riservaEquipaggiata(stato) === null ? ["equipaggiamento.cambia.scheda", "equipaggiamento.cambia.combattimento"] : [];
-  return [...nascoste, ...senzaRiserva];
+  const senzaGuida = righeBestiario(stato, ctx).length === 0 ? [ID_VOCE_BESTIARIO] : [];
+  return [...nascoste, ...senzaRiserva, ...senzaGuida];
 }
 
 function rigaInUso(stato: StatoGioco, ctx: Contesto, tipo: TipoOggetto, slot: SlotAcquisto): RigaVista {
@@ -146,7 +155,7 @@ function rigaOfferta(stato: StatoGioco, ctx: Contesto, voce: VoceMenu): RigaVist
 
 // Pannello del negozio: oggetto in uso e, per ogni voce di menu visibile, l'offerta con il prezzo netto.
 function pannelloNegozio(stato: StatoGioco, ctx: Contesto, contesto: string, tipo: TipoOggetto, slot: SlotAcquisto): PannelloVista {
-  const nascoste = vociNascoste(stato);
+  const nascoste = vociNascoste(stato, ctx);
   const voci = (ctx.registro.menu.get(contesto) ?? []).filter((v) => !nascoste.includes(v.id));
   const offerte = voci.flatMap((v) => rigaOfferta(stato, ctx, v) ?? []);
   return {
@@ -156,9 +165,9 @@ function pannelloNegozio(stato: StatoGioco, ctx: Contesto, contesto: string, tip
   };
 }
 
-// Aiuto nella scelta dell'arma: per ogni tipo di danno, quali mostri GIÀ INCONTRATI lo temono e quali lo resistono (il bestiario si scopre
-// giocando). Compare solo per i tipi con almeno un mostro noto che reagisce in modo diverso dal normale.
-function righeAiuto(stato: StatoGioco, ctx: Contesto): RigaVista[] {
+// La guida alle armi (0.25.0): per ogni tipo di danno, le armi della tua classe e i mostri GIÀ INCONTRATI che lo temono o lo resistono (il bestiario
+// si scopre giocando). Compare solo per i tipi con almeno un mostro noto che reagisce in modo diverso dal normale; le righe vuote si omettono.
+function righeBestiario(stato: StatoGioco, ctx: Contesto): RigaVista[] {
   const incontrati = elencaContenuti(ctx.registro, tipoCreatura).filter((c) => !c.dati.nonLetale && (statoCombattimento.leggi(stato).statistiche[c.id]?.incontri ?? 0) > 0);
   const nome = (c: (typeof incontrati)[number]): string => c.dati.nomeBreveChiave ?? c.dati.nomeChiave;
   const classe = statoClassi.leggi(stato).classeId;
@@ -166,11 +175,25 @@ function righeAiuto(stato: StatoGioco, ctx: Contesto): RigaVista[] {
   for (const tipo of ["taglio", "contundente", "perforante"] as const) {
     const efficaci = incontrati.filter((c) => (c.dati.natura?.[tipo] ?? 1) > 1).map(nome);
     const resistenti = incontrati.filter((c) => (c.dati.natura?.[tipo] ?? 1) < 1).map(nome);
-    const armi = LINEE.filter((l) => l.tipo === "arma" && l.tipoDanno === tipo && (!l.classi || (classe !== null && l.classi.includes(classe)))).map((l) => l.nomeChiave);
+    const armi = LINEE.filter((l) => l.tipo === "arma" && !l.fucina && l.tipoDanno === tipo && (!l.classi || (classe !== null && l.classi.includes(classe)))).map((l) => l.nomeChiave);
     if (efficaci.length + resistenti.length === 0 || armi.length === 0) continue;
-    righe.push({ chiave: "equipaggiamento.aiuto.riga", parametri: { tipoChiave: `combattimento.tipo.${tipo}`, armiChiavi: armi.join(","), efficaceChiavi: efficaci.join(","), resistitoChiavi: resistenti.join(",") } });
+    righe.push({ chiave: `equipaggiamento.bestiario.tipo.${tipo}`, tono: "speciale" });
+    righe.push({ chiave: "equipaggiamento.bestiario.armi", parametri: { nomiChiavi: armi.join(",") } });
+    if (efficaci.length > 0) righe.push({ chiave: "equipaggiamento.bestiario.efficace", parametri: { nomiChiavi: efficaci.join(",") }, tono: "positivo" });
+    if (resistenti.length > 0) righe.push({ chiave: "equipaggiamento.bestiario.resistito", parametri: { nomiChiavi: resistenti.join(",") }, tono: "negativo" });
   }
   return righe;
+}
+
+// Pannello del Fabbro: arma e armatura che porti, e le due offerte d'acciaio di brace della tua classe.
+function pannelloFabbro(stato: StatoGioco, ctx: Contesto): PannelloVista {
+  const voci = ctx.registro.menu.get(CONTESTO_FABBRO) ?? [];
+  const offerte = voci.flatMap((v) => rigaOfferta(stato, ctx, v) ?? []);
+  return {
+    titoloChiave: "equipaggiamento.pannello.titolo",
+    contesti: [CONTESTO_FABBRO],
+    righe: [{ chiave: "equipaggiamento.fabbro.armaAttuale" }, rigaInUso(stato, ctx, "arma", "principale"), { chiave: "equipaggiamento.fabbro.armaturaAttuale" }, rigaInUso(stato, ctx, "armatura", "principale"), { chiave: "equipaggiamento.pannello.nota" }, ...offerte],
+  };
 }
 
 // Durante lo scontro: l'arma in mano (e la riserva, se c'è) con il tipo di danno.
@@ -196,27 +219,27 @@ export const interfacciaEquipaggiamento: InterfacciaModulo = {
     [CONTESTO_ARMERIA]: "equipaggiamento.luogo.armeria",
     [CONTESTO_SARTORIA]: "equipaggiamento.luogo.sartoria",
     [CONTESTO_RISERVA]: "equipaggiamento.luogo.riserva",
+    [CONTESTO_BESTIARIO]: "equipaggiamento.luogo.bestiario",
+    [CONTESTO_FABBRO]: "equipaggiamento.luogo.fabbro",
   },
-  illustrazioniContesto: { [CONTESTO_ARMERIA]: "scena.armeria", [CONTESTO_SARTORIA]: "scena.sartoria", [CONTESTO_RISERVA]: "scena.armeria" },
+  illustrazioniContesto: { [CONTESTO_ARMERIA]: "scena.armeria", [CONTESTO_SARTORIA]: "scena.sartoria", [CONTESTO_RISERVA]: "scena.armeria", [CONTESTO_BESTIARIO]: "scena.armeria", [CONTESTO_FABBRO]: "scena.fucina" },
   // Dalla pagina della riserva "Torna indietro" riporta all'Armeria.
-  contestiPadre: { [CONTESTO_RISERVA]: CONTESTO_ARMERIA },
+  contestiPadre: { [CONTESTO_RISERVA]: CONTESTO_ARMERIA, [CONTESTO_BESTIARIO]: CONTESTO_ARMERIA },
   menu: vociMenu(),
-  menuNascosto: (stato) => vociNascoste(stato),
+  menuNascosto: (stato, ctx) => vociNascoste(stato, ctx),
   pannelli(stato, ctx): readonly PannelloVista[] {
     // Nella pagina di ogni classe ([I] -> [3] Le classi): l'arma riservata alla classe, se c'è.
     const armiDiClasse = elencaContenuti(ctx.registro, tipoClasse).flatMap(({ id }): PannelloVista[] => {
-      const linea = LINEE.find((l) => l.tipo === "arma" && l.classi?.includes(id));
+      const linea = LINEE.find((l) => l.tipo === "arma" && !l.fucina && l.classi?.includes(id));
       return linea ? [{ contesti: [contestoClasse(id)], righe: [{ chiave: "equipaggiamento.classe.arma", parametri: { armaChiave: linea.nomeChiave } }] }] : [];
     });
     return [
       ...armiDiClasse,
       pannelloNegozio(stato, ctx, CONTESTO_ARMERIA, "arma", "principale"),
       pannelloNegozio(stato, ctx, CONTESTO_RISERVA, "arma", "riserva"),
-      ...[CONTESTO_ARMERIA, CONTESTO_RISERVA].flatMap((c): PannelloVista[] => {
-        const righe = righeAiuto(stato, ctx);
-        return righe.length > 0 ? [{ titoloChiave: "equipaggiamento.aiuto.titolo", contesti: [c], righe }] : [];
-      }),
+      { contesti: [CONTESTO_BESTIARIO], righe: [{ chiave: "equipaggiamento.bestiario.intro" }, ...righeBestiario(stato, ctx)] },
       pannelloNegozio(stato, ctx, CONTESTO_SARTORIA, "armatura", "principale"),
+      pannelloFabbro(stato, ctx),
       pannelloCombattimento(stato, ctx),
       { titoloChiave: "equipaggiamento.scheda.titolo", contesti: [CONTESTO_INFO_PERSONAGGIO], righe: righeScheda(stato, ctx) },
     ];

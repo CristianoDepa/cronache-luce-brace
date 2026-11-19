@@ -20,22 +20,35 @@ const compra = (linea: string) => ({ tipo: "compraOggetto", dati: { linea } });
 
 describe("catalogo di armi e armature", () => {
   it("ha 11 linee: 7 armi (3 di classe) e 4 armature; leggere a 10 livelli, medie a 7, pesanti a 5 (83 oggetti)", () => {
-    expect(LINEE).toHaveLength(11);
-    expect(LINEE.filter((l) => l.tipo === "arma")).toHaveLength(7);
-    expect(LINEE.filter((l) => l.tipo === "armatura")).toHaveLength(4);
-    expect(LINEE.filter((l) => l.classi?.length && l.tipo === "arma")).toHaveLength(3);
+    const normali = LINEE.filter((l) => !l.fucina); // le linee d'acciaio di brace (Fabbro, 0.25.0) hanno un test a parte
+    expect(normali).toHaveLength(11);
+    expect(normali.filter((l) => l.tipo === "arma")).toHaveLength(7);
+    expect(normali.filter((l) => l.tipo === "armatura")).toHaveLength(4);
+    expect(normali.filter((l) => l.classi?.length && l.tipo === "arma")).toHaveLength(3);
     const massimi = { leggera: 10, media: 7, pesante: 5 } as const;
-    for (const l of LINEE) {
+    for (const l of normali) {
       expect(livelloMassimo(l), l.id).toBe(massimi[l.peso]);
       expect(leggiContenuto(registro, tipoOggetto, idOggetto(l.id, massimi[l.peso])), l.id).toBeDefined();
       expect(leggiContenuto(registro, tipoOggetto, idOggetto(l.id, massimi[l.peso] + 1)), l.id).toBeUndefined();
     }
-    expect(LINEE.reduce((somma, l) => somma + livelloMassimo(l), 0)).toBe(83);
+    expect(normali.reduce((somma, l) => somma + livelloMassimo(l), 0)).toBe(83);
   });
 
   it("ogni linea arriva alla stessa potenza massima (circa 20 punti)", () => {
-    for (const l of LINEE) expect(calcolaPunti(l, livelloMassimo(l)), l.id).toBeGreaterThanOrEqual(20);
-    for (const l of LINEE) expect(calcolaPunti(l, livelloMassimo(l)), l.id).toBeLessThanOrEqual(21);
+    for (const l of LINEE.filter((x) => !x.fucina)) expect(calcolaPunti(l, livelloMassimo(l)), l.id).toBeGreaterThanOrEqual(20);
+    for (const l of LINEE.filter((x) => !x.fucina)) expect(calcolaPunti(l, livelloMassimo(l)), l.id).toBeLessThanOrEqual(21);
+  });
+
+  it("l'acciaio di brace (Fabbro): sei linee di classe, un solo gradino da 26 punti a prezzo fisso 5.500, oltre il tetto dell'equipaggiamento normale", () => {
+    const brace = LINEE.filter((l) => l.fucina);
+    expect(brace.map((l) => l.id).sort()).toEqual(["bastone-brace", "cuoio-brace", "piastre-brace", "pugnale-brace", "spadone-brace", "veste-brace"]);
+    for (const l of brace) {
+      expect(livelloMassimo(l), l.id).toBe(1);
+      expect(calcolaPunti(l, 1), l.id).toBeCloseTo(26, 5);
+      expect(calcolaPrezzo(l, 1), l.id).toBe(5500);
+      expect(l.classi?.length, l.id).toBe(1);
+      expect(leggiContenuto(registro, tipoOggetto, idOggetto(l.id, 1)), l.id).toBeDefined();
+    }
   });
 
   it("il prezzo segue i punti: a pari potenza, pari prezzo (leggere 50, 128, 3436; pesanti 80, 524, 3436)", () => {

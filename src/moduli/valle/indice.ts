@@ -5,8 +5,9 @@ import { ID_AZIONI } from "../azioni/indice";
 import { ID_CITTA, leggiSito } from "../citta/indice";
 import { ID_COMBATTIMENTO, puntoFineScontro } from "../combattimento/indice";
 import { ID_FORESTA, avvisoFerito } from "../foresta/indice";
+import { ID_EQUIPAGGIAMENTO, statoEquipaggiamento } from "../equipaggiamento/indice";
 import { ID_LUOGHI, calcolaPotenza, faseDelGiorno } from "../luoghi/indice";
-import { ID_PALUDE, livelloPericolo, pericoloConFerite, èFerito } from "../palude/indice";
+import { ID_PALUDE, livelloPericolo, pericoloConFerite, potenzaConIncanto, èFerito } from "../palude/indice";
 import { LUOGHI_VALLE, MOSTRI_VALLE, SOGLIE_PERICOLO_VALLE } from "./dati";
 import { ILLUSTRAZIONI_VALLE } from "./grafica";
 import { TESTI_VALLE } from "./testi";
@@ -31,8 +32,8 @@ const interfaccia: InterfacciaModulo = {
   pannelli(stato, ctx): readonly PannelloVista[] {
     if (!portaAperta(stato, ctx)) return [];
     const statistiche = calcolaStatistiche(stato, ctx);
-    const potenza = calcolaPotenza(statistiche);
     const fase = faseDelGiorno(ctx);
+    const potenza = potenzaConIncanto(calcolaPotenza(statistiche), statoEquipaggiamento.leggi(stato).arma?.incantata === true, fase);
     const ferito = èFerito(stato.personaggio.hp, statistiche.hpMax);
     const livello = pericoloConFerite(livelloPericolo(potenza, SOGLIE_PERICOLO_VALLE[fase]), stato.personaggio.hp, statistiche.hpMax);
     const riga: RigaVista = { chiave: ferito ? "valle.pericoloFerito" : "valle.pericolo", parametri: { zonaChiave: "valle.zona.valle", livelloChiave: `palude.livello.${livello}` }, ...(livello === "basso" ? { tono: "positivo" as const } : livello === "alto" ? { tono: "negativo" as const } : {}) };
@@ -54,7 +55,7 @@ export const regolaBossValle = regola(puntoFineScontro, 70, (calcolo, ctx) => {
 export const moduloValle: DefinizioneModulo = {
   id: ID_VALLE,
   versioneApi: VERSIONE_API,
-  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_FORESTA, ID_LUOGHI, ID_PALUDE],
+  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_COMBATTIMENTO, ID_EQUIPAGGIAMENTO, ID_FORESTA, ID_LUOGHI, ID_PALUDE],
   contenuti: [...MOSTRI_VALLE, ...LUOGHI_VALLE, ...ILLUSTRAZIONI_VALLE],
   regole: [regolaBossValle],
   testi: TESTI_VALLE,

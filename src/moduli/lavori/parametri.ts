@@ -9,7 +9,7 @@ export const PARAMETRI_LAVORI = {
   azioniSorveglianza: 3,
   azioniCarico: 1,
   // Paga = livello x tariffa x azioni del lavoro (per consegna e scorta: carico + azioni del viaggio previsto, almeno 1).
-  tariffe: { sorveglianza: 4, consegna: 6, scorta: 6 },
+  tariffe: { sorveglianza: 8, consegna: 12, scorta: 12 },
   // Esperienza (minima, per non scavalcare la progressione): punti per azione del lavoro.
   esperienzaPerAzione: 1,
   // Probabilità di imboscata all'arrivo a destinazione.

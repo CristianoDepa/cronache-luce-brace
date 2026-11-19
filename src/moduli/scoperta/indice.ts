@@ -12,7 +12,7 @@ const CONTESTO_SCOPERTA = "scoperta";
 // Lo sfondo della schermata è quello degli incontri della zona dove è avvenuta la scoperta.
 const SCENE_DELLA_ZONA: Readonly<Record<string, string>> = { foresta: "scena.foresta", palude: "scena.palude", cimitero: "scena.cimitero", valle: "scena.valle" };
 // Lo sprite per ogni tipo di scoperta (un forziere fallito resta chiuso).
-const SPRITE: Readonly<Record<TipoScoperta, string>> = { lapide: "sprite.lapide", forziere: "sprite.forziere", "apertura-riuscita": "sprite.forziere_aperto", "apertura-fallita": "sprite.forziere" };
+const SPRITE: Readonly<Record<TipoScoperta, string>> = { lapide: "sprite.lapide", forziere: "sprite.forziere", "apertura-riuscita": "sprite.forziere_aperto", "apertura-fallita": "sprite.forziere", cripta: "sprite.scalinata" };
 
 const interfaccia: InterfacciaModulo = {
   titoliContesto: { [CONTESTO_SCOPERTA]: "scoperta.titolo" },
@@ -22,7 +22,9 @@ const interfaccia: InterfacciaModulo = {
   illustrazioni(stato, ctx): Readonly<Record<string, Raster>> {
     const { tipo, zona } = statoScoperta.leggi(stato);
     if (tipo === null || zona === null) return {};
-    const idScena = SCENE_DELLA_ZONA[zona];
+    // Per la scalinata della cripta lo sfondo è quello con la nebbia (la luna velata); la valle e la foresta restano come sono.
+    const base = SCENE_DELLA_ZONA[zona];
+    const idScena = tipo === "cripta" && (zona === "cimitero" || zona === "palude") ? `${base}.nebbia` : base;
     const scena = idScena === undefined ? undefined : leggiContenuto(ctx.registro, tipoIllustrazione, idScena);
     const sprite = leggiContenuto(ctx.registro, tipoIllustrazione, SPRITE[tipo]);
     if (!scena || !sprite) return {};
@@ -52,12 +54,14 @@ export const moduloScoperta: DefinizioneModulo = {
       "scoperta.menu.continua": "Continua",
       "scoperta.testo.lapide": "Tra le ombre ritrovi la tua lapide.",
       "scoperta.testo.forziere": "Un forziere chiuso, dimenticato da qualcuno. Lo aprirai dalla porta della zona.",
+      "scoperta.testo.cripta": "Nella nebbia si apre, per un attimo, una scalinata che scende nel buio. Dalla porta di Sant'Anna potrai tornarci, ma solo finché dura il giorno.",
     },
     en: {
       "scoperta.titolo": "A discovery",
       "scoperta.menu.continua": "Continue",
       "scoperta.testo.lapide": "Among the shadows you find your gravestone again.",
       "scoperta.testo.forziere": "A locked chest, forgotten by someone. You will open it from the zone's gate.",
+      "scoperta.testo.cripta": "In the fog a stairway opens, for a moment, leading down into the dark. You can come back to it from Sant'Anna Gate, but only while the day lasts.",
     },
   },
 };

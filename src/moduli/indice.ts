@@ -37,6 +37,7 @@ import { moduloCronache } from "./cronache/indice";
 import { moduloTorneo } from "./torneo/indice";
 import { moduloStati } from "./stati/indice";
 import { moduloEventi } from "./eventi/indice";
+import { moduloCripta } from "./cripta/indice";
 
 // Elenco dei moduli attivi: aggiungere un modulo significa aggiungere una riga.
 export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
@@ -77,5 +78,6 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloPalude,
   moduloEventi,
   moduloStati,
+  moduloCripta,
   moduloSviluppo,
 ];

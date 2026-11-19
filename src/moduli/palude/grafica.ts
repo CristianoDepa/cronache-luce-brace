@@ -148,6 +148,148 @@ zzAAABAyzzyzzzttutuzzzyzzzzzzzttttuzzxxwxxxwxxxyxxxwxxxwxxxwABzzzzzzzzzzzzttutuz
     cicli: [{ indici: [2, 38], ritardoMs: 900 }, { indici: [4, 39], ritardoMs: 1300 }, { indici: [7, 40], ritardoMs: 700 }, { indici: [27, 26], ritardoMs: 1100 }],
     ancora: { x: 50, y: 58 },
   }),
+  voceIllustrazione("scena.palude.nebbia", `
+011111111111111011111111111111111111111111111112111111111111121111111111113131313131111111111111
+111111111111111111111111111111111111111111111111111111211111111111111111131313131313111111111211
+414141414141414141414141414141414141414141414141414142224141414141414131313131513131313141412221
+111411141114111411141114111411161114111411141114111411241114111411141113111515151513111311141214
+444144414441444144414441444144414441444144414441444144414441444144413431555155515551543134414441
+141414141414141414141414141414141414141414141414141404141414141416141315151515751515151314141414
+444444444444444444444444444444444444444444444444444444444444464444443454545787877754545434444444
+144414441444144414441444144414441444144414441444164410441444144414431445157777777775194314441444
+a444a464a444a444a444a444a444a444a444a444a444a4446664a444a444a444a434b554c787d787ef77c554b434a444
+44444444444444444444444444444444444444444444444446444444444444444443454577777777fff7754543444444
+a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4b4b4c4d7d7d7d7efe7e4c4b4b4a2a4
+424a4a4a4a4a4a4a4a464a4a4a4a4a4a4a4a4a4a4a6a4a4a4a4a4a0a4a4a4a4a4a4b4c4c7e7e7e7e7e7e7c4c4a4a4a4a
+aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa4aaa46ab4cccgded7ded7eee7eec4cab4aaa4
+4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4b0c4c7e7h7e7e7e7e7c4c4b4a4a4a
+6aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaababacadehhhedeheeeeacababaaa6a
+66aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaba9aceeeheeehhheeecacaaaaa666
+6aiaiaiaiaiaiaiaiaia0aiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiababccacedededeheeecccababaia62
+aiaaaiaaaiaaaiaaaia000aaaiaaaiaaaiaaaiaa2iaaaiaaaiaaaiaaaiaaaiaaaiababacaceeeeeeeeecacababaaaiaa
+iaiaiaiaiaiaiaiaiaia0aiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiabacacacededeeecacacabaiaiaia
+aiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiaiai2iaiaiaiaiaiaiaiaiacacacacecacacacabaiaiaiai
+iiiiiiiiiiiiiiiii6iiiii0iiiiiiiiiiiiiiiiiii0iiiiiiiiiiiiiiiiiiiiiiiibibicccicccicccicibibiiiiiii
+iiaiiiaiiiaiiiaiiiaiii000iaii0aiiiaiiiaiiiaiiiaiiiaiiiaiiiaiiiaiiiaiibabibacicacicabibabiiaiiiai
+iiiiiiiiiiiiiiiiiiii0ii0iiii000iiiiiiiiiiiiiiiiiiiiii0iiiiiiiiiiiiiiiibibibibicibibibibiiiiiiiii
+iiiiiiiiiiiiiiiiiiiiiiiiiiiii0iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiibiiibiiibiiiiiiiiiii0
+jijijijij0jijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijikikikikiki2ijijijijiji
+ijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijij
+jijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijiji
+ijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijijij
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+ljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljljlj
+jljljljljljljljljljljljljljljlmmmmjljljljljljmjljljljljljljljljljljljljljljljljlmmmmmljljljljljl
+ljllljllljllnjllljllljllljllmmmmmmmmljllljmmmmmnljllljllljlnlnllljllnjllljllljlnmmmnnmmlljlllmmm
+nljljljljljljljljljnjljljljmmmmmmmmmmmmmmmmmmmoooljljljljljljljnjljlnnjljljljnmmmmmmmmmnoojmmmnn
+lnllllllllnllllllllllllllllmmmmmmmmmmmmmmmmmmmopomllllnlllllllllllllllllnllllmnmmmmmmmmopommmmmm
+lqlnllloonlllqnnlllllllllnmmmmmmmmnmmqmmmmmmmmoooqmllllllllnlqlllllllllllqrlmmmmmmmmmnnooommmmmm
+mqslllsoposllqsnllsllnsllqmmmnmmmmmmmqmmmmmmmmnmnqmmllslllsllqslnlslllsllqtlmmmmmnnnmqtmmmmmmmmm
+mqllllrooolllnnlllnqlnllmqmmmmmqmmmmmqmmmmmnmmmmmnnmmllnlllllooonllqlnlnlqtmmmmqmmmmnqtmmmmqmmmm
+qqqlsltqslmmqqqmultqnlsnqqqmmmmqnmmmqqqmmmmqmmmmnqnmmmsqslslnopoummnslslqvtmmmmummnmqvtnmmnqnmmn
+qqqmustqqmmuqqqummtnqmmmqooommqqqmmmqqqmmmqqqnmmqqqmmnqqqnumqooommqqqmnmqvqmmmqrqmmmnvqmmmqnqnmm
+unnqmvtqqmmqqqqqnvtnqnmqqopommqnqumqqquqmmquqmmqqqqqmmqqqmmqqqqnmmqqqmmuqvqqmmqtqmmqqvqqmuqqqmmm
+wwwwwvwnwwrwwwwwwvwnwwwuwooonwwwwnwwwwwwwuwnwwwwnwwwnwwwwwwuwwwwnwwwwwwwwvwwwwwtnwwnwvwwnwrwwwww
+uwwwxvnwnutwnwwwxvuwxwwwuwuwxwwyyyuuywwwxnwwxuuwxnwwxwwwxwwwnwnwxwwnuwnwxvwwxwwtvnwwxvwwxwtwxuww
+wwwwuvwwwwnwwwwnwnwwwwruwwwwwuwnyyuyywwwwwwwwwwwnwnnnuuwwwwwnnwwuunwwwwwwvwwwwwnvwwnuuuuwwtnnuwu
+xwnnxvuuzvuwuuxwxvxwABtuuuxzBnxuxuCnxwxwxwxuxnxnxuunxwxwuwnwxwnwxuDExwxwxuvwxwuuvuunxvvwxutwxwxw
+wwuxuvwnwvAuwnzBwvuABwtnwuwxuDExuCCBwzBxuwwxwnzBwwwzunwuuwwxwwwxnwuEuwwxwwvxwnwxvwwxuwvxwvwxwwwx
+xwxnnvvwxvxuxwxwxvvwnntwxwuwuDuwxCCwuwxwuuxwnBxwxwxwunxwABnwnwxnuDDEDwnwxuvwxwuzuwxwxwvuuvuwuwnw
+wuwxABvxwvuxwxwxwnvuwvzBwnunDDEuuCnxwuFABBBxwxwnwnwxwxwxwuwxwxwnwxDEnxwxwzvxuuwvwxwxuuvxwvDnwxwn
+xwuxxwnnxvvxnnxxxwvxxvxxxwnnnuEnzCuxxnFFxwuzBwxxxnxxuwxxxwxxxwxxnwDExuxxxwvnxABvGwuxnwvxnvDExwxx
+nBwxwxvxnxvxzBABuxvxuvwxuABxwDExnxwxnFnFHxwxnnwxwxwxnxwxwxnuwxFxnxDEwxnzBGvunGGvGGGGnGvGDDnEDxAB
+xxxxxxvxxnvxnxGxxxvBxnvxnxxxxnEnxxxzFFHFHxxxxxxnnxxxxnxxxxxxxFnFBznEBxIGGnvGGGGvGGnGnGvGnnDEnxxx
+xxxxxxvGGGvGGGGGnGvGGGnnxxzBxDnxnxxnFFnFHxxxxxxxABxxxxxxxxxxFFFFHBDExIGGGGGGGGGvGGGGGGvGGGDExxxx
+xxwIGnnnGGvnnGGGGGvGGnvnGIwxxDExzBnnFFHFHxwxxxwnxxwnxxwnxxnxFFHFHxwxIIIGGGGGGGGGnGGGGGGGGGDEIxnx
+nxInnnGGnGvnGGnGGGnGGGvGGGIBxDEBxxxxHHHHnxxxxxxxxnxxxxxnxxxAFFHnnxxxxnIIIGGGGGGnGGGGGGGnnIDExxxx
+wIInuGGGGnGGGGGGGGGGGGvGGIIIwnwxnxwxABwxuxwxwxnzBuwnuxnnwnwxHnHHHxwnnxnIIIIIIIIIGInInIIIIuIxwnnx
+xwIIuIGGGGGGGGGGGGGnGGuIIIIxunxxxwnxxzBznwxxxwABxwnxxuxxxwxxuwxxxwxxzBuxxIInIIIIIInIIIIIunnxxwxx
+wuwnnIuInIuInIuIIIuInIIIInwxwxwxABwxnxwxwxwxnxuxnuwxwxuxnnwxwxnBwxwxwxwxwxwxwxnxInnxwxwnAnwxwxwA
+xwuwxwnIIuIIIunIuIIuIIIwnwABnBxwxwxnuAnnxwxwxABnxwxwxnxuBBnuxzBwxwxwnwxwxuxwxnxwxwuBBwxwxwxwnwnw
+nwwnnwnwnwnuwwInwwnwnwnwzBBwwwwuwwwwwwuwuwwwwuwwwwwwnwnwwwuwwnuwABnwuwwnuwwwwwwwwwunwnwwAnuwwwww
+wuxnnwxwnwuwwnAnnnuwuwnwwzBwwwABwwxwwnxwwABwwwxwwwzBuwxwwnxwnwuBwuxwwwnwwwxnwwnwwwABABxwwnxwnnxw
+wunwwwnwwwABwwwwwwwwwnwwwnwnwnwwwwwwwuwwwnwwwwwwwwwwwnwwwwwwzBnwwwwwwwwwwwnwwwnwwwwwwwwwnwwwwuww
+wwwnwnwwwnzBwwnwnwwnnwnwwwwwwnwwnABwwwwwwzABwwwnwnwwwwwwwwwwwwwwwwnwnwnwwwwwwwnwwnwwwnwwwnwwwwww
+`, {
+    palette: ["#ffffff", "#0a0a30", "#d0d0ff", "#2e2ea0", "#0d0d42", "#4a4ac8", "#ffe9a0", "#f6f2c4", "#d8d49a", "#4a4ac8", "#12125a", "#2e2ea0", "#4a4ac8", "#d8d49a", "#f6f2c4", "#c9c490", "#f6f2c4", "#c9c490", "#191970", "#222288", "#2e2ea0", "#2e2ea0", "#1b2a6b", "#9aa0ae", "#6a6a2a", "#fff27a", "#0c3a33", "#a8723a", "#3c3cb4", "#7a4a22", "#14304f", "#2f9a47", "#1a2a78", "#4a7ab8", "#3d2812", "#b4d6f4", "#4a7ab8", "#8ab0e0", "#5a3a1c", "#9a6a3a", "#3d2812", "#8f959e", "#7a5230", "#3a3d46", "#5a3a1c", "#6a6ad0", "#6a6a9a", "#4a4a9a"],
+    paletteGiorno: ["#74b0ee", "#3a7bd5", "#5e9ee8", "#4a8be0", "#4a8be0", "#4a8be0", "#8cc2f2", "#4a8be0", "#4a8be0", "#a6d2f6", "#5e9ee8", "#5e9ee8", "#5e9ee8", "#5e9ee8", "#5e9ee8", "#4a8be0", "#a6d2f6", "#5e9ee8", "#74b0ee", "#8cc2f2", "#a6d2f6", "#a6d2f6", "#6f86c8", "#9aa0ae", "#2a8f45", "#2a8f45", "#2a6a50", "#a8723a", "#c4e2fa", "#7a4a22", "#4a7a9a", "#4fc060", "#1a2a78", "#4a7ab8", "#3d2812", "#b4d6f4", "#4a7ab8", "#8ab0e0", "#5a3a1c", "#9a6a3a", "#3d2812", "#a4aab4", "#7a5230", "#4a4d58", "#5a3a1c", "#74b0ee", "#8cc2f2", "#5e9ee8"],
+    cicli: [{ indici: [0, 45], ritardoMs: 900 }, { indici: [6, 46], ritardoMs: 1300 }, { indici: [2, 47], ritardoMs: 700 }, { indici: [25, 24], ritardoMs: 1100 }, { indici: [35, 36], ritardoMs: 800 }],
+    ancora: { x: 50, y: 58 },
+  }),
+  voceIllustrazione("scena.cimitero.nebbia", `
+000000000000101010101010100000000000000222000000000000000000000000000000000000000000000000000000
+000000000001010301010101010000000000000020000000000000000000004000000000000000000000000000000000
+505050505010106760808080101450505050505050505050505050505050544450505050505050505750505050505050
+000500050001080608080808000100050005000500050005000500050005004500050005020500050005000500050005
+555055501510888088908880881015505550555055505550555055505550555055505550555055505550555055505550
+050505010108080aaaaaaa08080101050505050505050505050505050505050505070505050505040505050505050505
+555555151585859a9a9aaaa5858515155555555555554555555555555555555555555555555555555555525555555555
+05550551085b0bababababab0b5805550555055505550555055505550555055505550555055505550555222505550555
+c555c515388bbbbbbbbbbbbbbb853515c555c555c555c555c555c555c555c555c555c555c555c555c555c255c555c555
+555555515858aaaaaaaaadaaa85851555575555555555555555555555555555555555555555555555555755555555755
+c5c5c5353565babbbabbbabbb5bbb5b5c777c5c545c5c5c5c5c5c5c5c5c5c5c575c5c5c5c5c5c5c5c5c2c5c5c5c2c5c5
+5c5c5c53565eababababababab5b5b535c7c5c5c5c5c5c5c5c5c5c5c5c5c575c5c5c5c5c5c5c5c5c5c4c5c5c5c5c5c5c
+ccc5cc353665fefdfefaeeeae6653c35ccc5ccc5ccc5ccc5ccc5ccc5ccc57775ccc5ccc5ccc5ccc5ccc7ccc5ccc5ccc5
+5c5c5c53565babdbdbabdbabab56535c5c5c5c5c5c5c5c5c5c5c5c4c5c5c575c4c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c
+cccccc3c3c6bbebbbebbbgbbbcbc3c3cccccccccccccccccccccccccccccc7ccccccccccccccccccc7cccccccccccccc
+ccccccc3c6c6ceeeeeeegeeec6c6cccccccccccccccccccccccccccccccccccccc4ccccccccccccccccc7ccccccccccc
+hchchc3c3c6c66fbbbbbbbbbbbbb3c3chchchchchchchchchchchchchchchchchchchchchchchchchch777hchchchchc
+chccchc3c3c6c6cbebebebcbcbcbc3ccchccchcc4hccchccchccchccchccchccchccchicchccchccchcc7hccchccchcc
+hchchchc3c3c6c6c6cec6c6c623c3chchchchchchchch4hchchchchchchchchchchchcichchchchchchchchcichchchc
+chchchchchc3c6c6c6c6c6c62223chchchchchchchchchchchchchchchchchchchchchcichchchchchchchchihchchch
+hhhhhhhhhh3h3h6h666h6664323hhhhhhhhhhhhhhhhhhh2hhhhhhhhhhhhhh4hhhhhhhhhhihhhhhhhhhhhhhhihhhhhhhh
+hhch4hchhhc3h3c3h3c3h34j43chhhchhhchhhchhhchhhchhhchhhchhhchhhchhhchhhchihchhhchhhchhhcihhchhhih
+hhh444hhhhhh3h3h3h3h3h343hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiihhhhhh7hhhhhhihhhhhhih
+hhhh4hhhhhhhhhh3hhh3hhh3hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhihhh7h777hhhhihhhhhhihh
+khkhkhkhkhkhkhkhkhjhkhkhkhkhkhkhkhkhkhkhkhkhkhkh4hkhkhkhkhkhkhkhkhkhkhkhkhihkhkh7hkhkikhkhkhkikh
+hkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhihkhkhkhkhihkhkhkikhk
+khkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhihkhkhkhkikhkhkhiikh
+hkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhkhihkhkhkikhkhkhiiihk
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkikkkkkikkkkkiiikkk
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkikkkkkkkkkkiikkkk
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkikiiilkkkiiikkkk
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkmmmmmkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiilkiiiimmkkk
+nknknknknknknknknknknknknknknmmmmmmmmmnknknknknknknknknknknknknknknknknknknknknknkiiiliiiimmmmnk
+knknknknknknknknknknknknknknmmmmmmmmmmmnknknknknknknknknknknknknknknknknkniiknknkniiiiiimmmmmmmn
+nknnnknnnknnoknnnknnnknnnknmmmmmmmmmmmmmnknnnknonknnnknnnknononnnknnoknnnkiiiknnnkiooiimmmmmmmmm
+onknknknknknknknknkoknknknmmmmmmmmmmmmmmmnknknknknknknknknknknkoknknooknknkiioinkniiiiiommmmmmoo
+nonnnnnnnpppnnnpppnnnnnnmmmmmmmmmmmmmmmmmmmnnnnmmmmmmnonnnnnnnnnnnnnnnnnommniioinmiiiimmmmmmmmmm
+nnnonnnnnoppnmooppmmmmmmmommmmmmmmommmmmmmmmmmmmmmmmmmnnnnnonnnnnnnnnnmmmmmmmmiimmiiioommmmmmmmm
+nnqnnnrnnpppmmmoppmmmomqmmmmmoqmmmmmmqmmmmmmqmomommqmmmmnnqnnnrnoqrnmmmmqmmmmmiqioooilqmmmmmmqmm
+nnqnnnnnnppssoopppommmmqmmmmmmqmmmmmmqmmmmmoqmmmmooqmmmomnqnnnnnoqnmmomoqmmmmmmqiiiiolqmmmmmmqmm
+mnqnrnrnrppstsmpppmmommommmmmmqmommmmqmmmmmmqmmmomoqmmmmmsssonrnrqmommmmqmmmmmmqmioiilqommomoqmo
+mmqrnrnrmppsssmpppmommmqmmmmmmqmmmmmmqmmmmmmqommmmmqmommmotsnrnrnqmmmmomqmmmmmmqmmiiolqmmmmomomm
+moommmmmmpppmmmpopmomomqmmmmmmqommmmmqmmmmmmqmmmmmmqmmmmmsssmmmomqmmmmmmqmmmmmmqmmiiilqmmmmmmqmm
+mmummmuompppmmmpupmommmqummmomqmmossmqummmmoqmmmommqommmmmummmmmoqmmmmmmummsssmqoiioilqmommmmqmm
+vvquuuovopppovvpppvvvvvqvuuvvvqvvstsvqvvvovvqvuvvovqvvvvvvqvouvvvquovvovqvustsvuvovvvvqvvvvvvqvv
+wuwwwwwwwwowwwwwwowwuwwwwwwwwwuowssswwwwwuuwuwwwowuoowwwwwwwoowwwwowwwwwwwwssswowwwowuwuwwwowwwu
+xuooxxxxuxxxxuxxxxxxxxxxxxxxxxuxxxxoyxyxyxyxyoyoyzyoyxuxyxoxyxouxxxxxuxxxxxxxxuxxxxoxuxxxxxxxxux
+xxxxxxxoxxxxxoxxxxxxxxxouxxxxxxxxxxxxxxyxxxyxozyzzzyzoxyxxxyxxuxoxxxxxxxxxxxxoxxxxxxxxxxxxxxxxxx
+AxBooxxxAxBxxxBxAACDxoBxxxBxxxBxAAxxyxyxyxyxozyzyzyzyoyxyxoxoxyoAxxxAAoxAxBxAxxxAxBxAxBxAxxxAxxx
+xxxxxBxxxBxxxBxxxoCDABxxAoxoABxxxxoxxyxxxxxAxyxozozzzxxxxyxxxyxoxBAxoBAxxBxxxAxxxxxxxBxxxBxoxAxx
+xAxxuxoovxAxooAACCCDCxAuBxoooxAoBAAxyoyAyxyxCDxzyoyzyxxxyxyxuxyxoxAxvxAxBxAoBxAxAAAxoxAxoxuxBxxu
+oBABxuxvovxxxAxxxxCDxBxBxBxBxBxBoBxxoBoyxBxyoozxzxuyozAAxxoyxBxBoBxvvvoBxBxBoBxBxBuBoBxBxBouxBxB
+ABBBABvvvowAoBAAAxCDAoBBoBBBvoBoABAxxxyByBCCCDCoozyzyoyzyAuByBoBABovvvuBuoBBABBBABoBABBBooBBABBB
+BBxBBBvvwvwBBBuuuuuDuBooBxxuvvxBoBxoBuoBByxzCDzzuyxzzyzzByxBByxBBBvvwvwBuBxBBBxBxBxBBBxxBBxBBBxB
+BBAuBooowvwooBABABCDBoAoBxvvvvwBBBooyuyByByzCDyoyuuoyzuoyBoBuByBBBvvwvwBBBAuBBABxBuBBxuABBABxBoB
+ouBooBvvovwoBBoBBuouBuxuBBuvwvwBBBBBBBByozuuCDuyzozyzzzoxzBuBBBoouvuuowxBBBBBuBoBBABuuBooBBBABBB
+ABBoABvvvowxABBBABCDAuABABvvwowBoBBByuyByuyzCDouyzyzyzoouzyByoyuAuvoovoAuxBBAuBBxuoBoBuBABBBAooB
+xBuBBBwwwuuuBBBBBBBBBuBBBBvvwowuBBBBByBuoyzuCDzzuyouzyzzzyzuCDBBBBuwwwuuBABoBxBBABouBuBBBooBBuBu
+ABAooBABoBxBoBxBvBABoBABuovvvvwBBBABoByByzyzoDyzozyxyzyzooyxCDoBBBuBBBAuBBABuAoBBooBBBAoBoABBBAB
+BBBABBoxBuABBBovuvBxBBBBoBwwowwBBBBBBBoozzzyzzzozzzAzozyzzoCCDCBBBBBoBBxBBBxBoBBBBBBBBBBBBxBoBoB
+oBBooBoxoBoBABvovvoxoBBBAxxBABBBABBByByzyzyzyzyzxzyzozozyxyzCoyBABoBABBoABBAvBBBABBoAoBBAoABABBB
+BBBoCDxBoBBBBBvooowBBBoBBABBxBBxvBBBBozzzyzzzyzzxyzzzyzzzozxoDBBBBBBBBoBBBBovvoBBBBBBBBBBoBBooBB
+BBoBCDoxBBxBBBvvwvwBBoxBBoAoxoAvvvAByByzyoyzyzyxyzyzyoyzyzyACDoBBBABBBABBBovvvwBBBABBBABoxCDBBAB
+BBCoCDCABBABBBvvovwooBoBBBBBBovvovwBBzzyzzzyzzzozozyzzzyzzzyCDBBBBoBBBBBBBvvwvoBBoBBBoBBBoCDBBBB
+`, {
+    palette: ["#0a0a30", "#2e2ea0", "#ffffff", "#2e2ea0", "#ffe9a0", "#0d0d42", "#4a4ac8", "#d0d0ff", "#4a4ac8", "#d8d49a", "#f6f2c4", "#9a9cae", "#12125a", "#c9c490", "#f6f2c4", "#d8d49a", "#c9c490", "#191970", "#3d2812", "#2e2ea0", "#222288", "#5a3a1c", "#1b2a6b", "#2e2ea0", "#9aa0ae", "#b9bfc7", "#555a63", "#3c3cb4", "#6a6a2a", "#fff27a", "#14304f", "#8f959e", "#3a3d46", "#0f5326", "#5a3a1c", "#7a5230", "#15632f", "#0b3f1f", "#9a6a3a", "#3d2812", "#6a6ad0", "#6a6a9a", "#4a4a9a"],
+    paletteGiorno: ["#3a7bd5", "#4a8be0", "#74b0ee", "#5e9ee8", "#8cc2f2", "#4a8be0", "#5e9ee8", "#5e9ee8", "#4a8be0", "#4a8be0", "#4a8be0", "#a6aab9", "#5e9ee8", "#4a8be0", "#5e9ee8", "#5e9ee8", "#5e9ee8", "#74b0ee", "#3d2812", "#a6d2f6", "#8cc2f2", "#5a3a1c", "#6f86c8", "#a6d2f6", "#9aa0ae", "#cdd2d9", "#555a63", "#c4e2fa", "#2a8f45", "#2a8f45", "#4a7a9a", "#a4aab4", "#4a4d58", "#1f7a38", "#5a3a1c", "#7a5230", "#2a8f45", "#1a6a30", "#9a6a3a", "#3d2812", "#74b0ee", "#8cc2f2", "#5e9ee8"],
+    cicli: [{ indici: [2, 40], ritardoMs: 900 }, { indici: [4, 41], ritardoMs: 1300 }, { indici: [7, 42], ritardoMs: 700 }, { indici: [29, 28], ritardoMs: 1100 }],
+    ancora: { x: 50, y: 58 },
+  }),
   voceIllustrazione("sprite.rospo", `
 ............................................
 ............................................

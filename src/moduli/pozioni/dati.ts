@@ -7,15 +7,16 @@ export type Statistica = "forza" | "velocita" | "difesa" | "fortuna";
 // Una pozione: cosa fa e quanto pesa nel bottino. Il prezzo delle cure dipende dal livello (vedi prezzoPozione).
 export interface DefinizionePozione {
   readonly tipo: TipoPozione;
-  readonly effetto: { readonly genere: "statistica"; readonly statistica: Statistica } | { readonly genere: "cura"; readonly dadi: number } | { readonly genere: "mana"; readonly dadi: number } | { readonly genere: "antidoto" };
+  readonly effetto: { readonly genere: "statistica"; readonly statistica: Statistica } | { readonly genere: "cura"; readonly dadi: number; readonly facce: number; readonly perLivello: number } | { readonly genere: "mana"; readonly dadi: number } | { readonly genere: "antidoto" };
   // Peso nel bottino (probabilità proporzionale).
   readonly pesoBottino: number;
 }
 
-// Cure e mana lanciano dadi a sei facce (mana a quattro): "dadi" è il numero di dadi, la faccia sta in FACCE.
+// Le cure (0.25.0) lanciano "dadi" dadi a "facce" facce più "perLivello" HP per ogni livello del personaggio (leggera 1d6 + 1 per livello,
+// robusta 1d8 + 2 per livello); il mana lancia dadi a quattro facce (FACCE_MANA).
 export const POZIONI: readonly DefinizionePozione[] = [
-  { tipo: "curaLeggera", effetto: { genere: "cura", dadi: 1 }, pesoBottino: 40 },
-  { tipo: "curaRobusta", effetto: { genere: "cura", dadi: 2 }, pesoBottino: 15 },
+  { tipo: "curaLeggera", effetto: { genere: "cura", dadi: 1, facce: 6, perLivello: 1 }, pesoBottino: 40 },
+  { tipo: "curaRobusta", effetto: { genere: "cura", dadi: 1, facce: 8, perLivello: 2 }, pesoBottino: 15 },
   { tipo: "mana", effetto: { genere: "mana", dadi: 1 }, pesoBottino: 15 },
   { tipo: "forza", effetto: { genere: "statistica", statistica: "forza" }, pesoBottino: 10 },
   { tipo: "destrezza", effetto: { genere: "statistica", statistica: "velocita" }, pesoBottino: 10 },
@@ -25,17 +26,30 @@ export const POZIONI: readonly DefinizionePozione[] = [
   { tipo: "antidoto", effetto: { genere: "antidoto" }, pesoBottino: 0 },
 ];
 
-export const FACCE_CURA = 6;
 export const FACCE_MANA = 4;
 
 export const idPozione = (tipo: TipoPozione): string => `pozione.${tipo}`;
 export const tipoDaId = (id: string): TipoPozione | undefined => POZIONI.find((p) => idPozione(p.tipo) === id)?.tipo;
 export const definizione = (tipo: TipoPozione): DefinizionePozione => POZIONI.find((p) => p.tipo === tipo)!;
 
-// Prezzo di una pozione al livello del personaggio. Le cure costano il doppio del Guaritore (livello per HP) a pari HP medi.
+// Cura media di una pozione di cura a un dato livello del personaggio (dadi medi + bonus per livello).
+export function curaMedia(tipo: TipoPozione, livello: number): number {
+  const e = definizione(tipo).effetto;
+  if (e.genere !== "cura") return 0;
+  return e.dadi * ((e.facce + 1) / 2) + e.perLivello * livello;
+}
+
+// Arrotonda per eccesso al multiplo indicato (monete).
+const arrotondaSu = (valore: number, passo: number): number => Math.ceil(valore / passo - 1e-9) * passo;
+
+// Prezzo di una pozione al livello del personaggio. Le cure (0.25.0) costano moltiplicatorePrezzoCura volte quello che chiederebbe il Guaritore
+// (livello per HP) a pari cura media, arrotondate per eccesso alle 5 monete e con un tetto per tipo (250 la leggera, 450 la robusta, raggiunto al livello 11).
 export function prezzoPozione(tipo: TipoPozione, livello: number): number {
   const p = definizione(tipo);
-  if (p.effetto.genere === "cura") return Math.round(livello * p.effetto.dadi * ((FACCE_CURA + 1) / 2) * PARAMETRI_POZIONI.moltiplicatorePrezzoCura);
+  if (p.effetto.genere === "cura") {
+    const calcolato = arrotondaSu(PARAMETRI_POZIONI.moltiplicatorePrezzoCura * livello * curaMedia(tipo, livello), PARAMETRI_POZIONI.arrotondamentoPrezzoCura);
+    return Math.min(calcolato, PARAMETRI_POZIONI.tettoPrezzoCura[tipo === "curaRobusta" ? "curaRobusta" : "curaLeggera"]);
+  }
   if (p.effetto.genere === "antidoto") return PARAMETRI_POZIONI.prezzoAntidoto;
   return p.effetto.genere === "mana" ? PARAMETRI_POZIONI.prezzoMana : PARAMETRI_POZIONI.prezzoEffetto;
 }

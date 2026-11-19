@@ -113,7 +113,7 @@ describe("la città: dati", () => {
       expect(distanze.has(id), id).toBe(true);
       expect(distanzeCitta(registro, id).get("porta-s"), id).toBe(distanze.get(id));
     }
-    expect(elencaSiti(registro)).toHaveLength(35); // 32 luoghi della città (0.19.0: Piazza San Martino, la cattedrale, il Palazzo degli Anziani), 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla), la foresta, le paludi e (0.18.0) la valle del Serchio (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
+    expect(elencaSiti(registro)).toHaveLength(36); // 0.25.0: il Fabbro; // 32 luoghi della città (0.19.0: Piazza San Martino, la cattedrale, il Palazzo degli Anziani), 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla), la foresta, le paludi e (0.18.0) la valle del Serchio (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
   });
 
   it("distanze di riferimento dalla Porta San Pietro, dove si inizia", () => {
@@ -300,8 +300,8 @@ describe("i contesti e le schermate della città", () => {
   it("ogni luogo ha la mappa; le porte anche l'uscita; i luoghi con NPC il comando per parlare; gli ospiti gli ingressi", () => {
     expect(menu("citta:porta-s")).toEqual(["C", "E", "F", "L", "M", "N", "T"]); // capanna di Sibilla, esci (nascosta se la porta è aperta), addentrati nella foresta, Locanda, mappa, parla, forziere (nascosta finché non ce n'è uno) (elenco in ordine alfabetico)
     for (const id of ["porta-n", "porta-ne", "porta-e", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(id === "porta-n" ? ["E", "M", "N", "T", "V"] : ["E", "M", "N"]); // V = la valle del Serchio (0.18.0), T = il forziere (nascosta finché non ce n'è uno)
-    expect(menu("citta:porta-so")).toEqual(["C", "E", "M", "N", "P", "T"]); // palude e cimitero (dal livello 4; sotto, l'uscita racconta la porta chiusa), forziere (nascosta finché non ce n'è uno)
-    expect(menu("citta:piazza-n")).toEqual(["G", "M", "N", "T"]); // Gilda dei Cavalieri e il Torneo (T): l'Armeria e la Sartoria sono in Via Fillungo
+    expect(menu("citta:porta-so")).toEqual(["C", "E", "M", "N", "P", "S", "T"]); // palude e cimitero (dal livello 4; sotto, l'uscita racconta la porta chiusa), scalinata della cripta e forziere (nascoste finché non ci sono)
+    expect(menu("citta:piazza-n")).toEqual(["A", "G", "M", "N", "T"]); // A = il Fabbro (0.25.0, dal livello 12); // Gilda dei Cavalieri e il Torneo (T): l'Armeria e la Sartoria sono in Via Fillungo
     expect(menu("citta:piazza-c")).toEqual(["B", "G", "M", "N"]); // Banca, Gilda dei Mistici
     expect(menu("citta:piazza-s")).toEqual(["A", "G", "M", "N", "S", "U"]); // Palazzo degli Anziani, Guaritore, Speziale, Gilda dei Ladri (il registro dal 0.19.0 è a San Martino)
     expect(menu("citta:fillungo")).toEqual(["A", "M", "S", "T"]); // Armeria, Sartoria, Stamperia (T) e la mappa (la via non ospita NPC)
@@ -348,7 +348,7 @@ describe("i contesti e le schermate della città", () => {
   });
 
   it("gli edifici si vedono nel luogo ospite con tasto d'ingresso e costo", () => {
-    expect(righe(inSito(partenza(), "piazza-n"), "citta.pannello.edifici", "citta:piazza-n")).toEqual(["[G] Gilda dei Cavalieri - 2 movimenti, 0 azioni"]);
+    expect(righe(inSito(partenza(), "piazza-n"), "citta.pannello.edifici", "citta:piazza-n")).toEqual(["[A] Fabbro - 2 movimenti, 0 azioni", "[G] Gilda dei Cavalieri - 2 movimenti, 0 azioni"]);
     expect(righe(inSito(partenza(), "fillungo"), "citta.pannello.edifici", "citta:fillungo")).toEqual([
       "[A] Armeria - 3 movimenti, 0 azioni",
       "[S] Sartoria - 2 movimenti, 0 azioni",
@@ -447,9 +447,9 @@ describe("comandi di prova (?dev=1)", () => {
   });
 
   it("le schermate di prova hanno menu, titoli e testi nelle due lingue", () => {
-    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "E"]);
+    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "Q", "E", "S"]);
     expect(vociMenu(registro, "sviluppo:vai").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]);
-    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(14); // 0.19.0: la cattedrale e il Palazzo degli Anziani
+    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(15); // 0.25.0: il Fabbro; 0.19.0: la cattedrale e il Palazzo degli Anziani
     expect(registro.contestiPadre.get("sviluppo:vai:porte")).toBe("sviluppo:vai");
     expect(registro.contestiPadre.get("sviluppo:vai")).toBe("sviluppo");
     expect(traduci(registro, "it", "sviluppo.menu.giorno")).toBe("Passa al giorno dopo");

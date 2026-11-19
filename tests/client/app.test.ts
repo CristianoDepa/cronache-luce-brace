@@ -878,7 +878,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(sx(app.schermata())).toContain("[V] Comandi di prova");
     await app.premiTasto("V");
     expect(sx(app.schermata())).toContain("Comandi di prova");
-    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "E", "0", "I", "O"]); // L: incarichi di oggi (0.20.0); il 9 è "Avvia il torneo"; A, B, C: amuleto, forziere, Fortuna 20; D: prepara il duello (0.18.1)
+    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "Q", "E", "S", "0", "I", "O"]); // L: incarichi di oggi (0.20.0); il 9 è "Avvia il torneo"; A, B, C: amuleto, forziere, Fortuna 20; D: prepara il duello (0.18.1); Q: equipaggiati al livello (0.25.0)
     // vai a un luogo: gratis, senza consumare azioni
     await app.premiTasto("4");
     await app.premiTasto("3"); // piazze e torre

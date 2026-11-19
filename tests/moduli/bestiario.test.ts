@@ -152,13 +152,18 @@ describe("bestiario a tre livelli: famiglie, mostri, scheda", () => {
     expect(rows.find((r) => r.chiave === "combattimento.scheda.resistenza")?.tono).toBe("negativo");
   });
 
-  it("in Armeria compare l'aiuto sulle armi solo per i mostri già incontrati, e solo per le armi che la classe può comprare", () => {
-    const armeria = (st: StatoGioco) => righe(statoCitta.scrivi(st, { sito: "armeria", movimenti: 0, visitati: ["porta-s", "armeria"] }), "luogo:armeria").filter((r) => r.includes("efficace contro"));
-    expect(armeria(base())).toEqual([]); // nessun mostro noto: nessun suggerimento
-    const aiuto = armeria(seiTornato(incontra(base(), "scheletro")));
-    expect(aiuto.some((r) => r.startsWith("contundente (Mazza") && r.includes("efficace contro Scheletro"))).toBe(true);
-    expect(aiuto.some((r) => r.startsWith("perforante (Lancia, Pugnale)") && r.includes("resistito da Scheletro"))).toBe(true); // il Ladro vede il suo Pugnale
-    expect(aiuto.some((r) => r.includes("Spadone") || r.includes("Bastone"))).toBe(false); // le armi di altre classi no
+  it("la sottovoce dell'Armeria «quali armi contro quali mostri» compare solo con mostri già incontrati e mostra le sole armi della classe, a blocchi per tipo", () => {
+    const inArmeria = (st: StatoGioco) => statoCitta.scrivi(st, { sito: "armeria", movimenti: 0, visitati: ["porta-s", "armeria"] });
+    const vistaMenu = (st: StatoGioco) => creaVistaPartita(inArmeria(st), creaContestoDiProva(registro, 1)).menuNascosto;
+    expect(vistaMenu(base())).toContain("equipaggiamento.bestiario"); // nessun mostro noto: voce nascosta
+    const noto = seiTornato(incontra(base(), "scheletro"));
+    expect(vistaMenu(noto)).not.toContain("equipaggiamento.bestiario");
+    const pagina = righe(statoCitta.scrivi(noto, { sito: "armeria", movimenti: 0, visitati: ["porta-s", "armeria"] }), "luogo:armeria:bestiario");
+    expect(pagina.some((r) => r.includes("CONTUNDENTE"))).toBe(true);
+    expect(pagina.some((r) => r.includes("✓ Efficace contro") && r.includes("Scheletro"))).toBe(true);
+    expect(pagina.some((r) => r.includes("✗ Resistito da") && r.includes("Scheletro"))).toBe(true); // il perforante (Pugnale del Ladro)
+    expect(pagina.some((r) => r.includes("Spadone") || r.includes("Bastone"))).toBe(false); // le armi di altre classi no
+    expect(righe(inArmeria(noto), "luogo:armeria").some((r) => r.includes("Efficace contro"))).toBe(false); // niente più aiuto nella pagina principale
   });
 });
 
