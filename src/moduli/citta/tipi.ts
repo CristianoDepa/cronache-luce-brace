@@ -136,6 +136,6 @@ function convalidaStato(dati: unknown): Risultato<StatoCitta> {
 export const statoCitta = definisciStato<StatoCitta>(
   ID_CITTA,
   1,
-  () => ({ sito: PARAMETRI_CITTA.sitoIniziale, movimenti: 0, visitati: [PARAMETRI_CITTA.sitoIniziale] }),
+  () => ({ sito: PARAMETRI_CITTA.sitoIniziale, movimenti: 0, visitati: [PARAMETRI_CITTA.sitoIniziale, ...PARAMETRI_CITTA.sitiNotiAllInizio] }),
   convalidaStato,
 );

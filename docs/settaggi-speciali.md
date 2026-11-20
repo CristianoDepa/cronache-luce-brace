@@ -127,7 +127,7 @@ Con `?dev=1` → `[O]` → `[V]` → **`[E]` «Provoca un evento»** si apre l'e
 | Scasso del Ladro (punti percentuali per livello, a rotazione) | `src/moduli/livelli/dati.ts` (`scasso`) | `[1]` = +1 per livello |
 | Tetto di Fortuna per l'apertura del forziere, per classe | `src/moduli/classi/dati.ts` (`tettoForziere`) | 0,70 / 0,75 / 0,85 |
 | Oggetti magici: punti per qualità e slot, HP per punto, probabilità di anello, probabilità di bottino, qualità delle fonti, compenso a zaino pieno | `src/moduli/oggettimagici/parametri.ts` | medaglione 2/4/6, anello 1/2/3, 5 HP per punto, 50% anello, 0,5%, bronzo/argento/oro, 60/150/400 |
-| Manuale di gioco (genera `docs/manuale.md`) | `CLB_MANUALE=1 npx vitest run strumenti/manuale` | |
+| Manuale di gioco (genera `docs/manuale.md` e `docs/manuale.html` con grafici: statistiche, scheda per classe 1-20, armi e armature, oggetti magici) | `CLB_MANUALE=1 npx vitest run strumenti/manuale` | dalla 0.25.2 con le nuove pagine |
 | Tasto nuovo | Forziere `[T]` alle porte di San Pietro e Sant'Anna (solo se c'è un forziere) | |
 | **0.19.1** - Comandi di prova (`?dev=1` → `[O]` → `[V]`) | usabili anche **durante un combattimento** | |
 | **0.19.1** - Valle: forza dama 38, annegato 30, corvi 28 | `src/moduli/valle/dati.ts` | |
@@ -165,3 +165,13 @@ Con `?dev=1` → `[O]` → `[V]` → **`[E]` «Provoca un evento»** si apre l'e
 | Bonus di potenza dell'arma incantata nell'indicatore di pericolo (solo di notte) | `src/moduli/palude/pericolo.ts` (`BONUS_POTENZA_INCANTO_NOTTE`) | 0,15 |
 
 **Attenzione agli aggiornamenti:** il delta della 0.25.1 sovrascrive `equipaggiamento/linee.ts`, `abilita/dati.ts` e `cripta/dati.ts`, `cripta/parametri.ts`, `palude/pericolo.ts`: le tue modifiche a mano vanno rifatte.
+
+## 0.26.0 - Il manuale in gioco
+Nessun settaggio nuovo. Le pagine del manuale sono calcolate dai dati: per cambiarle si ritoccano i dati del gioco (CRESCITA, rette, linee d'equipaggiamento, `PARAMETRI_MAGICI`). L'acciaio di brace compare nel manuale dal livello 12 (con `?dev=1` si può salire per provare). Il generatore `docs/manuale.md`/`manuale.html` condivide il calcolo con il gioco.
+
+## 0.27.0 - Piana, livelli 13-16, simulatore
+Strumento fuori dal gioco: `CLB_SIMULATORE=1 npx vitest run strumenti/simulatore` (scrive `docs/simulatore.md`). Variabili: `CLB_RUN` (partite per classe, default 8), `CLB_GIORNI` (tetto di giorni, default 300), `CLB_CURA=1` (il giocatore simulato si cura a pagamento dal guaritore; di default riposa). Il giocatore simulato esplora solo la foresta, senza abilità né pozioni. Nota: `tsconfig.json` include solo `src` e `tests`, quindi `strumenti/` non è controllato da `tsc` (lo controlla solo vitest).
+`CLB_RIPOSO_PIANA` (default 0,75: quota di HP sotto cui il giocatore simulato riposa nella piana; nella foresta 0,5). Costanti di taratura nuove: `livelli/parametri.ts` (esperienza, rette, `livelloMax` 16, `livelloDegno` 12, `livelliChiave`), `piana/dati.ts` (creature, pesi, `SOGLIE_PERICOLO_PIANA`, premio notte 1,25), `gilde/dati.ts` (capigilda 16), `citta/dati.ts` (porta-ne `livelloMin` 12). Comandi `?dev=1` invariati: [8] sale di livello fino al 16, [Q] equipaggia al livello, [4] Vai a un luogo → Le porte.
+
+## 0.28.0 - Colline e livelli 17-20
+`CLB_RIPOSO_COLLINE` (default 0,75: quota di HP sotto cui il giocatore simulato riposa nelle colline). Costanti di taratura nuove: `livelli/parametri.ts` (esperienza e rette 17-20, `livelloMax` 20, `livelliChiave` con il 20), `colline/dati.ts` (creature, pesi, `SOGLIE_PERICOLO_COLLINE`, premio notte 1,25), `gilde/dati.ts` (capigilda 20), `citta/dati.ts` (porta-e `livelloMin` 16). Comandi `?dev=1` invariati: [8] sale di livello fino al 20.

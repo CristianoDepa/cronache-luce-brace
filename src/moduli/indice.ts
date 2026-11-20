@@ -21,6 +21,8 @@ import { moduloLapide } from "./lapide/indice";
 import { moduloRegistro } from "./registro/indice";
 import { moduloScoperta } from "./scoperta/indice";
 import { moduloValle } from "./valle/indice";
+import { moduloColline } from "./colline/indice";
+import { moduloPiana } from "./piana/indice";
 import { moduloCattedrale } from "./cattedrale/indice";
 import { moduloBandi } from "./bandi/indice";
 import { moduloFortuna } from "./fortuna/indice";
@@ -38,6 +40,7 @@ import { moduloTorneo } from "./torneo/indice";
 import { moduloStati } from "./stati/indice";
 import { moduloEventi } from "./eventi/indice";
 import { moduloCripta } from "./cripta/indice";
+import { moduloManuale } from "./manuale/indice";
 
 // Elenco dei moduli attivi: aggiungere un modulo significa aggiungere una riga.
 export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
@@ -63,6 +66,8 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloScoperta,
   moduloIncantatrice,
   moduloValle,
+  moduloPiana,
+  moduloColline,
   moduloCattedrale,
   moduloOggettiMagici,
   moduloZara,
@@ -79,5 +84,6 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloEventi,
   moduloStati,
   moduloCripta,
+  moduloManuale,
   moduloSviluppo,
 ];

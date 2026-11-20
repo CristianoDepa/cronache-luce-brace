@@ -1,6 +1,6 @@
 {
   "name": "clb",
-  "version": "0.25.1",
+  "version": "0.28.0",
   "description": "Cronache di Luce e Brace (CLB)",
   "directories": {
     "doc": "docs",

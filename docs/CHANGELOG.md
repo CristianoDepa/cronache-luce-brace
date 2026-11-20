@@ -1,5 +1,46 @@
 # Cronologia delle versioni
 
+## 0.28.0 - Le colline di Lucca e i livelli 17-20
+- **Nuova area: le colline di Lucca**, dietro **Porta Elisa** (porta-e), aperta dal **livello 16** (sotto, messaggio di porta chiusa). Nuovo modulo `colline`, sul modello della piana. Sette creature: bandito della macchia, mercenario disertore, lupo di collina, arpia e il **mezzogigante delle colline** (raro, lento, molti HP, premio alto); di notte anche **cavaliere spettrale** e **ombra delle rovine** (premi +25%). Due scene (`scena.colline`, `scena.fortino`) e otto sprite nuovi.
+- **Il fortino dei banditi:** boss **una volta al giorno** (voce [Q]), il **Capitano dei Banditi** (190 HP, debole a perforante e taglio; premio 2.800 monete e 7.500 PE). Non parte da sola; si azzera al nuovo giorno.
+- **Livelli 17-20** (decisione del game designer, 20-11-2026): tetto a **20** (`livelloMax`), esperienza 76.000 / 89.000 / 103.000 / 118.000, rette 4.600 / 5.400 / 6.300 / 7.300, livelli chiave **4, 8, 12, 16, 20**. Valori **provvisori**. Il 20 non sblocca ancora abilità (il Drago arriva con la 1.0.0).
+- **Nuovi capigilda del livello 20** (Gran Connestabile Ruggero, Somma Maga Berenice, Il Gatto di Lucca), tutti ridisegnati; duello non letale.
+- **Taratura:** creature e capigilda misurati con `tests/moduli/bilanciamentoColline.test.ts` (acciaio di brace al 17: comuni oltre il 70%, mezzogigante e Capitano duri; capigilda del 20 ~35-95% con la brace, impossibili con l'equipaggiamento normale). Il Cavaliere vince quasi tutto: squilibrio noto tra le classi.
+- **Simulatore** esteso fino al livello 20 e alle colline; nuova variabile `CLB_RIPOSO_COLLINE`.
+- **Test:** nuovi `colline.test.ts` e `bilanciamentoColline.test.ts`; adattati città, livelli, gilde, manuale, torre, client.
+
+## 0.27.0 - La piana di Capannori e i livelli 13-16
+- **Nuova area: la piana di Capannori**, dietro **Porta San Jacopo alla Tomba** (porta-ne), aperta dal **livello 12** (sotto, messaggio di porta chiusa). Nuovo modulo `piana` (dipende da azioni, città, combattimento, equipaggiamento, foresta, luoghi, palude). Sei creature: contadino posseduto, spaventapasseri, cane nero, erborista strega; di notte anche **lupo mannaro** e **strega del sabba** (premi +25%). Due scene (`scena.piana`, `scena.quercia`) e sette sprite nuovi.
+- **La Quercia delle streghe:** boss **una volta al giorno** (voce [Q], come il guardiano della cripta), la **Madre della Quercia** (175 HP, debole al contundente, resiste a magico e taglio; premio 1.500 monete e 4.000 PE). Non parte da sola; si azzera al nuovo giorno.
+- **Livelli 13-16** (decisione del game designer, 20-11-2026): tetto a **16** (`livelloMax`), esperienza 25.000 / 34.000 / 43.000 / 53.000 / 64.000, rette 2.400 / 2.800 / 3.300 / 3.900, livelli chiave **4, 8, 12, 16**. Valori **provvisori**, tarati con il simulatore. Il messaggio «degno» e le pagine di brace del manuale seguono `livelloDegno` (12).
+- **Nuovi capigilda del livello 16** (Marchese Aldobrando, Arcimaga Ildegarda, Madama Ombra), tutti ridisegnati; duello non letale come gli altri.
+- **Simulatore** esteso al livello 16 e alla piana; nuova variabile `CLB_RIPOSO_PIANA`.
+- **Test:** nuovi `piana.test.ts` e `bilanciamentoPiana.test.ts`; adattati città, livelli, gilde, manuale, torre, client.
+- **Dalla 0.26.1 (non consegnata, inclusa qui):**
+- **Si parte in una piazza, si rinasce alla porta** (decisione del game designer, 20-11-2026): il personaggio comincia in **Piazza San Michele** (`sitoIniziale = "piazza-c"`); dopo la morte rinasce **fuori dalla prima porta**, Porta San Pietro (`sitoRinascita = "porta-s"`). All'inizio conosce la piazza di partenza, la porta (la strada per la foresta) e la piazza della Locanda (`sitiNotiAllInizio`). La strada dalla piazza alla porta costa 10 movimenti (1 azione).
+- **La Locanda si sposta in Piazza dell'Anfiteatro**, accanto a Fabbro e gilda del cavaliere (prima era alla Porta San Pietro, che ora ospita solo la capanna di Sibilla e le mura sud). Da lì la porta dista 16 movimenti.
+- **Dormire da avvelenati costa almeno 3 azioni** (`PARAMETRI_LOCANDA.azioniSeAvvelenati`); la paura passa come prima. Il pannello della locanda mostra il costo esatto.
+- **Correzione di prestazioni del manuale in gioco:** le pagine si calcolano una volta sola per registro (prima a ogni vista: rallentava la suite e faceva scadere il test degli eventi).
+- **Simulatore di bilanciamento** (`strumenti/simulatore`, fuori dal gioco): giocatore automatico che esplora la foresta; misura i giorni per livello e per l'acciaio di brace. Primi risultati in `docs/simulatore.md` e `docs/todo.md`.
+- **Test:** aggiornati i test che assumevano la partenza alla porta (città, mappa, vista, client); nuovi: partenza e rinascita, sonno da avvelenati, simulatore.
+
+## 0.26.0 - Il manuale in gioco
+- **Nuovo modulo `manuale`**: voce **[6] Il manuale** nell'elenco INFO (`[I]`). Cinque pagine: **Le statistiche** (valori a livello 1 e a livello 12 per classe), **Le classi, livello per livello** (una scheda per classe, livelli 1-12: esperienza, retta, HP, forza, difesa, velocità, mana, Fortuna, scasso; sotto, le abilità con livello, mana e usi per scontro; i livelli dei duelli con il capogilda), **Le armi** e **Le armature** (una pagina per linea con punti, forza, difesa, HP, velocità e prezzo a ogni livello), **Gli oggetti magici** (bonus per slot e qualità; 1 punto di vita = 5 HP).
+- **Solo ciò che si scopre giocando** (decisione del game designer, opzione a): nessuna durata delle pozioni, probabilità di bottino o di forzieri, effetto numerico della Fortuna, formula dei prezzi, né fonti degli oggetti magici. Mai livelli oltre il 12.
+- **Niente spoiler sull'acciaio di brace** (opzione c): le voci «Acciaio di brace» (armi e armature, una riga per linea) compaiono solo dal livello 12. Le abilità dei livelli chiave (4, 8, 12) si vedono già.
+- **Sempre allineato ai dati:** le pagine si calcolano dai contenuti dei moduli. Il calcolo dei valori per classe e livello sta in `src/moduli/manuale/calcoli.ts` ed è **lo stesso** usato dal generatore di `docs/manuale.md` / `manuale.html` (nessun numero scritto a mano).
+- Testi in italiano e inglese. Nessuno stato, nessuna regola, nessun salvataggio nuovo.
+- **Test:** 9 nuovi in `tests/moduli/manuale.test.ts` (12 livelli e non oltre, coincidenza con il generatore, abilità, nessuna informazione nascosta, brace nascosta sotto il 12, magici, chiavi it/en, navigazione); aggiornati `coerenzaTasti` e il test INFO del client (tasto 6).
+
+## 0.25.2 - Il manuale di gioco con le tabelle
+- **Nessuna modifica al gioco:** cambia solo il generatore del manuale (`strumenti/manuale/genera.ts`) e i documenti `docs/manuale.md` (da 168 a circa 490 righe) e `docs/manuale.html`, rigenerati dai dati.
+- **Scheda per classe, livello per livello (1-20):** per Cavaliere, Mistico e Ladro, esperienza, retta, HP, forza, difesa, velocità, mana (dove c'è), Fortuna, scasso (Ladro), abilità che si sbloccano e duelli con i capigilda. Oltre il livello 12 le righe sono una **proiezione** della stessa crescita lineare (abilità «da progettare», rette assenti; l'esperienza c'è solo fino al 14).
+- **Armi e armature:** una tabella per ogni linea (spada, ascia, mazza, lancia, spadone, pugnale, bastone, cuoio, maglia, piastre, veste e le sei linee d'acciaio di brace) con punti, forza, difesa, HP, velocità e prezzo a ogni livello.
+- **Oggetti magici:** bonus per slot e qualità, vita (1 punto = 5 HP), compenso a zaino pieno, fonti e probabilità di bottino.
+- **Versione HTML** (`docs/manuale.html`, una pagina sola, nessuna libreria esterna): indice laterale, tabelle a righe colorate (le righe di proiezione 13-20 in grigio) e **cinque grafici SVG** (HP, forza, difesa e velocità per classe livello per livello con tratteggio oltre il 12; prezzo contro punti dell'equipaggiamento). Resta **interna**: sta in `docs/`, non è nella build del gioco (la build contiene solo `index.html` e il codice).
+- **Come si rigenera:** `CLB_MANUALE=1 npx vitest run strumenti/manuale` (scrive `manuale.md` e `manuale.html`). Il manuale di `docs/` contiene anche informazioni che nel gioco restano nascoste (per esempio la durata delle pozioni): non va copiato così com'è nel manuale in gioco.
+- **Test:** 818 (+1 saltato): due nuovi verificano i 20 livelli per classe, le sezioni e la pagina HTML.
+
 ## 0.25.1 - Ritocchi dal collaudo della 0.25.0
 - **Acciaio di brace** (dopo il collaudo: «perdo 1 forza e 3 velocità e guadagno 5 difesa per 4.790 monete»): il gradino sale da 22 a **26 punti** (+4 su ogni linea) e il prezzo diventa **fisso a 5.500** a pezzo (`prezzoFisso`, costante `PREZZO_BRACE`). Spada liv. 6 → spadone di brace: forza +3, difesa +5, velocità −3; maglia liv. 6 → piastre di brace: difesa +8. Il prezzo vale circa 1,3-2,6 giorni di guadagno a 50-100 azioni (stima a mano sui premi della valle, ~70 monete a incontro: **non misurato con un simulatore**).
 - **Carica** del Cavaliere: precisione −10 punti invece di −20 (danno doppio invariato; successo ~90%). Testi aggiornati.

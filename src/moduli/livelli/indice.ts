@@ -66,7 +66,7 @@ export function salitaDiLivello(stato: StatoGioco, ctx: Contesto): { readonly st
   const finale = statoLivelli.scrivi(conMana, { ...statoLivelli.leggi(conMana), tentativi: 0 }); // il nuovo livello riparte da zero tentativi
   const eventi: EventoGioco[] = [{ chiave: "livelli.salito", parametri: { livello: nuovo }, tono: "positivo" }, ...righeGuadagni(g).map((r) => ({ ...r, tono: "positivo" as const }))];
   // Il terzo capogilda è battuto: le gilde ti ritengono degno dei migliori equipaggiamenti della città (si sblocca il fabbro).
-  if (nuovo === PARAMETRI_LIVELLI.livelloMax) eventi.push({ chiave: "livelli.degno", tono: "speciale", importante: true });
+  if (nuovo === PARAMETRI_LIVELLI.livelloDegno) eventi.push({ chiave: "livelli.degno", tono: "speciale", importante: true });
   return { stato: finale, eventi };
 }
 

@@ -93,23 +93,31 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     "porta-ne",
     { it: "Porta San Jacopo alla Tomba", en: "San Jacopo alla Tomba Gate" },
     { it: "La porta più recente delle mura, aperta verso la piana di Capannori e i paesi vicini.", en: "The newest gate in the walls, opened towards the Capannori plain and the nearby villages." },
-    [{ verso: "piazza-n", distanza: 7 }, { verso: "mura-ne", distanza: 2 }],
+    [{ verso: "piazza-n", distanza: 7 }, { verso: "mura-ne", distanza: 2 }, { verso: "piana", distanza: 0 }],
     { it: "Esci dalla Porta San Jacopo", en: "Leave through San Jacopo Gate" },
-    { chiusa: { it: "Oltre la porta si apre la piana di Capannori, con i campi e le querce antiche. Strada ancora da esplorare.", en: "Beyond the gate lies the Capannori plain, with its fields and ancient oaks. Road still to be explored." } },
+    {
+      areaId: "piana",
+      livelloMin: 12,
+      chiusa: { it: "Oltre la porta si apre la piana di Capannori, con i campi e le querce antiche. È la strada per chi ha già battuto il terzo capogilda (livello 12): per ora è chiusa.", en: "Beyond the gate lies the Capannori plain, with its fields and ancient oaks. It is the road for those who have already beaten the third guildmaster (level 12): for now it is closed." },
+    },
   ),
   porta(
     "porta-e",
     { it: "Porta Elisa", en: "Elisa Gate" },
     { it: "Dedicata a Elisa Baciocchi, sorella di Napoleone, che governò Lucca. Si apre sulla strada verso Firenze.", en: "Named after Elisa Baciocchi, Napoleon's sister, who ruled Lucca. It opens onto the road to Florence." },
-    [{ verso: "piazza-c", distanza: 8 }, { verso: "mura-e", distanza: 2 }],
+    [{ verso: "piazza-c", distanza: 8 }, { verso: "mura-e", distanza: 2 }, { verso: "colline", distanza: 0 }],
     { it: "Esci dalla Porta Elisa", en: "Leave through Elisa Gate" },
-    { chiusa: { it: "Oltre la porta parte la strada per Firenze. Strada ancora da esplorare.", en: "Beyond the gate starts the road to Florence. Road still to be explored." } },
+    {
+      areaId: "colline",
+      livelloMin: 16,
+      chiusa: { it: "Oltre la porta parte la strada per Firenze, tra le colline dei banditi. È la strada per chi ha già battuto il quarto capogilda (livello 16): per ora è chiusa.", en: "Beyond the gate starts the road to Florence, through the bandit hills. It is the road for those who have already beaten the fourth guildmaster (level 16): for now it is closed." },
+    },
   ),
   porta(
     "porta-s",
     { it: "Porta San Pietro", en: "San Pietro Gate" },
     { it: "La porta a sud, verso la stazione e la via Francigena: da qui arrivano i pellegrini. Fuori si stende la foresta.", en: "The south gate, towards the station and the Via Francigena: pilgrims arrive here. The forest lies outside." },
-    [{ verso: "piazza-s", distanza: 6 }, { verso: "mura-s", distanza: 2 }, { verso: "locanda", distanza: 2 }, { verso: "capanna", distanza: 2 }, { verso: "foresta", distanza: 0 }],
+    [{ verso: "piazza-s", distanza: 6 }, { verso: "mura-s", distanza: 2 }, { verso: "capanna", distanza: 2 }, { verso: "foresta", distanza: 0 }],
     { it: "Esci nella foresta", en: "Go out into the forest" },
     { areaId: "foresta" },
   ),
@@ -147,7 +155,7 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     contesto: "citta:piazza-n",
     nome: { it: "Piazza dell'Anfiteatro", en: "Amphitheatre Square" },
     descrizione: { it: "Una piazza ovale che segue la forma dell'antico anfiteatro romano, chiusa da case antiche e botteghe.", en: "An oval square that follows the shape of the old Roman amphitheatre, ringed by old houses and shops." },
-    collegamenti: [{ verso: "piazza-c", distanza: 4 }, { verso: "gilda-cavaliere", distanza: 2 }, { verso: "fabbro", distanza: 2 }, { verso: "torre", distanza: 3 }],
+    collegamenti: [{ verso: "piazza-c", distanza: 4 }, { verso: "gilda-cavaliere", distanza: 2 }, { verso: "fabbro", distanza: 2 }, { verso: "locanda", distanza: 2 }, { verso: "torre", distanza: 3 }],
   },
   {
     id: "piazza-c",
@@ -210,7 +218,7 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
   { id: "stamperia", tasto: "T", dove: { it: "alla Stamperia", en: "at the Print Shop" }, categoria: "edificio", ospite: "fillungo", ingresso: { it: "Entra nella Stamperia", en: "Enter the Print Shop" }, contesto: "luogo:stamperia", nome: { it: "Stamperia", en: "Print Shop" }, descrizione: { it: "Un torchio, fogli appesi ad asciugare e odore d'inchiostro: qui escono le Cronache della città.", en: "A press, sheets hung out to dry and the smell of ink: this is where the city's Chronicles come out." }, collegamenti: [] },
   // La capanna di Sibilla Brace, l'Incantatrice (0.17.0): al limitare della foresta, a Porta San Pietro.
   { id: "capanna", tasto: "C", dove: { it: "alla capanna di Sibilla", en: "at Sibilla's hut" }, categoria: "edificio", ospite: "porta-s", ingresso: { it: "Vai alla capanna di Sibilla", en: "Go to Sibilla's hut" }, contesto: "luogo:capanna", nome: { it: "Capanna di Sibilla", en: "Sibilla's hut" }, descrizione: { it: "Al limitare del bosco, una capanna di assi con la finestra accesa di una luce viola: ci vive Sibilla Brace, l'Incantatrice.", en: "At the edge of the woods, a plank hut with a window lit by a violet glow: Sibilla Brace, the Enchantress, lives here." }, collegamenti: [] },
-  { id: "locanda", tasto: "L", dove: { it: "alla Locanda", en: "at the Inn" }, categoria: "edificio", ospite: "porta-s", ingresso: { it: "Entra nella Locanda", en: "Enter the Inn" }, contesto: "luogo:locanda", nome: { it: "Locanda", en: "Inn" }, descrizione: { it: "Un fuoco acceso, un letto e un pasto caldo per i viaggiatori.", en: "A warm fire, a bed and a hot meal for travellers." }, collegamenti: [] },
+  { id: "locanda", tasto: "L", dove: { it: "alla Locanda", en: "at the Inn" }, categoria: "edificio", ospite: "piazza-n", ingresso: { it: "Entra nella Locanda", en: "Enter the Inn" }, contesto: "luogo:locanda", nome: { it: "Locanda", en: "Inn" }, descrizione: { it: "Un fuoco acceso, un letto e un pasto caldo per i viaggiatori.", en: "A warm fire, a bed and a hot meal for travellers." }, collegamenti: [] },
   // Le gilde di classe (0.8.0): una per piazza. Ci si sale di livello solo nella propria; la logica sta nel modulo "gilde".
   { id: "gilda-cavaliere", tasto: "G", dove: { it: "alla Gilda dei Cavalieri", en: "at the Knights' Guild" }, categoria: "edificio", ospite: "piazza-n", ingresso: { it: "Entra nella Gilda dei Cavalieri", en: "Enter the Knights' Guild" }, contesto: "luogo:gilda-cavaliere", nome: { it: "Gilda dei Cavalieri", en: "Knights' Guild" }, descrizione: { it: "Stendardi, rastrelliere di spade e un manichino consumato dai colpi: qui si allenano i cavalieri di Lucca.", en: "Banners, sword racks and a dummy worn down by blows: the knights of Lucca train here." }, collegamenti: [] },
   { id: "gilda-mistico", tasto: "G", dove: { it: "alla Gilda dei Mistici", en: "at the Mystics' Guild" }, categoria: "edificio", ospite: "piazza-c", ingresso: { it: "Entra nella Gilda dei Mistici", en: "Enter the Mystics' Guild" }, contesto: "luogo:gilda-mistico", nome: { it: "Gilda dei Mistici", en: "Mystics' Guild" }, descrizione: { it: "Librerie fino al soffitto, una rosa dei venti stellata e una sfera di cristallo che non smette mai di brillare.", en: "Bookshelves to the ceiling, a starry compass rose and a crystal ball that never stops glowing." }, collegamenti: [] },
@@ -219,6 +227,10 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
   { id: "paludi", categoria: "area", contesto: "luogo:paludi", nome: { it: "Le Paludi", en: "The Marshes" }, dove: { it: "nelle paludi", en: "in the marshes" }, descrizione: { it: "Paludi e nebbia fuori dalle mura. Tra le canne affiorano croci e lapidi: un antico cimitero inghiottito dall'acqua.", en: "Marshes and mist outside the walls. Crosses and gravestones surface among the reeds: an ancient cemetery swallowed by the water." }, collegamenti: [] },
   // L'area fuori dalla Porta Santa Maria (dal livello 8): la valle del Serchio (la sua esplorazione sta nel modulo valle).
   { id: "valle", categoria: "area", contesto: "luogo:valle", nome: { it: "La Valle del Serchio", en: "The Serchio Valley" }, dove: { it: "nella valle del Serchio", en: "in the Serchio valley" }, descrizione: { it: "Il Serchio scende tra rive di fango, croci e nebbia, fino al Ponte del Diavolo.", en: "The Serchio runs down between muddy banks, crosses and fog, all the way to the Devil's Bridge." }, collegamenti: [] },
+  // L'area fuori dalla Porta San Jacopo alla Tomba (dal livello 12): la piana di Capannori (la sua esplorazione sta nel modulo piana).
+  { id: "piana", categoria: "area", contesto: "luogo:piana", nome: { it: "La Piana di Capannori", en: "The Capannori Plain" }, dove: { it: "nella piana di Capannori", en: "in the Capannori plain" }, descrizione: { it: "Campi, fossi e querce antiche: di notte nessuno esce dalle cascine.", en: "Fields, ditches and ancient oaks: by night nobody leaves the farmhouses." }, collegamenti: [] },
+  // L'area fuori da Porta Elisa (dal livello 16): le colline di Lucca (la sua esplorazione sta nel modulo colline).
+  { id: "colline", categoria: "area", contesto: "luogo:colline", nome: { it: "Le Colline di Lucca", en: "The Hills of Lucca" }, dove: { it: "sulle colline di Lucca", en: "on the hills of Lucca" }, descrizione: { it: "Macchia, uliveti e torri in rovina lungo la strada per Firenze: la battono i banditi.", en: "Scrub, olive groves and ruined towers along the road to Florence: bandits roam it." }, collegamenti: [] },
   { id: "foresta", categoria: "area", contesto: "luogo:foresta", nome: { it: "La Foresta", en: "The Forest" }, descrizione: { it: "Una foresta fitta fuori dalle mura.", en: "A dense forest outside the walls." }, collegamenti: [] },
 ];
 

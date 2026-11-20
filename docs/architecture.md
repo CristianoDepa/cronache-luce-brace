@@ -867,3 +867,18 @@ Modulo `cripta` (`src/moduli/cripta`: `tipi`, `parametri`, `dati`, `borsa`, `reg
 
 ## 67. Ritocchi della 0.25.1
 `LineaOggetto.prezzoFisso` (opzionale): `calcolaPrezzo` lo usa al posto della formula dei punti; le linee `*-brace` lo valgono (`PREZZO_BRACE`). Cripta: `pannelloIngresso(stato, ctx)` aggiunge l'avviso di pericolo (`rigaPericoloIngresso`, soglie in `PARAMETRI_CRIPTA`). Nessuna modifica al nucleo.
+
+## 68. Il manuale esteso (0.25.2)
+`strumenti/manuale/genera.ts` legge dal registro le classi, le abilità (`tipoAbilita`), le linee d'equipaggiamento (`LINEE`, `leggiContenuto` su `tipoOggetto`) e i parametri degli oggetti magici. Nuove pagine: `paginaSchede` (20 livelli per classe, proiezione oltre `livelloMax`), `paginaEquipaggiamento`, `paginaOggettiMagici`. Nessun codice di gioco toccato.
+
+## 69. Il manuale in gioco (0.26.0)
+Modulo `manuale` (`src/moduli/manuale`), senza stato né regole: solo interfaccia e testi, dipende da abilità, classi, combattimento, equipaggiamento, livelli e oggetti magici. `calcoli.ts` contiene il calcolo puro dei valori per classe e livello (`valoreTeorico`, `haLaSkill`), usato **sia** dalle pagine del gioco **sia** da `strumenti/manuale/genera.ts`: un solo calcolo, il manuale non si disallinea. `pagine.ts` costruisce le righe monospazio (`RigaVista` con `manuale.riga`/`rigaClasse`/`rigaMagico`), `interfaccia.ts` registra la voce INFO (tasto 6, ordine 60) e i contesti `info:manuale[:statistiche|:classi|:classe:<id>|:armi|:armature|:linea:<id>|:brace:<tipo>|:magici]`, con `contestiPadre` per «Torna indietro». `menuNascosto` toglie le due voci «Acciaio di brace» sotto il livello massimo. Le pagine non leggono mai parametri nascosti (probabilità, durate, formule).
+
+## 70. Partenza, rinascita e Locanda (0.27.0)
+`PARAMETRI_CITTA` ha tre valori: `sitoIniziale` (piazza-c), `sitoRinascita` (porta-s) e `sitiNotiAllInizio` (porta-s, piazza-n). `regolaRinascita` usa `sitoRinascita`; lo stato iniziale della città parte da `sitoIniziale` con i luoghi noti. La Locanda è un edificio ospitato da `piazza-n` (campo `ospite` e collegamento nella piazza). `azioniPerDormire(stato, ctx)` (locanda) calcola il costo del sonno (HP, mana, stati, minimo 3 se avvelenati). `strumenti/simulatore/simula.ts` guida il motore reale con un giocatore automatico (azioni `esploraForesta`, `combattiFinoAllaFine`, `fuggi`, `saliDiLivello`/`sfidaCapogilda`, `compraOggetto`); `tsconfig.json` non include `strumenti/` (lo controlla solo vitest).
+
+## 71. La piana e i livelli 13-16 (0.27.0)
+Modulo `piana` (stato `statoPiana.querciaSfidata`, azione `sfidaQuercia`, regola `puntoInizioGiorno` priorità 109). Esplorazione generica `esploraForesta {luogoId:"piana"}`; la porta usa `areaId` + `livelloMin`. Boss con `iniziaScontro(..., "scena.quercia")`. Livelli: tutto in `livelli/parametri.ts`; `livelloDegno` separa la «dignità» dal tetto. Capigilda 16 in `gilde/dati.ts` (`capogilda: {4,8,12,16}`). Arte: `strumenti/arte/scene_p.py` ed `esporta.py`.
+
+## 72. Le colline e i livelli 17-20 (0.28.0)
+Modulo `colline` (stato `statoColline.capitanoSfidato`, azione `sfidaCapitano`, regola `puntoInizioGiorno` priorità 110), identico nello schema a `piana`. Porta: `porta-e` con `areaId "colline"` e `livelloMin` 16. Un livello chiave è il livello di **arrivo**: il duello serve per salire AL livello chiave (si sfida dal 15 per il 16, dal 19 per il 20). Arte: `strumenti/arte/scene_k.py`.

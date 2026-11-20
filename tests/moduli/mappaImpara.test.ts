@@ -7,7 +7,10 @@ import { creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from "../aiut
 
 const registro = registroDa(MODULI_ATTIVI);
 const ctx = creaContestoDiProva(registro, 4);
-const partenza = (): StatoGioco => statoDiProva(registro);
+// Dalla 0.26.1 si parte a Piazza San Michele; qui la "partenza" dei test di viaggio resta la Porta San Pietro (come prima), con solo la porta già visitata.
+const partenza = (): StatoGioco => statoCitta.scrivi(statoDiProva(registro), { sito: "porta-s", movimenti: 0, visitati: ["porta-s"] });
+const inAnfiteatro = (): StatoGioco => statoCitta.scrivi(partenza(), { sito: "piazza-n", movimenti: 0, visitati: ["porta-s", "piazza-n"] });
+const partenzaVera = (): StatoGioco => statoDiProva(registro);
 const viaggia = (sito: string) => ({ tipo: "viaggia", dati: { sito } });
 const entra = (sito: string) => ({ tipo: "entra", dati: { sito } });
 
@@ -20,9 +23,15 @@ const lista = (stato: StatoGioco, categoria: string, lingua: "it" | "en" = "it")
 };
 
 describe("la mappa impara cosa c'è nei luoghi visitati", () => {
-  it("all'inizio si conosce solo la porta di partenza (con la Locanda); le piazze mostrano solo il nome", () => {
+  it("0.26.1: all'inizio si conoscono la piazza di partenza, la porta della foresta e la piazza della Locanda", () => {
+    expect(statoCitta.leggi(partenzaVera()).visitati).toEqual(["piazza-c", "porta-s", "piazza-n"]);
+    expect(lista(partenzaVera(), "porte")).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla - 10 movimenti, 1 azione");
+    expect(lista(partenzaVera(), "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Fabbro, Locanda, Gilda dei Cavalieri - 4 movimenti, 0 azioni");
+  });
+
+  it("dalla porta (partenza dei test di viaggio) le piazze non visitate mostrano solo il nome", () => {
     expect(statoCitta.leggi(partenza()).visitati).toEqual(["porta-s"]);
-    expect(lista(partenza(), "porte")).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla, Locanda - sei qui");
+    expect(lista(partenza(), "porte")).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla - sei qui");
     expect(lista(partenza(), "piazze")).toEqual([
       "[1] Piazza dell'Anfiteatro - 14 movimenti, 1 azione",
       "[2] Piazza San Michele - 10 movimenti, 1 azione",
@@ -35,10 +44,10 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
 
   it("dopo la prima visita la piazza mostra i suoi edifici, anche da lontano e in inglese", () => {
     const a = eseguiOk(partenza(), viaggia("piazza-n"), ctx).stato;
-    expect(lista(a, "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Fabbro, Gilda dei Cavalieri - sei qui");
+    expect(lista(a, "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Fabbro, Locanda, Gilda dei Cavalieri - sei qui");
     expect(lista(a, "piazze")[1]).toBe("[2] Piazza San Michele - 4 movimenti, 1 azione"); // non ancora visitata: solo il nome
     const b = eseguiOk(a, viaggia("piazza-c"), ctx).stato;
-    expect(lista(b, "piazze")[0]).toMatch(/^\[1\] Piazza dell'Anfiteatro: Fabbro, Gilda dei Cavalieri - 4 movimenti/); // resta nota
+    expect(lista(b, "piazze")[0]).toMatch(/^\[1\] Piazza dell'Anfiteatro: Fabbro, Locanda, Gilda dei Cavalieri - 4 movimenti/); // resta nota
     expect(lista(b, "piazze", "en")[1]).toBe("[2] San Michele Square: Bank, Mystics' Guild - you are here");
     expect(statoCitta.leggi(b).visitati).toEqual(["porta-s", "piazza-n", "piazza-c"]);
   });
@@ -80,16 +89,16 @@ describe("le frasi di arrivo e le etichette di uscita hanno le preposizioni gius
     expect(da("fillungo", "sartoria")).toMatch(/^Arrivi alla Sartoria/);
     expect(da("piazza-c", "banca")).toMatch(/^Arrivi in Banca/);
     expect(da("piazza-s", "guaritore")).toMatch(/^Arrivi dal Guaritore/);
-    expect(arrivo(partenza(), entra("locanda"))).toMatch(/^Arrivi alla Locanda/);
-    expect(arrivo(partenza(), entra("locanda"), "en")).toMatch(/^You arrive at the Inn/);
+    expect(arrivo(inAnfiteatro(), entra("locanda"))).toMatch(/^Arrivi alla Locanda/);
+    expect(arrivo(inAnfiteatro(), entra("locanda"), "en")).toMatch(/^You arrive at the Inn/);
   });
 
   it("l'uscita dice dove si torna, e il tasto dice se si esce in piazza o alla porta", () => {
-    const inLocanda = eseguiOk(partenza(), entra("locanda"), ctx).stato;
-    expect(arrivo(inLocanda, { tipo: "esciEdificio" })).toBe("Esci: sei di nuovo a Porta San Pietro.");
-    expect(arrivo(inLocanda, { tipo: "esciEdificio" }, "en")).toBe("You step out: you are back at San Pietro Gate.");
+    const inLocanda = eseguiOk(inAnfiteatro(), entra("locanda"), ctx).stato;
+    expect(arrivo(inLocanda, { tipo: "esciEdificio" })).toBe("Esci: sei di nuovo in Piazza dell'Anfiteatro.");
+    expect(arrivo(inLocanda, { tipo: "esciEdificio" }, "en")).toBe("You step out: you are back in Amphitheatre Square.");
     const etichetta = (contesto: string) => traduci(registro, "it", vociMenu(registro, contesto).find((v) => v.tasto === "E")!.etichettaChiave);
-    expect(etichetta("luogo:locanda")).toBe("Esci alla porta");
+    expect(etichetta("luogo:locanda")).toBe("Esci in piazza");
     for (const c of ["luogo:armeria", "luogo:sartoria", "luogo:banca", "luogo:guaritore"]) expect(etichetta(c), c).toBe("Esci in piazza");
     expect(traduci(registro, "en", vociMenu(registro, "luogo:banca").find((v) => v.tasto === "E")!.etichettaChiave)).toBe("Go out to the square");
   });

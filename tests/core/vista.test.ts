@@ -32,13 +32,13 @@ describe("vista e menu", () => {
     expect(con("ladro").find((v) => v.tipo === "statistica")).toMatchObject({ valore: 15 });
   });
 
-  it("dopo la scelta della classe si è alla Porta San Pietro, liberi di addentrarsi nella foresta o di aprire la mappa", () => {
+  it("dopo la scelta della classe si è a Piazza San Michele (0.26.1), liberi di addentrarsi nella foresta o di aprire la mappa", () => {
     const scelta = eseguiOk(statoDiProva(registro), { tipo: "scegliClasse", dati: { classeId: "ladro" } }, ctx);
     const vista = creaVistaPartita(scelta.stato, ctx);
     expect(vista.contestoForzato).toBeUndefined();
-    expect(vista.contestoBase).toBe("citta:porta-s");
-    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "T", "E", "C", "L", "M"]); // parla, addentrati nella foresta, apri il forziere (nascosta finché non ce n'è uno), esci, capanna di Sibilla (nascosta: la porta è aperta), Locanda, mappa
-    expect(vista.pannelli.some((p) => p.contesti?.includes("citta:porta-s") && p.righe[0]?.chiave === "citta.pannello.descrizione")).toBe(true);
+    expect(vista.contestoBase).toBe("citta:piazza-c");
+    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "T", "E", "C", "M"]); // parla, addentrati nella foresta, apri il forziere (nascosta finché non ce n'è uno), esci, capanna di Sibilla (nascosta: la porta è aperta), Locanda, mappa
+    expect(vista.pannelli.some((p) => p.contesti?.includes("citta:piazza-c") && p.righe[0]?.chiave === "citta.pannello.descrizione")).toBe(true);
     expect(vista.pannelli.some((p) => p.titoloChiave === "classi.pannello.titolo")).toBe(false);
   });
 

@@ -734,6 +734,12 @@ Esplorando una zona, circa 1 volta su 7 capita un **incontro speciale** invece d
 ## Novità 0.25.1 - Ritocchi
 L'acciaio di brace ora vale 26 punti e costa 5.500 monete fisse (un vero salto sull'equipaggiamento normale). La Carica toglie 10 punti di precisione invece di 20. Il Guardiano della cripta ha 200 HP. La scalinata della cripta avvisa se sei ferito prima di scendere. **Il Mondo vivo va ridisegnato** (da progettare con il game designer).
 
+## In preparazione 0.26.1 - Partenza, rinascita, Locanda e sonno
+Il personaggio comincia in **Piazza San Michele** (il cuore della città) e conosce la strada per la foresta; morendo si ritrova **fuori dalla prima porta**. La **Locanda** è in **Piazza dell'Anfiteatro**. Se sei avvelenato, **dormire costa almeno 3 azioni**.
+
+## Novità 0.26.0 - Il manuale in gioco
+Da **[I] Informazioni → [6] Il manuale** si leggono le tabelle del gioco: statistiche per classe (livello 1 e 12), la scheda di ogni classe livello per livello (1-12, con esperienza, retta, abilità e duelli dei capigilda), armi e armature linea per linea (punti, effetti, prezzo a ogni livello) e i bonus degli oggetti magici. Mostra solo ciò che si scopre giocando: niente probabilità, durate delle pozioni, effetti numerici della Fortuna. L'acciaio di brace compare solo dal livello 12.
+
 ## Novità 0.25.0 - Livello 12, Fabbro e cripta rivista
 **Livello 12:** il tetto sale a 12 (retta 2.600, provvisoria). Chi ci arriva è «degno dei migliori equipaggiamenti». Tre nuovi capigilda (Ruggero, Selene, Gufo Nero) e una **quarta abilità** per classe, una volta per scontro: Grido (il nemico sbaglia di più), Lama avvelenata (colpi più forti), Maledizione (il nemico fa meno danno, 5 mana). **Fabbro** (dal 12): arma e armatura d'acciaio di brace, un solo gradino fortissimo e molto caro (5.500 monete). **Cripta:** massimo tre esplorazioni per piano e almeno una per scendere; le monete vinte vanno nella borsa e si perdono morendo, ma **le monete in tasca no**; la fuga riesce almeno 1 volta su 4. **Pozioni** più potenti e **lavori** pagati il doppio. **Armeria:** voce Bestiario con ciò che è efficace o resistito per tipo di danno.
 
@@ -742,3 +748,9 @@ Spedizione «tutto al rischio». **Come si trova:** esplorando palude o cimitero
 
 ## Novità 0.23.0
 **Veleno** e **paura** durano 8 azioni: il veleno toglie 1 HP per azione speso (mai oltre 1 HP rimasto), la paura toglie 1 forza e 1 difesa. Li infliggono, con il 25% di probabilità per colpo a segno, serpe e rospo (veleno), spettro, annegato e dama della nebbia (paura); anche la trappola può avvelenare. Rimedi: **Antidoto** dello Speziale (veleno), Guaritore e chiesa a pagamento (entrambi), sonno in locanda e nuovo giorno. **Patto del diavolo**: una volta per partita, alla valle di notte, si può accettare uno di tre patti permanenti (Forza, Difesa, Fortuna), ciascuno con il suo prezzo. Il bestiario dice quali mostri avvelenano o spaventano.
+
+## Novità 0.27.0 - La piana di Capannori e i livelli 13-16
+Dal livello 12 si apre Porta San Jacopo alla Tomba: la piana di Capannori (contadini posseduti, spaventapasseri, cani neri, erboriste; di notte lupi mannari e streghe del sabba, premi +25%). In fondo, la Quercia delle streghe: la Madre si sfida una volta al giorno. Il tetto sale al livello 16, con nuovi capigilda al 16. Valori provvisori da collaudare.
+
+## Novità 0.28.0 - Le colline di Lucca e i livelli 17-20
+Dal livello 16 si apre Porta Elisa: le colline (banditi, mercenari, lupi, arpie e, raro, il mezzogigante; di notte cavalieri spettrali e ombre delle rovine, premi +25%). Sul colle, il fortino: il Capitano dei Banditi si sfida una volta al giorno. Il tetto sale al livello 20 con nuovi capigilda al 20. Valori provvisori da collaudare.

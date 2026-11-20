@@ -4,6 +4,7 @@ import { applicaRegole, calcolaStatistiche, eseguiAzione } from "../../src/core/
 import { puntoColpoSubito, puntoOro } from "../../src/moduli/combattimento/indice";
 import { statoClassi } from "../../src/moduli/classi/indice";
 import { MODULI_ATTIVI } from "../../src/moduli/indice";
+import { leggiAzioniResidue, statoAzioni } from "../../src/moduli/azioni/indice";
 import { aggiungiOggetto } from "../../src/moduli/inventario/indice";
 import { PARAMETRI_STATI as P, azioniResidue, curaStati, infliggiStato, pattoStretto, prezzoCuraChiesa, prezzoCuraGuaritore, statoStati, stringiPatto, èAvvelenato } from "../../src/moduli/stati/indice";
 import { creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from "../aiuti";
@@ -102,6 +103,19 @@ describe("Stati: i rimedi", () => {
     const dopo = eseguiOk(malato, { tipo: "dormi" }, ctx0).stato;
     expect(statoStati.leggi(dopo)).toMatchObject({ veleno: 0, paura: 0 });
     expect(dopo.personaggio.hp).toBe(calcolaStatistiche(dopo, ctx0).hpMax);
+  });
+
+  it("0.26.1: avvelenati, dormire costa almeno 3 azioni; la sola paura meno di 3", () => {
+    const avvelenato = infliggiStato(pg(), "veleno");
+    expect(leggiAzioniResidue(avvelenato) - leggiAzioniResidue(eseguiOk(avvelenato, { tipo: "dormi" }, ctx0).stato)).toBe(3);
+    const spaventato = infliggiStato(pg(), "paura");
+    expect(leggiAzioniResidue(spaventato) - leggiAzioniResidue(eseguiOk(spaventato, { tipo: "dormi" }, ctx0).stato)).toBeLessThan(3);
+  });
+
+  it("0.26.1: avvelenato con poche azioni non può dormire", () => {
+    const avvelenato = infliggiStato(pg(), "veleno");
+    const stanco = statoAzioni.scrivi(avvelenato, { ...statoAzioni.leggi(avvelenato), residue: 2 });
+    expect(eseguiAzione(stanco, { tipo: "dormi" }, ctx0).ok).toBe(false);
   });
 });
 

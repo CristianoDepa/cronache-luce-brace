@@ -69,9 +69,9 @@ async function vai(app: ReturnType<typeof creaApp>, categoria: string, luogo: st
 }
 
 // Raggiunge un edificio: cammina fino al suo luogo ospite (dalla mappa) e vi entra con il tasto d'ingresso.
-// Armeria e Sartoria: Piazza dell'Anfiteatro (lettere A e S); Banca: San Michele (B); Guaritore: Napoleone (U); Locanda: Porta San Pietro (L).
+// Armeria e Sartoria: Piazza dell'Anfiteatro (lettere A e S); Banca: San Michele (B); Guaritore: Napoleone (U); Locanda: Piazza dell'Anfiteatro (L, dalla 0.26.1).
 async function entraIn(app: ReturnType<typeof creaApp>, edificio: "armeria" | "sartoria" | "banca" | "guaritore" | "locanda"): Promise<void> {
-  const dove = { armeria: ["5", "A"], sartoria: ["5", "S"], banca: ["2", "B"], guaritore: ["3", "U"], locanda: [undefined, "L"] } as const;
+  const dove = { armeria: ["5", "A"], sartoria: ["5", "S"], banca: ["2", "B"], guaritore: ["3", "U"], locanda: ["1", "L"] } as const;
   const [piazza, tasto] = dove[edificio];
   if (piazza !== undefined) await vai(app, "3", piazza);
   await app.premiTasto(tasto);
@@ -175,16 +175,28 @@ describe("una giornata in città e nella foresta", () => {
     const app = creaAmbiente(lingua).nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto("1"); // Cavaliere
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return app;
   }
 
-  it("si parte alla Porta San Pietro: addentrarsi nella foresta, mappa, luogo e azioni rimaste a destra", async () => {
+  it("0.26.1: si parte a Piazza San Michele, non alla porta; la locanda è all'Anfiteatro", async () => {
+    const amb = creaAmbiente("it");
+    const app = amb.nuovaApp();
+    await iniziaPartita(app, "Aldo");
+    await app.premiTasto("1");
+    expect(app.schermata().chiave).toBe("gioco:citta:piazza-c");
+    expect(testo(app.schermata())).toContain("Luogo: Piazza San Michele");
+    expect(testo(app.schermata())).toContain("Azioni 50/50");
+    expect(tasti(app.schermata())).not.toContain("F"); // la foresta si raggiunge dalla porta
+  });
+
+  it("dalla Porta San Pietro: addentrarsi nella foresta, mappa, luogo e azioni rimaste a destra", async () => {
     const app = await giocatore();
     const s = app.schermata();
-    expect(tasti(s)).toEqual(["F", "C", "L", "M", "I", "O"]); // F = Addentrati nella foresta, C = la capanna di Sibilla; il comando "Parla" non c'è dove non c'è nessuno
+    expect(tasti(s)).toEqual(["F", "C", "M", "I", "O"]); // F = Addentrati nella foresta, C = la capanna di Sibilla; il comando "Parla" non c'è dove non c'è nessuno
     expect(testo(s)).toContain("Porta San Pietro");
     expect(testo(s)).toContain("Luogo: Porta San Pietro");
-    expect(testo(s)).toContain("Azioni 50/50");
+    expect(testo(s)).toContain("Azioni 49/50"); // la strada dalla piazza di partenza costa 10 movimenti: 1 azione
     expect(testo(s)).toContain("Aldo");
   });
 
@@ -216,7 +228,7 @@ describe("una giornata in città e nella foresta", () => {
     const app = await giocatore();
     expect(testo(app.schermata())).toContain("Addentrati nella foresta");
     expect(testo(app.schermata())).toContain("Luogo: Porta San Pietro");
-    expect(testo(app.schermata())).toContain("Azioni 50/50");
+    expect(testo(app.schermata())).toContain("Azioni 49/50");
     await app.premiTasto("f"); // le minuscole funzionano
     const combattimento = app.schermata();
     expect(tasti(combattimento)).toEqual(["A", "T", "S", "F", "O"]); // T = combatti fino alla fine; la seconda abilità si vede solo dal livello 4
@@ -233,7 +245,7 @@ describe("una giornata in città e nella foresta", () => {
     }
     expect(app.stato().vista?.contestoForzato).toBeUndefined();
     expect(testo(app.schermata())).toMatch(/Vittoria!|sconfitto/);
-    expect(testo(app.schermata())).toContain("Azioni 49/50");
+    expect(testo(app.schermata())).toContain("Azioni 48/50");
     expect(app.stato().log.length).toBeLessThanOrEqual(4); // 0.23.0: restano solo le righe dell'ultimo round, non tutto lo scontro
   });
 
@@ -322,6 +334,7 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     const app = creaAmbiente("it").nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto("1");
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return app;
   }
 
@@ -429,7 +442,7 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     expect(app.stato().fase).toBe("opzioni");
     expect(testo(app.schermata())).toContain("Azioni al giorno (ora: 80)");
     await app.premiTasto("0");
-    expect(testo(app.schermata())).toContain("Azioni 80/80");
+    expect(testo(app.schermata())).toContain("Azioni 79/80");
   });
 
   it("Invio da solo conferma il valore attuale senza cambiarlo", async () => {
@@ -448,6 +461,7 @@ describe("pulizia dello schermo e aggiornamento", () => {
     const app = amb.nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto("1");
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return { amb, app };
   }
 
@@ -511,6 +525,7 @@ describe("schermate INFO: il personaggio e le statistiche incontri", () => {
     const app = amb.nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto("1"); // Cavaliere
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return { amb, app };
   }
   const sx = (s: Schermata): string => s.sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n");
@@ -588,7 +603,7 @@ describe("schermate INFO: il personaggio e le statistiche incontri", () => {
   it("l'elenco INFO ha le schede numerate; dentro le schede non c'è altro gruppo INFO", async () => {
     const { app } = await giocatore();
     await app.premiTasto("I");
-    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "0", "O"]); // personaggio, statistiche, classi, inventario, bestiario
+    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "0", "O"]); // personaggio, statistiche, classi, inventario, bestiario, manuale
     await app.premiTasto("1");
     expect(tasti(app.schermata())).toEqual(["0", "O"]);
     await app.premiTasto("0");
@@ -602,6 +617,7 @@ describe("schermate INFO: il personaggio e le statistiche incontri", () => {
     await iniziaPartita(app, "Aldo");
     expect(tasti(app.schermata())).toEqual(["1", "2", "3", "D", "O"]); // creazione
     await app.premiTasto("1");
+    await vai(app, "1", "4"); // alla Porta San Pietro
     await app.premiTasto("F"); // addentrati nella foresta (dalla porta)
     expect(tasti(app.schermata())).toEqual(["A", "T", "S", "F", "O"]); // combattimento
   });
@@ -622,6 +638,7 @@ describe("messaggi ripetuti, effetti grafici e CRT", () => {
     const app = amb.nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto("1");
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return { amb, app };
   }
   const sx = (s: Schermata): string => s.sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n");
@@ -741,7 +758,7 @@ describe("colonna di destra, versione e scelta della classe", () => {
     await app.premiTasto("D");
     await app.premiTasto("2");
     await app.premiTasto("1"); // sceglie il Mistico dalla sua pagina
-    expect(app.schermata().chiave).toBe("gioco:citta:porta-s");
+    expect(app.schermata().chiave).toBe("gioco:citta:piazza-c");
     expect(sx(app.schermata())).not.toContain("Scegli questa classe");
     expect(dx(app.schermata())).toContain("Mana");
   });
@@ -789,6 +806,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     const app = amb.nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto(classe);
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return { amb, app };
   }
 
@@ -800,7 +818,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(tasti(app.schermata())).toEqual(["1", "2", "3", "0", "I", "O"]);
     await app.premiTasto("1");
     expect(sx(app.schermata())).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 2 azioni"); // con la direzione
-    expect(sx(app.schermata())).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla, Locanda - sei qui"); // già visitata: mostra cosa contiene
+    expect(sx(app.schermata())).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla - sei qui"); // già visitata: mostra cosa contiene
     expect(haDisegno(app.schermata())).toBe(true);
     await app.premiTasto("0"); // dalla lista torna alla mappa
     expect(sx(app.schermata())).toContain("Sei qui: Porta San Pietro");
@@ -811,20 +829,20 @@ describe("mappa, viaggi e comandi di prova", () => {
 
   it("viaggiando si arriva nel nuovo luogo: registro con l'arrivo, luogo e azioni aggiornati a destra", async () => {
     const { app } = await giocatore();
-    await vai(app, "3", "1"); // Piazza dell'Anfiteatro: 14 movimenti, 1 azione
+    await vai(app, "3", "1"); // Piazza dell'Anfiteatro: 14 movimenti dalla porta (con il resto di 2: 2 azioni)
     expect(app.schermata().chiave).toBe("gioco:citta:piazza-n");
-    expect(sx(app.schermata())).toContain("Arrivi in Piazza dell'Anfiteatro (14 movimenti, 1 azione).");
-    expect(sx(app.schermata())).toContain("[G] Gilda dei Cavalieri - 2 movimenti, 1 azione"); // (con il resto di 6) gli edifici si vedono nella piazza
+    expect(sx(app.schermata())).toContain("Arrivi in Piazza dell'Anfiteatro (14 movimenti, 2 azioni).");
+    expect(sx(app.schermata())).toContain("[G] Gilda dei Cavalieri - 2 movimenti, 0 azioni"); // (con il resto di 0) gli edifici si vedono nella piazza
     await app.premiTasto("G"); // entra nella Gilda dei Cavalieri: 2 movimenti, con il resto di 6 fa 1 azione
     expect(app.schermata().chiave).toBe("gioco:luogo:gilda-cavaliere");
     expect(app.stato().log).toHaveLength(1);
-    expect(sx(app.schermata())).toContain("Arrivi alla Gilda dei Cavalieri (2 movimenti, 1 azione).");
+    expect(sx(app.schermata())).toContain("Arrivi alla Gilda dei Cavalieri (2 movimenti, 0 azioni).");
     expect(dx(app.schermata())).toContain("Luogo: Gilda dei Cavalieri");
-    expect(dx(app.schermata())).toContain("Azioni 48/50");
+    expect(dx(app.schermata())).toContain("Azioni 47/50");
     // uscire è gratis e riporta alla piazza
     await app.premiTasto("E");
     expect(app.schermata().chiave).toBe("gioco:citta:piazza-n");
-    expect(dx(app.schermata())).toContain("Azioni 48/50");
+    expect(dx(app.schermata())).toContain("Azioni 47/50");
     // un viaggio impossibile resta sulla mappa con il messaggio
     await app.premiTasto("M");
     await app.premiTasto("3");
@@ -835,7 +853,7 @@ describe("mappa, viaggi e comandi di prova", () => {
 
   it("layout compatto: nome del luogo, righe di stato senza titoli ripetuti, linea sopra il registro, poi il menu", async () => {
     const { app } = await giocatore();
-    await app.premiTasto("L"); // entra nella Locanda dalla Porta San Pietro
+    await entraIn(app, "locanda"); // dalla 0.26.1 la Locanda è in Piazza dell'Anfiteatro
     const righe = app.schermata().sinistra.map((r) => r.map((x) => x.testo).join(""));
     const t = righe.join("\n");
     expect(righe[0]).toBe("La Locanda");
@@ -853,7 +871,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(log).toBe(linea + 1);
     expect(menu).toBeGreaterThan(log); // sotto il registro c'è l'intestazione del menu
     await app.premiTasto("E");
-    expect(app.schermata().sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n")).toContain("Esci: sei di nuovo a Porta San Pietro.");
+    expect(app.schermata().sinistra.map((r) => r.map((x) => x.testo).join("")).join("\n")).toContain("Esci: sei di nuovo in Piazza dell'Anfiteatro.");
   });
 
   it("le porte chiuse spiegano cosa c'è fuori; quella aperta porta nella foresta", async () => {
@@ -885,7 +903,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     await app.premiTasto("6"); // Torre Guinigi (dopo Piazza San Martino e Via Fillungo)
     expect(app.schermata().chiave).toBe("gioco:citta:torre");
     expect(dx(app.schermata())).toContain("Luogo: Torre Guinigi");
-    expect(dx(app.schermata())).toContain("Azioni 50/50");
+    expect(dx(app.schermata())).toContain("Azioni 49/50"); // 1 azione spesa nel tragitto fino alla porta
     // monete
     await app.premiTasto("O");
     await app.premiTasto("V");
@@ -905,8 +923,8 @@ describe("mappa, viaggi e comandi di prova", () => {
 
   it("il giorno dopo di prova ripristina le azioni spese camminando", async () => {
     const { app } = await giocatore(true);
-    await entraIn(app, "armeria"); // 49 azioni
-    expect(dx(app.schermata())).toContain("Azioni 49/50");
+    await entraIn(app, "armeria"); // 47 azioni (1 per arrivare alla porta, 2 fino all'armeria)
+    expect(dx(app.schermata())).toContain("Azioni 47/50");
     await app.premiTasto("O");
     await app.premiTasto("V");
     await app.premiTasto("1");
@@ -937,6 +955,7 @@ describe("[C] Le classi", () => {
     const app = creaAmbiente("it").nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto(classe);
+    await vai(app, "1", "4"); // 0.26.1: si parte a Piazza San Michele; qui si raggiunge la Porta San Pietro (4ª porta)
     return app;
   }
 

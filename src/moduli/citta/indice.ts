@@ -23,8 +23,8 @@ export { CONTESTO_MAPPA } from "./interfaccia";
 // Al nuovo giorno il resto dei movimenti si azzera.
 const regolaMovimentiGiornalieri = regola(puntoInizioGiorno, 95, (stato) => statoCitta.scrivi(stato, { ...statoCitta.leggi(stato), movimenti: 0 }));
 
-// Dopo la morte si rinasce alla porta di partenza.
-const regolaRinascita = regola(puntoRinascita, 100, (stato, ctx) => spostaIn(ctx.registro, stato, PARAMETRI_CITTA.sitoIniziale, 0));
+// Dopo la morte si rinasce fuori dalla prima porta (la partenza, dalla 0.26.1, è una piazza interna).
+const regolaRinascita = regola(puntoRinascita, 100, (stato, ctx) => spostaIn(ctx.registro, stato, PARAMETRI_CITTA.sitoRinascita, 0));
 
 const testi = testiSiti();
 

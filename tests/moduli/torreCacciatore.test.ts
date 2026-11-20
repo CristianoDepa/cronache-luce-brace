@@ -369,7 +369,7 @@ describe("la scheda del personaggio (0.13.1): mana nelle Statistiche e crescita 
     expect(classe("mistico", 3)).toEqual(["Mistico", "Al prossimo livello:", "HP massimi +3", "Difesa +1", "Velocità +1", "Mana +2", "Fortuna +1"]); // il livello 4 è il prossimo: il suo bonus si somma (e la Fortuna sale ai livelli pari)
     expect(classe("mistico", 4)).toEqual(["Mistico", "Al prossimo livello:", "HP massimi +3", "Difesa +1", "Mana +2"]);
     expect(classe("cavaliere", 1)).toEqual(["Cavaliere", "Al prossimo livello:", "HP massimi +5", "Forza +1", "Fortuna +1", "Al livello 4:", "Difesa +1"]);
-    expect(classe("ladro", 12)).toEqual(["Ladro"]); // al livello massimo non c'è più nulla da guadagnare
+    expect(classe("ladro", 20)).toEqual(["Ladro"]); // al livello massimo non c'è più nulla da guadagnare
     for (const id of ["cavaliere", "mistico", "ladro"]) for (const l of [1, 3, 8]) expect(classe(id, l).join(" ")).not.toMatch(/-\d/);
   });
 });

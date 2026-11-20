@@ -2,7 +2,7 @@ import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from quadro import *
-import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n, scene_o
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n, scene_o, scene_p, scene_k
 
 SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
 INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
@@ -32,6 +32,8 @@ modulo("scoperta", "ILLUSTRAZIONI_SCOPERTA", [scene_i.lapide().esporta("sprite.l
 modulo("cattedrale", "ILLUSTRAZIONI_CATTEDRALE", [scene_n.cattedrale().esporta("scena.cattedrale")])
 modulo("bandi", "ILLUSTRAZIONI_BANDI", [scene_n.palazzo_anziani().esporta("scena.palazzo")])
 modulo("valle", "ILLUSTRAZIONI_VALLE", [f().esporta(i) for i, f in scene_l.SPRITE.items()] + [scene_l.valle().esporta("scena.valle")])
+modulo("colline", "ILLUSTRAZIONI_COLLINE", [f().esporta(i) for i, f in scene_k.SPRITE.items()] + [scene_k.colline().esporta("scena.colline"), scene_k.fortino().esporta("scena.fortino")])
+modulo("piana", "ILLUSTRAZIONI_PIANA", [f().esporta(i) for i, f in scene_p.SPRITE.items()] + [scene_p.piana().esporta("scena.piana"), scene_p.quercia().esporta("scena.quercia")])
 modulo("eventi", "ILLUSTRAZIONI_EVENTI", [scene_m.grotta().esporta("scena.grotta"), scene_m.guado().esporta("scena.guado")] + [f().esporta(i) for i, f in scene_m.SPRITE.items()])
 modulo("incantatrice", "ILLUSTRAZIONI_INCANTATRICE", [scene_i.capanna().esporta("scena.capanna")])
 modulo("registro", "ILLUSTRAZIONI_REGISTRO", [scene_h.registro().esporta("scena.registro")])
@@ -49,7 +51,7 @@ npc = scene_c.npc()
 modulo("mura", "ILLUSTRAZIONI_MURA", [mura.esporta("scena.mura")] + [npc[n].esporta(f"sprite.npc.{n}") for n in ["beatrice", "anselmo", "ginevra", "tobia", "lorenzo", "zita"]])
 modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_n.piazza_san_martino().esporta("scena.piazza-m"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")] + [scene_i.porta(n).esporta("scena.porta-" + s) for n, s in (("san-pietro", "s"), ("sant-anna", "so"), ("san-jacopo", "ne"), ("elisa", "e"), ("santa-maria", "n"), ("san-donato", "no"))])
 cg = scene_e.capogilda()
-modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")] + [scene_l.capigilda8()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere8", "mistico8", "ladro8")] + [scene_o.capigilda12()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere12", "mistico12", "ladro12")])
+modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")] + [scene_l.capigilda8()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere8", "mistico8", "ladro8")] + [scene_o.capigilda12()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere12", "mistico12", "ladro12")] + [scene_p.capigilda16()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere16", "mistico16", "ladro16")] + [scene_k.capigilda20()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere20", "mistico20", "ladro20")])
 modulo("palude", "ILLUSTRAZIONI_PALUDE", [scene_f.palude().esporta("scena.palude"), scene_f.cimitero().esporta("scena.cimitero"), scene_o.palude_nebbia().esporta("scena.palude.nebbia"), scene_o.cimitero_nebbia().esporta("scena.cimitero.nebbia")] + [f().esporta(f"sprite.{n}") for n, f in scene_f.MOSTRI.items()])
 VARIANTI_CRIPTA = [("scena.cripta", dict(piano=1)), ("scena.cripta.2", dict(piano=2)), ("scena.cripta.3", dict(piano=3)), ("scena.cripta.3.forziere", dict(piano=3, forziere=True)), ("scena.cripta.4", dict(piano=4)),
                    ("scena.cripta.5", dict(piano=5)), ("scena.cripta.5.forziere", dict(piano=5, forziere=True)), ("scena.cripta.5.statua.forziere", dict(piano=5, forziere=True, statua=True))]

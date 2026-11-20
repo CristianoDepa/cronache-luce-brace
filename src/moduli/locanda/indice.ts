@@ -1,4 +1,4 @@
-import type { DefinizioneModulo, DizionarioTesti, InterfacciaModulo, PannelloVista, Risultato, RigaVista } from "../../core/indice";
+import type { Contesto, DefinizioneModulo, DizionarioTesti, InterfacciaModulo, PannelloVista, Risultato, RigaVista, StatoGioco } from "../../core/indice";
 import { ID_MANA, manaAttuale, manaMassimo, ripristinaMana } from "../mana/indice";
 import {
   VERSIONE_API,
@@ -30,6 +30,8 @@ export const PARAMETRI_LOCANDA = {
   prezzoPasto: 10,
   hpPasto: 10,
   pastiMaxGiorno: 3,
+  // Avvelenato, dormire costa almeno così tante azioni (0.26.1): il veleno non passa più quasi gratis; la paura passa come prima.
+  azioniSeAvvelenati: 3,
 } as const;
 
 export interface StatoLocanda {
@@ -46,6 +48,16 @@ function convalidaStato(dati: unknown): Risultato<StatoLocanda> {
 
 export const statoLocanda = definisciStato<StatoLocanda>(ID_LOCANDA, 1, () => ({ pastiOggi: 0 }), convalidaStato);
 
+// Quante azioni costa dormire adesso: per gli HP (e il mana) da recuperare, almeno 1 se ci sono stati da far passare, almeno 3 se si è avvelenati.
+export function azioniPerDormire(stato: StatoGioco, ctx: Contesto): number {
+  const { hpMax } = calcolaStatistiche(stato, ctx);
+  const mancanti = Math.max(0, hpMax - stato.personaggio.hp);
+  const manaMancante = manaMassimo(stato, ctx) - manaAttuale(stato, ctx);
+  const conStati = èAvvelenato(stato) || èSpaventato(stato);
+  const base = Math.max(incontriPerDormire(mancanti), manaMancante > 0 || conStati ? 1 : 0);
+  return èAvvelenato(stato) ? Math.max(base, PARAMETRI_LOCANDA.azioniSeAvvelenati) : base;
+}
+
 export function incontriPerDormire(hpMancanti: number): number {
   return Math.ceil(hpMancanti / PARAMETRI_LOCANDA.hpPerIncontro);
 }
@@ -60,7 +72,7 @@ const azioneDormi = definisciAzione("dormi", nessunDato, (stato, _dati, ctx) => 
   const conStati = èAvvelenato(stato) || èSpaventato(stato);
   if (mancanti === 0 && manaMancante === 0 && !conStati) return esitoErrore("locanda.errore.in_salute");
   // Anche solo per recuperare il mana (o per far passare veleno e paura) si consuma almeno un incontro.
-  const incontri = Math.max(incontriPerDormire(mancanti), manaMancante > 0 || conStati ? 1 : 0);
+  const incontri = azioniPerDormire(stato, ctx);
   const dopoIncontri = consumaAzioni(stato, incontri);
   if (!dopoIncontri) return esitoErrore("locanda.errore.incontri_insufficienti", String(incontri));
   const curato = curaStati(ripristinaMana({ ...dopoIncontri, personaggio: { ...dopoIncontri.personaggio, hp: hpMax } }, ctx));
@@ -155,7 +167,7 @@ const interfaccia: InterfacciaModulo = {
           pastiMax: PARAMETRI_LOCANDA.pastiMaxGiorno,
         },
       },
-      ...(mancanti > 0 ? [{ chiave: "locanda.pannello.dormire", parametri: { incontri: incontriPerDormire(mancanti) } }] : []),
+      ...(mancanti > 0 || èAvvelenato(stato) ? [{ chiave: "locanda.pannello.dormire", parametri: { incontri: azioniPerDormire(stato, ctx) } }] : []),
     ];
     return [{ contesti: [CONTESTO_LOCANDA], righe }];
   },

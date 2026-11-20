@@ -14,7 +14,7 @@ const esiste = (c: string): boolean => registro.menu.has(c);
 describe("coerenza dei tasti", () => {
   it("il gruppo INFO ha una sola voce, la I, che apre l'elenco numerato delle schede (1, 2, 3)", () => {
     expect(voci(CONTESTO_INFO).map((v) => v.tasto)).toEqual(["I"]);
-    expect(voci(CONTESTO_INFO_INDICE).map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5"]);
+    expect(voci(CONTESTO_INFO_INDICE).map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6"]);
     expect(voci(CONTESTO_INFO)[0]?.comando).toEqual({ tipo: "naviga", verso: CONTESTO_INFO_INDICE });
   });
 
