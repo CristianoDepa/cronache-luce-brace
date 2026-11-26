@@ -4,7 +4,7 @@ import { puntoFineRound, puntoFineScontro, puntoVelocita, tipoCreatura } from ".
 import { probabilitaConFortuna, puntoFortunaBonus } from "../fortuna/indice";
 import { aggiungiOggetto } from "../inventario/indice";
 import { manaMassimo } from "../mana/indice";
-import { POZIONI, bonusPozione, idPozione } from "./dati";
+import { BALSAMI_DEI_BOSS, POZIONI, bonusPozione, idPozione } from "./dati";
 import type { Statistica } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
 import { statoPozioni } from "./tipi";
@@ -14,6 +14,8 @@ function bonusAttivo(stato: StatoGioco, statistica: Statistica): number {
   const e = statoPozioni.leggi(stato).effetto;
   if (!e || e.restanti <= 0) return 0;
   const def = POZIONI.find((p) => p.tipo === e.tipo);
+  // Il balsamo dà il suo bonus a forza, difesa e velocità insieme (non alla fortuna).
+  if (def?.effetto.genere === "balsamo") return statistica === "fortuna" ? 0 : bonusPozione(e.tipo);
   return def?.effetto.genere === "statistica" && def.effetto.statistica === statistica ? bonusPozione(e.tipo) : 0;
 }
 
@@ -59,4 +61,16 @@ export const regolaBottinoPozioni = regola(puntoFineScontro, 90, (calcolo, ctx: 
   const con = aggiungiOggetto(calcolo.stato, idPozione(scelta.tipo));
   const evento: EventoGioco = con ? { chiave: "pozioni.trovata", parametri: { nomeChiave }, tono: "positivo" } : { chiave: "pozioni.trovataPiena", parametri: { nomeChiave }, tono: "avviso" };
   return { ...calcolo, stato: con ?? calcolo.stato, eventi: [...calcolo.eventi, evento] };
+});
+
+// Il premio dei boss (0.29.0): a ogni vittoria sul boss un balsamo, sempre. Con lo zaino pieno non si perde: resta "sospeso" e si apre la schermata
+// dove si sceglie quale slot lasciare al suo posto (oppure si scarta il balsamo).
+export const regolaBalsamoBoss = regola(puntoFineScontro, 95, (calcolo) => {
+  const tipo = BALSAMI_DEI_BOSS[calcolo.creaturaId];
+  if (calcolo.esito !== "vittoria" || tipo === undefined) return calcolo;
+  const nomeChiave = `pozioni.nome.${tipo}`;
+  const con = aggiungiOggetto(calcolo.stato, idPozione(tipo));
+  const premio: EventoGioco = { chiave: con ? "pozioni.premioBoss" : "pozioni.premioSospeso", parametri: { nomeChiave }, tono: "speciale", importante: true };
+  const stato = con ?? statoPozioni.scrivi(calcolo.stato, { ...statoPozioni.leggi(calcolo.stato), sospeso: tipo });
+  return { ...calcolo, stato, eventi: [...calcolo.eventi, premio] };
 });

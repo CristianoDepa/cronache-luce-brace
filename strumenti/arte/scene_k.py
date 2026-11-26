@@ -125,8 +125,9 @@ SPRITE = {"sprite.bandito_macchia": bandito_macchia, "sprite.mercenario_disertor
 
 
 def colline():
+    # Ancora a 42: il mezzogigante è largo 50 e l'ancora indica il lato sinistro dello sprite (42 + 50 = 92, dentro i 96 della scena).
     # La scena delle colline (96 x 64): colline a onde che si sovrappongono, una strada bianca che sale a svolte, uliveti, cipressi, una torre in rovina sulla cresta; cielo di sole o stellato.
-    q = Quadro(96, 64, CICLI_STELLE, ancora=(48, 60))
+    q = Quadro(96, 64, CICLI_STELLE, ancora=(42, 60))
     cielo(q, 0, 34); stelle(q, 22, 0, 20, 63)
     for x in range(0, 96, 2): q.rett(x, 30 + int(3 * math.sin(x / 10.0)), x + 1, 40, "monte2")                     # le colline lontane
     for x in range(0, 96, 2): q.rett(x, 35 + int(3 * math.sin(x / 7.0 + 1.5)), x + 1, 44, "collina_s")             # le colline medie

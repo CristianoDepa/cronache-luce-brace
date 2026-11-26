@@ -255,7 +255,7 @@ describe("Castruccio, il cacciatore di taglie", () => {
 
   it("con lo zaino pieno la pozione del premio diventa monete (nessun premio si perde)", () => {
     let st = pg("cavaliere", "foresta");
-    st = { ...st, moduli: { ...st.moduli, inventario: { versione: 1, dati: { slot: Array(6).fill("pozione.forza") } } } };
+    st = { ...st, moduli: { ...st.moduli, inventario: { versione: 1, dati: { slot: Array(8).fill("pozione.forza") } } } };
     const missione = { tipo: "battuta" as const, creaturaId: "ratto", luogoId: "foresta", quantita: 3, fatte: 3, completata: true, oro: 30, pozioni: 1 };
     st = statoCacciatore.scrivi(st, { propostaAl: st.ultimoReset, missione });
     const r = eseguiOk(st, { tipo: "riscuotiMissione" }, ctx);

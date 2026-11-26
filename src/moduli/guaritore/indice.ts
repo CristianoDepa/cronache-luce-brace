@@ -30,9 +30,11 @@ function validaQuantita(dati: unknown): Risultato<{ readonly quantita: Quantita 
   return fallisci('campo "quantita": "tutto" o un intero positivo atteso');
 }
 
-// Prezzo per HP = livello del personaggio.
+// Prezzo per HP: uguale al livello fino all'8, poi cresce di 1 ogni 2 livelli (L12 = 10, L16 = 12, L20 = 14), così ai livelli alti non mangia tutto l'oro.
+export const LIVELLO_CURVA_CURA = 8;
 export function costoPerHp(stato: StatoGioco): number {
-  return stato.personaggio.livello;
+  const livello = stato.personaggio.livello;
+  return livello <= LIVELLO_CURVA_CURA ? livello : LIVELLO_CURVA_CURA + Math.floor((livello - LIVELLO_CURVA_CURA) / 2);
 }
 
 const azioneCura = definisciAzione("curaGuaritore", validaQuantita, (stato, dati, ctx) => {

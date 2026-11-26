@@ -215,12 +215,16 @@ export function sovrapponi(sfondo: Raster, sprite: Raster, x: number, y: number)
   };
 }
 
+// Margine minimo (in pixel) tra lo sprite e il bordo destro della scena.
+const MARGINE_SPRITE = 2;
+
 // Angolo in alto a sinistra di uno sprite sovrapposto a una scena: con l'ancora i piedi poggiano
-// sulla riga del suolo, senza ancora lo sprite va in alto a destra.
+// sulla riga del suolo (e uno sprite largo si sposta a sinistra quanto basta per non uscire dalla scena),
+// senza ancora lo sprite va in alto a destra.
 export function posizioneSprite(scena: Illustrazione, sprite: Illustrazione): Posizione {
-  if (scena.ancora) return { x: scena.ancora.x, y: Math.max(0, scena.ancora.y - sprite.pixel.length + 1) };
   const larghezzaScena = Math.max(0, ...scena.pixel.map((r) => r.length));
   const larghezzaSprite = Math.max(0, ...sprite.pixel.map((r) => r.length));
+  if (scena.ancora) return { x: Math.max(0, Math.min(scena.ancora.x, larghezzaScena - larghezzaSprite - MARGINE_SPRITE)), y: Math.max(0, scena.ancora.y - sprite.pixel.length + 1) };
   return { x: Math.max(0, larghezzaScena - larghezzaSprite - 2), y: 1 };
 }
 

@@ -118,7 +118,7 @@ describe("la città: dati", () => {
       expect(distanze.has(id), id).toBe(true);
       expect(distanzeCitta(registro, id).get("porta-s"), id).toBe(distanze.get(id));
     }
-    expect(elencaSiti(registro)).toHaveLength(38); // 0.28.0: le colline; 0.27.0: la piana di Capannori; 0.25.0: il Fabbro; // 32 luoghi della città (0.19.0: Piazza San Martino, la cattedrale, il Palazzo degli Anziani), 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla), la foresta, le paludi e (0.18.0) la valle del Serchio (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
+    expect(elencaSiti(registro)).toHaveLength(40); // 0.30.0: la Piazza dei Mercanti e la Loggia; 0.28.0: le colline; 0.27.0: la piana di Capannori; 0.25.0: il Fabbro; // 32 luoghi della città (0.19.0: Piazza San Martino, la cattedrale, il Palazzo degli Anziani), 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla), la foresta, le paludi e (0.18.0) la valle del Serchio (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
   });
 
   it("distanze di riferimento dalla Porta San Pietro, dove si inizia", () => {
@@ -152,14 +152,14 @@ describe("la città: dati", () => {
 });
 
 describe("viaggiare", () => {
-  it("0.26.1: si parte a Piazza San Michele con 50 azioni, nessun movimento; si conoscono la porta e la piazza della Locanda", () => {
+  it("0.31.0: si parte a Piazza dell'Anfiteatro con 50 azioni, nessun movimento; si conosce la porta della foresta", () => {
     const s = partenzaVera();
     expect(sitoDi(s)).toBe(PARAMETRI_CITTA.sitoIniziale);
-    expect(sitoDi(s)).toBe("piazza-c");
+    expect(sitoDi(s)).toBe("piazza-n");
     expect(statoCitta.leggi(s).movimenti).toBe(0);
     expect(leggiAzioniResidue(s)).toBe(50);
-    expect(creaVistaPartita(s, ctx).contestoBase).toBe("citta:piazza-c");
-    expect(statoCitta.leggi(s).visitati).toEqual(["piazza-c", "porta-s", "piazza-n"]);
+    expect(creaVistaPartita(s, ctx).contestoBase).toBe("citta:piazza-n");
+    expect(statoCitta.leggi(s).visitati).toEqual(["piazza-n", "porta-s"]);
   });
 
   it("0.26.1: dopo la morte si rinasce fuori dalla prima porta, non alla piazza di partenza", () => {
@@ -331,7 +331,7 @@ describe("i contesti e le schermate della città", () => {
     expect(menu("mappa")).toEqual(["1", "2", "3", "A"]); // la A (abbandona l'incarico) si vede solo con un lavoro in corso
     expect(menu("mappa:porte")).toHaveLength(6);
     expect(menu("mappa:mura")).toHaveLength(6);
-    expect(menu("mappa:piazze")).toHaveLength(6); // quattro piazze (con San Martino), Via Fillungo e la Torre
+    expect(menu("mappa:piazze")).toHaveLength(7); // quattro piazze (con San Martino), Via Fillungo, la Torre e la Piazza dei Mercanti (0.30.0)
     expect(menu("mappa:edifici")).toHaveLength(0);
     for (const c of ["porte", "mura", "piazze"]) expect(registro.contestiPadre.get(`mappa:${c}`)).toBe("mappa");
     expect(registro.contestiPadre.get("mappa")).toBeUndefined(); // da "mappa" si torna al luogo
@@ -456,13 +456,18 @@ describe("comandi di prova (?dev=1)", () => {
       const r = eseguiOk(partenza(), { tipo: "iniziaCombattimento", dati: { creaturaId: id } }, ctx);
       expect(statoCombattimento.leggi(r.stato).scontro?.creaturaId).toBe(id);
     }
-    expect(vociMenu(registro, "sviluppo:mostri").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A"]);
+    // 0.28.1: anche le creature di piana e colline (25 voci); i tasti saltano F, I, O.
+    expect(vociMenu(registro, "sviluppo:mostri").map((v) => v.tasto)).toEqual([..."123456789ABCDEGHJKLMNPQRS", "Z"]); // + «Mostri di riserva» (0.32.0)
+    for (const id of ["contadino_posseduto", "madre_quercia", "lupo_collina", "capitano_banditi"]) {
+      const r = eseguiOk(partenza(), { tipo: "iniziaCombattimento", dati: { creaturaId: id } }, ctx);
+      expect(statoCombattimento.leggi(r.stato).scontro?.creaturaId).toBe(id);
+    }
   });
 
   it("le schermate di prova hanno menu, titoli e testi nelle due lingue", () => {
-    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "Q", "E", "S"]);
+    expect(vociMenu(registro, "sviluppo").map((v) => v.tasto)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "Q", "E", "M", "S", "R"]);
     expect(vociMenu(registro, "sviluppo:vai").map((v) => v.tasto)).toEqual(["1", "2", "3", "4"]);
-    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(15); // 0.25.0: il Fabbro; 0.19.0: la cattedrale e il Palazzo degli Anziani
+    expect(vociMenu(registro, "sviluppo:vai:edifici")).toHaveLength(16); // 0.30.0: la Loggia dei Mercanti; 0.25.0: il Fabbro; 0.19.0: la cattedrale e il Palazzo degli Anziani
     expect(registro.contestiPadre.get("sviluppo:vai:porte")).toBe("sviluppo:vai");
     expect(registro.contestiPadre.get("sviluppo:vai")).toBe("sviluppo");
     expect(traduci(registro, "it", "sviluppo.menu.giorno")).toBe("Passa al giorno dopo");

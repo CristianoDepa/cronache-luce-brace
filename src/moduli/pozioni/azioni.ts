@@ -2,10 +2,10 @@ import type { Contesto, EventoGioco, Risultato, StatoGioco } from "../../core/in
 import { calcolaStatistiche, chiudi, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, numero, stringa } from "../../core/indice";
 import { caricaScontro, risolviRound } from "../combattimento/indice";
 import { curaStati, èAvvelenato } from "../stati/indice";
-import { aggiungiOggetto, oggettoInSlot, rimuoviOggetto } from "../inventario/indice";
+import { aggiungiOggetto, leggiSlot, oggettoInSlot, rimuoviOggetto, statoInventario } from "../inventario/indice";
 import { aggiungiMana, manaAttuale, manaMassimo } from "../mana/indice";
 import type { TipoPozione } from "./dati";
-import { FACCE_MANA, POZIONI, definizione, idPozione, prezzoPozione, tipoDaId } from "./dati";
+import { FACCE_MANA, POZIONI, definizione, idPozione, prezzoPozione, tipoDaId, èBalsamo } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
 import { scortaRimasta, tipiDelGiorno } from "./scorta";
 import { statoPozioni } from "./tipi";
@@ -72,10 +72,13 @@ function applicaEffetto(stato: StatoGioco, tipo: TipoPozione, ctx: Contesto, inC
     if (!èAvvelenato(stato)) return "pozioni.errore.non_avvelenato";
     return { stato: curaStati(stato, ["veleno"]), eventi: [{ chiave: "pozioni.antidoto", parametri: { nomeChiave }, tono: "positivo" }] };
   }
-  // Forza, destrezza e corazza non si cumulano: finché una è attiva non se ne beve un'altra.
+  // Forza, destrezza e corazza non si cumulano: finché una è attiva non se ne beve un'altra. Il balsamo invece prende il posto dell'effetto in corso.
   const pozioni = statoPozioni.leggi(stato);
-  if (pozioni.effetto && pozioni.effetto.restanti > 0) return "pozioni.errore.effetto_attivo";
-  const durata = PARAMETRI_POZIONI.durataBase + lancia(ctx, 1, PARAMETRI_POZIONI.durataDado);
+  const balsamo = effetto.genere === "balsamo";
+  if (!balsamo && pozioni.effetto && pozioni.effetto.restanti > 0) return "pozioni.errore.effetto_attivo";
+  const durata = balsamo
+    ? PARAMETRI_POZIONI.durataBalsamoBase + lancia(ctx, 1, PARAMETRI_POZIONI.durataBalsamoDado)
+    : PARAMETRI_POZIONI.durataBase + lancia(ctx, 1, PARAMETRI_POZIONI.durataDado);
   // Bevendo in combattimento il turno stesso conta come uno dei turni (lo scala la regola di fine round): si aggiunge uno.
   const restanti = durata + (inCombattimento ? 1 : 0);
   return { stato: statoPozioni.scrivi(stato, { ...pozioni, effetto: { tipo, restanti } }), eventi: [{ chiave: "pozioni.effetto", parametri: { nomeChiave, sensazioneChiave: `pozioni.sensazione.${tipo}`, turni: durata }, tono: "speciale" }] };
@@ -106,7 +109,7 @@ export const azioneVendiPozione = definisciAzione("vendiPozione", validaPosizion
   const id = oggettoInSlot(stato, dati.posizione - 1);
   if (id === null) return esitoErrore("pozioni.errore.slot_vuoto");
   const tipo = tipoDaId(id);
-  if (tipo === undefined) return esitoErrore("pozioni.errore.non_utilizzabile");
+  if (tipo === undefined || èBalsamo(tipo)) return esitoErrore("pozioni.errore.non_utilizzabile");
   const oro = prezzoRiacquisto(tipo, stato.personaggio.livello);
   const venduto = rimuoviOggetto(stato, dati.posizione - 1);
   return esitoOk({ ...venduto, personaggio: { ...venduto.personaggio, oro: venduto.personaggio.oro + oro } }, [
@@ -114,3 +117,21 @@ export const azioneVendiPozione = definisciAzione("vendiPozione", validaPosizion
   ]);
 });
 
+
+// Il balsamo trovato a zaino pieno aspetta in "sospeso" (vedi regole.ts): si sceglie quale slot lasciare al suo posto oppure si scarta il balsamo.
+export const azioneSostituisciConPremio = definisciAzione("sostituisciConPremio", validaPosizione, (stato, dati) => {
+  const pozioni = statoPozioni.leggi(stato);
+  if (pozioni.sospeso === null) return esitoErrore("pozioni.errore.nessun_premio");
+  const vecchio = oggettoInSlot(stato, dati.posizione - 1);
+  if (vecchio === null) return esitoErrore("pozioni.errore.slot_vuoto");
+  const slot = [...leggiSlot(stato)];
+  slot[dati.posizione - 1] = idPozione(pozioni.sospeso);
+  const nuovo = statoPozioni.scrivi(statoInventario.scrivi(stato, { slot }), { ...pozioni, sospeso: null });
+  return esitoOk(nuovo, [{ chiave: "pozioni.sostituito", parametri: { nuovoChiave: `pozioni.nome.${pozioni.sospeso}`, vecchioChiave: `pozioni.nome.${vecchio.replace("pozione.", "")}` }, tono: "positivo" }]);
+});
+
+export const azioneScartaPremio = definisciAzione("scartaPremio", () => ({ ok: true, valore: null }), (stato) => {
+  const pozioni = statoPozioni.leggi(stato);
+  if (pozioni.sospeso === null) return esitoErrore("pozioni.errore.nessun_premio");
+  return esitoOk(statoPozioni.scrivi(stato, { ...pozioni, sospeso: null }), [{ chiave: "pozioni.scartato", parametri: { nomeChiave: `pozioni.nome.${pozioni.sospeso}` }, tono: "avviso" }]);
+});

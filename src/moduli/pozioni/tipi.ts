@@ -16,6 +16,8 @@ export interface StatoPozioni {
   readonly effetto: EffettoPozione | null;
   // Pezzi venduti oggi dallo Speziale per tipo (la scorta del giorno si ricava dalla data dell'ultimo reset, vedi scorta.ts).
   readonly venduti: Readonly<Record<string, number>>;
+  // Il balsamo di un boss trovato con lo zaino pieno: finché non si sceglie cosa lasciare (o si scarta) la schermata di scelta resta aperta.
+  readonly sospeso: TipoPozione | null;
 }
 
 function convalidaStato(dati: unknown): Risultato<StatoPozioni> {
@@ -31,7 +33,9 @@ function convalidaStato(dati: unknown): Risultato<StatoPozioni> {
   }
   const grezzo = comeOggetto(o["venduti"]) ?? {};
   const venduti = Object.fromEntries(Object.keys(grezzo).map((k) => [k, numero(grezzo, k, errori, { min: 0 })]));
-  return chiudi(errori, { effetto, venduti });
+  const grezzoSospeso = o["sospeso"];
+  const sospeso = typeof grezzoSospeso === "string" && POZIONI.some((p) => p.tipo === grezzoSospeso) ? (grezzoSospeso as TipoPozione) : null;
+  return chiudi(errori, { effetto, venduti, sospeso });
 }
 
-export const statoPozioni = definisciStato<StatoPozioni>(ID_POZIONI, 1, () => ({ effetto: null, venduti: {} }), convalidaStato);
+export const statoPozioni = definisciStato<StatoPozioni>(ID_POZIONI, 1, () => ({ effetto: null, venduti: {}, sospeso: null }), convalidaStato);

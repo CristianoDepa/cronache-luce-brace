@@ -1,13 +1,13 @@
 import type { VoceContenuto } from "../../core/indice";
 import { PARAMETRI_POZIONI } from "./parametri";
 
-export type TipoPozione = "forza" | "destrezza" | "corazza" | "fortuna" | "mana" | "curaLeggera" | "curaRobusta" | "antidoto";
+export type TipoPozione = "forza" | "destrezza" | "corazza" | "fortuna" | "mana" | "curaLeggera" | "curaRobusta" | "antidoto" | "balsamoQuercia" | "balsamoFortino";
 export type Statistica = "forza" | "velocita" | "difesa" | "fortuna";
 
 // Una pozione: cosa fa e quanto pesa nel bottino. Il prezzo delle cure dipende dal livello (vedi prezzoPozione).
 export interface DefinizionePozione {
   readonly tipo: TipoPozione;
-  readonly effetto: { readonly genere: "statistica"; readonly statistica: Statistica } | { readonly genere: "cura"; readonly dadi: number; readonly facce: number; readonly perLivello: number } | { readonly genere: "mana"; readonly dadi: number } | { readonly genere: "antidoto" };
+  readonly effetto: { readonly genere: "statistica"; readonly statistica: Statistica } | { readonly genere: "cura"; readonly dadi: number; readonly facce: number; readonly perLivello: number } | { readonly genere: "mana"; readonly dadi: number } | { readonly genere: "antidoto" } | { readonly genere: "balsamo" };
   // Peso nel bottino (probabilità proporzionale).
   readonly pesoBottino: number;
 }
@@ -24,7 +24,15 @@ export const POZIONI: readonly DefinizionePozione[] = [
   { tipo: "fortuna", effetto: { genere: "statistica", statistica: "fortuna" }, pesoBottino: 10 },
   // L'antidoto (0.23.0) cura il veleno: lo Speziale lo vende sempre (non è una delle pozioni a caso del giorno) e non si trova nel bottino.
   { tipo: "antidoto", effetto: { genere: "antidoto" }, pesoBottino: 0 },
+  // I balsami (0.29.0) sono il premio dei boss: non si comprano né cadono dai mostri comuni (peso 0); +2 a forza, difesa e velocità insieme.
+  { tipo: "balsamoQuercia", effetto: { genere: "balsamo" }, pesoBottino: 0 },
+  { tipo: "balsamoFortino", effetto: { genere: "balsamo" }, pesoBottino: 0 },
 ];
+
+// Il premio di ogni boss (id della creatura -> balsamo): sempre, a ogni vittoria.
+export const BALSAMI_DEI_BOSS: Readonly<Record<string, TipoPozione>> = { madre_quercia: "balsamoQuercia", capitano_banditi: "balsamoFortino" };
+
+export const èBalsamo = (tipo: TipoPozione): boolean => definizione(tipo).effetto.genere === "balsamo";
 
 export const FACCE_MANA = 4;
 
@@ -51,12 +59,14 @@ export function prezzoPozione(tipo: TipoPozione, livello: number): number {
     return Math.min(calcolato, PARAMETRI_POZIONI.tettoPrezzoCura[tipo === "curaRobusta" ? "curaRobusta" : "curaLeggera"]);
   }
   if (p.effetto.genere === "antidoto") return PARAMETRI_POZIONI.prezzoAntidoto;
+  if (p.effetto.genere === "balsamo") return 0; // non si compra né si vende
   return p.effetto.genere === "mana" ? PARAMETRI_POZIONI.prezzoMana : PARAMETRI_POZIONI.prezzoEffetto;
 }
 
 // Il bonus di una pozione di effetto (0 per cure e mana): +2 forza, destrezza e corazza, +5 la fortuna. Un solo posto per i due usi: statistiche e riquadro.
 export function bonusPozione(tipo: TipoPozione): number {
   const e = definizione(tipo).effetto;
+  if (e.genere === "balsamo") return PARAMETRI_POZIONI.bonusBalsamo;
   if (e.genere !== "statistica") return 0;
   return e.statistica === "fortuna" ? PARAMETRI_POZIONI.bonusFortuna : PARAMETRI_POZIONI.bonusEffetto;
 }

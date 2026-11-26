@@ -139,7 +139,7 @@ Con `?dev=1` → `[O]` → `[V]` → **`[E]` «Provoca un evento»** si apre l'e
 ## 0.25.0 - Livello 12, Fabbro, cripta rivista
 | Cosa | Dove | Valore |
 |---|---|---|
-| Comando di prova **`[Q]`** «Equipaggiati al tuo livello» (`?dev=1` → `[O]` → `[V]`) | `src/moduli/sviluppo/indice.ts` | arma e armatura di classe |
+| Comando di prova **`[Q]`** «Equipaggiati al tuo livello» (`?dev=1` → `[O]` → `[V]`) | `src/moduli/sviluppo/indice.ts` | arma e armatura di classe; dal livello 12 in acciaio di brace (0.28.1) |
 | Teletrasporto: lettere dei luoghi (senza `F`); il Fabbro è tra «Gli edifici» | `src/moduli/sviluppo/indice.ts` (`LETTERE_TELE`) | |
 | Tetto dei livelli (12) e retta del 12 | `src/moduli/livelli/parametri.ts` | 2.600 (provvisoria); esperienza del 12: 25.000 |
 | Capigilda del 12 (HP, forza, difesa, velocità) | `src/moduli/gilde/dati.ts` | Ruggero 140/34/16/7, Selene 85/34/7/11, Gufo Nero 98/32/7/17 |
@@ -175,3 +175,22 @@ Strumento fuori dal gioco: `CLB_SIMULATORE=1 npx vitest run strumenti/simulatore
 
 ## 0.28.0 - Colline e livelli 17-20
 `CLB_RIPOSO_COLLINE` (default 0,75: quota di HP sotto cui il giocatore simulato riposa nelle colline). Costanti di taratura nuove: `livelli/parametri.ts` (esperienza e rette 17-20, `livelloMax` 20, `livelliChiave` con il 20), `colline/dati.ts` (creature, pesi, `SOGLIE_PERICOLO_COLLINE`, premio notte 1,25), `gilde/dati.ts` (capigilda 20), `citta/dati.ts` (porta-e `livelloMin` 16). Comandi `?dev=1` invariati: [8] sale di livello fino al 20.
+
+## 0.29.0: balsami dei boss e zaino a 8 slot
+Costanti nuove (nessuna opzione `?` nuova): `src/moduli/pozioni/parametri.ts` → `bonusBalsamo` (2), `durataBalsamoBase` (8), `durataBalsamoDado` (8: durata 9-16 turni); `src/moduli/pozioni/dati.ts` → `BALSAMI_DEI_BOSS` (creatura → balsamo); `src/moduli/inventario/parametri.ts` → `slot` (8). Comandi `?dev=1`: [Q] equipaggia l'acciaio di brace dal livello 12; [5] «Scegli il mostro» elenca ora anche le creature di piana e colline (tasti 1-9 e lettere senza F, I, O); per provare il balsamo: [5] → Madre della Quercia (o Capitano dei Banditi) e vinci; per provare lo zaino pieno riempi gli slot con pozioni (Speziale con [2] monete) prima del boss. Il delta sovrascrive file di testi e dati di piana, colline e pozioni: se li hai modificati a mano, avvisami prima.
+
+## 0.30.0: missioni di recupero
+**Prove (?dev=1 → Opzioni [V] Comandi di prova):** [M] accende o spegne il giorno di mercato (si salva nello stato: `mercatoProva`), [R] trova subito gli oggetti delle missioni in corso. Nessuna opzione `?` nuova. **Costanti di taratura:** `src/moduli/recuperi/parametri.ts` → `PARAMETRI_RECUPERI`: `probabilita` 0.04 (ritrovamento a ogni vittoria nella zona), `moltiplicatorePrezzo` 4, `variazione` 0.25, `arrotondamento` 5, `prezzoMin` 40, `prezzoMax` 2000, `probabilitaMercato` 1/7, `bonusDoppia` 0.25, `missioniNormali` 1, `missioniMercato` 2, `frequenzaRara` 1/8, `probabilitaRara` 0.01, `moltiplicatoreRaro` 3, `consegnePerGradino` 5, `bonusGradino` 0.05, `gradiniMax` 3, `premioRegistro` 3000, `costoChiacchiere` 1, `bonusDritta` 1.5 (moltiplicatore), `pozioniDoppia` 1. `src/moduli/recuperi/dati.ts` → `ZONE_RECUPERI` (livello di apertura e oro medio di ogni zona: l'oro medio va rimisurato se cambiano i mostri) e `OGGETTI_RECUPERI` (dodici oggetti). Testi in `recuperi/testi.ts`. **Il delta sovrascrive** `citta/dati.ts`, `citta/interfaccia.ts`, `citta/coordinate.ts`, `citta/grafica.ts` e `sviluppo/indice.ts`: se li hai modificati a mano, rifai le modifiche.
+
+## 0.31.0: correzioni dal collaudo
+Nessuna opzione `?` nuova; i comandi di prova non cambiano. **Costanti di taratura nuove o cambiate:** `src/moduli/citta/parametri.ts` → `sitoIniziale` ora `"piazza-n"` (Anfiteatro) e `sitiNotiAllInizio` ora `["porta-s"]`; `src/moduli/classi/parametri.ts` → `oroIniziale` 100 (era 50); `src/moduli/guaritore/indice.ts` → `LIVELLO_CURVA_CURA` 8 (oltre questo livello il costo per HP cresce di 1 ogni 2 livelli); `PARAMETRI_RECUPERI.premioRegistro` 3000 vale a ogni serie completa; `PARAMETRI_RECUPERI.probabilita` e `bonusDritta` sono ora anche scritti nel testo della dritta. **Il delta sovrascrive** `citta/parametri.ts`, `classi/parametri.ts`, `guaritore/indice.ts`, `eventi/risoluzione.ts`, `eventi/testi.ts`, `mura/indice.ts` e i file del modulo `recuperi`: se li hai modificati a mano, rifai le modifiche.
+
+## 0.32.0: riserva del bestiario
+**Prove (?dev=1 → Opzioni [V] Comandi di prova):** in [5] Scegli il mostro c'è la nuova voce **[Z] Mostri di riserva** (sotto-elenco dei 21 mostri). Nessuna opzione `?` nuova. **Costanti di taratura:** `src/moduli/riserva/dati.ts` (HP, forza, difesa, velocità, oro, esperienza e natura dei 21 mostri: valori proposti, mai provati); `src/moduli/stati/dati.ts` → `CREATURE_CHE_INFLIGGONO` (veleno: ragno gigante; paura: ghoul, folletto dispettoso, banshee, medusa). **Il delta sovrascrive** `moduli/indice.ts`, `sviluppo/indice.ts`, `stati/dati.ts`, `strumenti/arte/esporta.py` e `strumenti/arte/LEGGIMI.md`: se li hai modificati a mano, rifai le modifiche.
+
+## 0.33.0: scenari di riserva
+Nessun settaggio nuovo: gli scenari non sono raggiungibili dal gioco (né da `?dev=1`). Si vedono nelle anteprime PNG consegnate. **Costanti:** nessuna di taratura. **Il delta sovrascrive** `src/moduli/indice.ts`, `strumenti/arte/colori.py` e `strumenti/arte/esporta.py` (più `strumenti/arte/LEGGIMI.md`): se li hai modificati a mano, rifai le modifiche.
+
+## 0.33.1: comandi di prova dei mostri
+**Prove (?dev=1 → Opzioni [V] → [5] Scegli il mostro, e [Z] per la riserva):** lo scontro parte ora con lo sfondo della zona della creatura (foresta se non ha zona). Nessuna opzione `?` nuova. **Il delta sovrascrive** `src/core/grafica.ts` (nucleo: posizione degli sprite), `src/moduli/sviluppo/indice.ts` e `src/moduli/riserva/grafica.ts`.
+

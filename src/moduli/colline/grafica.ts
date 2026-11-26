@@ -500,7 +500,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmjjjjmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
     palette: ["#0a0a30", "#ffe9a0", "#ffffff", "#d0d0ff", "#0d0d42", "#12125a", "#191970", "#3a3d46", "#222288", "#5c626b", "#2e2ea0", "#0e4d2b", "#000000", "#14304f", "#3c3cb4", "#7ae09a", "#145a2a", "#80693a", "#d8c598", "#b8a06a", "#3d2812", "#9aa0ae", "#a8925a", "#0f5326", "#6a6ad0", "#6a6a9a", "#4a4a9a"],
     paletteGiorno: ["#3a7bd5", "#8cc2f2", "#74b0ee", "#5e9ee8", "#4a8be0", "#5e9ee8", "#74b0ee", "#4a4d58", "#8cc2f2", "#707680", "#a6d2f6", "#1a7040", "#000000", "#4a7a9a", "#c4e2fa", "#7ae09a", "#145a2a", "#80693a", "#d8c598", "#b8a06a", "#3d2812", "#9aa0ae", "#a8925a", "#1f7a38", "#74b0ee", "#8cc2f2", "#5e9ee8"],
     cicli: [{ indici: [2, 24], ritardoMs: 900 }, { indici: [1, 25], ritardoMs: 1300 }, { indici: [3, 26], ritardoMs: 700 }],
-    ancora: { x: 48, y: 60 },
+    ancora: { x: 42, y: 60 },
   }),
   voceIllustrazione("scena.fortino", `
 000000000000000000120000000000000000000000000300000000000000000000000000004040404045404000000000

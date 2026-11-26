@@ -22,6 +22,9 @@ import { moduloRegistro } from "./registro/indice";
 import { moduloScoperta } from "./scoperta/indice";
 import { moduloValle } from "./valle/indice";
 import { moduloColline } from "./colline/indice";
+import { moduloRiserva } from "./riserva/indice";
+import { moduloScenari } from "./scenari/indice";
+import { moduloRecuperi } from "./recuperi/indice";
 import { moduloPiana } from "./piana/indice";
 import { moduloCattedrale } from "./cattedrale/indice";
 import { moduloBandi } from "./bandi/indice";
@@ -68,6 +71,8 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloValle,
   moduloPiana,
   moduloColline,
+  moduloRiserva,
+  moduloScenari,
   moduloCattedrale,
   moduloOggettiMagici,
   moduloZara,
@@ -77,6 +82,7 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloLocanda,
   moduloMura,
   moduloLavori,
+  moduloRecuperi,
   moduloBandi, // dopo i lavori, da cui dipende (così l'ordine dei pannelli degli altri moduli non cambia)
   moduloLivelli,
   moduloGilde,

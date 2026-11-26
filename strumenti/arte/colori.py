@@ -61,3 +61,20 @@ COL = {
     "pavim_s": ("#3a2412", None), "pavim": ("#6a4628", None), "pavim_l": ("#8a5c30", None),
     "vetro": ("#9ad8ff", None), "erba_g": ("#3a9a5a", None),
 }
+
+# Ruoli per gli scenari di riserva (0.33.0): sabbia, neve, roccia, laghi, campi, fiamma magica, tempesta.
+COL.update({
+    "sab_s": ("#a8742c", "#c89448"), "sab": ("#d6a548", "#f0c466"), "sab_l": ("#f0cc72", "#fbe4a0"),
+    "neve_s": ("#6c7cae", "#9cacd4"), "neve": ("#bcc8e6", "#e8f0ff"), "neve_l": ("#eef2ff", "#ffffff"),
+    "roc_s": ("#26242c", "#44404a"), "roc": ("#46424e", "#6c6872"), "roc_l": ("#6c6876", "#9894a0"),
+    "lago_s": ("#0c1644", "#2458a0"), "lago": ("#18286a", "#3a7cc0"), "lago_l": ("#3c58aa", "#86bce8"),
+    "cip": ("#08281a", "#16502e"), "cip_l": ("#14442a", "#2a7a48"),
+    "campo_a": ("#8a7a28", "#d4bc48"), "campo_b": ("#5e6e28", "#98b040"), "campo_c": ("#6e4e28", "#a47c40"),
+    "secco_s": ("#5a5a24", "#8c8c38"), "secco": ("#80803a", "#b4b450"),
+    "tenda_s": ("#8a7650", "#b8a478"), "tenda": ("#b09a6c", "#d8c498"),
+    "fm1": ("#0a5a4e", None), "fm2": ("#18a084", None), "fm3": ("#4af0c0", None), "fm4": ("#d0fff0", None),
+    "rug_s": ("#6a3418", None), "rug": ("#a8561e", None),
+    "nube0": ("#14161f", "#4a4e60"), "nube1": ("#222636", "#666a80"), "nube2": ("#363a50", "#8286a0"),
+    "nube3": ("#50546e", "#a4a8c0"), "nube4": ("#74789a", "#c6cadc"),
+    "fulmine": ("#fffbd0", None), "fulmine_b": ("#7c7ca8", None), "pioggia": ("#6a7aac", "#8a9abe"),
+})

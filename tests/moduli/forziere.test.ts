@@ -58,7 +58,7 @@ describe("Forziere: apertura", () => {
     const r = tentaApertura(st, "palude", conRng(fisso(0))); // tutto zero: apre, pozione
     expect(r.eventi.map((e) => e.chiave)).toEqual(["forziere.aperto", "forziere.pozione"]);
     let pieno = st;
-    for (let i = 0; i < 6; i++) pieno = aggiungiOggetto(pieno, "pozione.curaLeggera") ?? pieno;
+    for (let i = 0; i < 8; i++) pieno = aggiungiOggetto(pieno, "pozione.curaLeggera") ?? pieno;
     const rp = tentaApertura(pieno, "palude", conRng(fisso(0, 0, 0, 0.5)));
     expect(rp.eventi.map((e) => e.chiave)).toEqual(["forziere.aperto", "forziere.oro"]);
     expect(rp.stato.personaggio.oro).toBeGreaterThan(pieno.personaggio.oro);

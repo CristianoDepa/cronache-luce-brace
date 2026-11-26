@@ -131,6 +131,14 @@ describe("Eventi: le scelte", () => {
     // Con 2 monete l'offerta non si vede: la prima voce è «Rifiuta» e non cura.
     expect(ok(scegli(evento(pg(2), "pellegrino", "foresta", ctx0), 1, ctx0)).personaggio.oro).toBe(2);
   });
+  it("senza HP da recuperare il messaggio non scrive «+0 HP» (variante senza numero)", () => {
+    const base = pg(100);
+    const pieno = { ...base, personaggio: { ...base.personaggio, hp: calcolaStatistiche(base, ctx0).hpMax } };
+    const r = scegli(evento(pieno, "pellegrino", "foresta", ctx0), 1, ctx0);
+    const testi = JSON.stringify(r.ok ? r.eventi : r);
+    expect(testi).toContain("pellegrinoNulla");
+    expect(testi).not.toContain('"hp"');
+  });
   it("mercante: compra una pozione a prezzo scontato; la scelta si nasconde... e rifiutare non costa", () => {
     const st = evento(pg(100), "mercante", "foresta", ctx0);
     const dopo = ok(scegli(st, 1, ctx0));

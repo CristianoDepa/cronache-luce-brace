@@ -2,7 +2,7 @@ import type { Contesto, InterfacciaModulo, PannelloVista, RigaVista, StatoGioco,
 import { CONTESTO_COMBATTIMENTO } from "../combattimento/indice";
 import { CONTESTO_INFO_INVENTARIO, PARAMETRI_INVENTARIO, leggiSlot } from "../inventario/indice";
 import { prezzoRiacquisto } from "./azioni";
-import { POZIONI, bonusPozione, prezzoPozione, tipoDaId } from "./dati";
+import { POZIONI, bonusPozione, prezzoPozione, tipoDaId, èBalsamo } from "./dati";
 import { PARAMETRI_POZIONI } from "./parametri";
 import { scortaRimasta, tipiDelGiorno } from "./scorta";
 import { statoPozioni } from "./tipi";
@@ -11,6 +11,8 @@ export const CONTESTO_SPEZIALE = "luogo:speziale";
 // La schermata dove si vendono le pozioni allo Speziale (figlia della sua bottega).
 export const CONTESTO_VENDI = "luogo:speziale:vendi";
 const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";
+// La schermata di scelta del balsamo di un boss trovato con lo zaino pieno (0.29.0): resta aperta finché non si decide.
+export const CONTESTO_SCELTA = "pozioni:scelta";
 
 // Speziale: al massimo tre pozioni diverse al giorno; i tasti 1, 2, 3 aprono quelle di oggi (senza buchi) e l'etichetta dice quale.
 const vociSpeziale: VoceMenu[] = Array.from({ length: PARAMETRI_POZIONI.slotSpeziale }, (_, i) => ({
@@ -43,6 +45,19 @@ const vociZaino: VoceMenu[] = Array.from({ length: PARAMETRI_INVENTARIO.slot }, 
   comando: { tipo: "azione", azione: { tipo: "usaOggetto", dati: { posizione: i + 1 } } },
 }));
 
+// Scelta del balsamo: il numero è lo slot dello zaino da lasciare al suo posto; "X" scarta il balsamo.
+const vociScelta: VoceMenu[] = [
+  ...Array.from({ length: PARAMETRI_INVENTARIO.slot }, (_, i): VoceMenu => ({
+    id: `pozioni.sostituisci.${i + 1}`,
+    contesto: CONTESTO_SCELTA,
+    etichettaChiave: "pozioni.menu.sostituisci",
+    tasto: String(i + 1),
+    ordine: i + 1,
+    comando: { tipo: "azione", azione: { tipo: "sostituisciConPremio", dati: { posizione: i + 1 } } },
+  })),
+  { id: "pozioni.scarta", contesto: CONTESTO_SCELTA, etichettaChiave: "pozioni.menu.scarta", tasto: "X", ordine: 20, comando: { tipo: "azione", azione: { tipo: "scartaPremio" } } },
+];
+
 // Le pozioni di oggi, due righe ciascuna: nome con l'effetto, poi prezzo e quanti pezzi restano (o "esaurita oggi").
 function pannelloSpeziale(stato: StatoGioco, ctx: Contesto): PannelloVista {
   const righe: RigaVista[] = tipiDelGiorno(stato, ctx).flatMap((tipo, i): RigaVista[] => {
@@ -70,37 +85,46 @@ function vociNascoste(stato: StatoGioco, ctx: Contesto): string[] {
   const vuoti = slot.flatMap((s, i) => (nonPozione(s) ? [`pozioni.usa.${i + 1}`] : []));
   // Dello Speziale si vedono solo i tasti delle pozioni di oggi.
   const dello = Array.from({ length: PARAMETRI_POZIONI.slotSpeziale }, (_, i) => i + 1).filter((n) => n > tipiDelGiorno(stato, ctx).length).map((n) => `pozioni.compra.${n}`);
-  const nonVendibili = slot.flatMap((s, i) => (nonPozione(s) ? [`pozioni.vendi.${i + 1}`] : []));
-  return slot.every(nonPozione) ? [...vuoti, ...dello, ...nonVendibili, "pozioni.bevi"] : [...vuoti, ...dello, ...nonVendibili];
+  // I balsami non si vendono: lo Speziale non li ricompra.
+  const nonVendibili = slot.flatMap((s, i) => (nonPozione(s) || èBalsamo(tipoDaId(s!)!) ? [`pozioni.vendi.${i + 1}`] : []));
+  const senzaPosto = slot.flatMap((s, i) => (s === null ? [`pozioni.sostituisci.${i + 1}`] : []));
+  const nascoste = [...vuoti, ...dello, ...nonVendibili, ...senzaPosto];
+  return slot.every(nonPozione) ? [...nascoste, "pozioni.bevi"] : nascoste;
 }
 
 export const interfacciaPozioni: InterfacciaModulo = {
-  illustrazioniContesto: { [CONTESTO_SPEZIALE]: "scena.speziale", [CONTESTO_VENDI]: "scena.speziale" },
+  illustrazioniContesto: { [CONTESTO_SPEZIALE]: "scena.speziale", [CONTESTO_VENDI]: "scena.speziale", [CONTESTO_SCELTA]: "scena.zaino" },
   // Durante un combattimento si può aprire lo zaino (il "Bevi") e tornare indietro.
   contestiLiberiDaForzato: [CONTESTO_INFO_INVENTARIO],
   menu: [
     ...vociSpeziale,
     ...vociZaino,
     ...vociVendita,
+    ...vociScelta,
     { id: "pozioni.vendi", contesto: CONTESTO_SPEZIALE, etichettaChiave: "pozioni.menu.vendi", tasto: "V", ordine: 10, comando: { tipo: "naviga", verso: CONTESTO_VENDI } },
     { id: "pozioni.bevi", contesto: CONTESTO_COMBATTIMENTO, etichettaChiave: "pozioni.menu.bevi", tasto: "B", ordine: 12, comando: { tipo: "naviga", verso: CONTESTO_INFO_INVENTARIO } },
   ],
   menuNascosto: (stato, ctx) => vociNascoste(stato, ctx),
+  // Con un balsamo in sospeso (zaino pieno) si resta sulla schermata di scelta finché non si decide.
+  contestoForzato: (stato) => (statoPozioni.leggi(stato).sospeso === null ? undefined : CONTESTO_SCELTA),
   // Nello zaino il numero dice quale pozione usa: "Usa: Pozione di cura leggera".
   etichette: (stato, ctx) => ({
     // Allo Speziale i tasti 1-3 portano il nome della pozione di oggi; nello zaino "Usa: ..." con il nome della pozione.
     ...Object.fromEntries(tipiDelGiorno(stato, ctx).map((tipo, i) => [`pozioni.compra.${i + 1}`, { chiave: "pozioni.menu.compraNome", parametri: { nomeChiave: `pozioni.nome.${tipo}` } } as RigaVista])),
+    ...Object.fromEntries(leggiSlot(stato).flatMap((id, i) => (id === null || tipoDaId(id) === undefined ? [] : [[`pozioni.sostituisci.${i + 1}`, { chiave: "pozioni.menu.sostituisciNome", parametri: { nomeChiave: `pozioni.nome.${id.replace("pozione.", "")}` } } as RigaVista]]))),
     ...Object.fromEntries(leggiSlot(stato).flatMap((id, i) => {
       const tipo = id === null ? undefined : tipoDaId(id);
-      return tipo === undefined ? [] : [[`pozioni.vendi.${i + 1}`, { chiave: "pozioni.menu.vendiNome", parametri: { nomeChiave: `pozioni.nome.${tipo}`, oro: prezzoRiacquisto(tipo, stato.personaggio.livello) } } as RigaVista]];
+      return tipo === undefined || èBalsamo(tipo) ? [] : [[`pozioni.vendi.${i + 1}`, { chiave: "pozioni.menu.vendiNome", parametri: { nomeChiave: `pozioni.nome.${tipo}`, oro: prezzoRiacquisto(tipo, stato.personaggio.livello) } } as RigaVista]];
     })),
     ...Object.fromEntries(leggiSlot(stato).flatMap((id, i) => (id === null || tipoDaId(id) === undefined ? [] : [[`pozioni.usa.${i + 1}`, { chiave: "pozioni.menu.usaNome", parametri: { nomeChiave: `pozioni.nome.${id.replace("pozione.", "")}` } } as RigaVista]]))),
   }),
-  titoliContesto: { [CONTESTO_SPEZIALE]: "pozioni.luogo.speziale", [CONTESTO_VENDI]: "pozioni.luogo.vendi" },
+  titoliContesto: { [CONTESTO_SPEZIALE]: "pozioni.luogo.speziale", [CONTESTO_VENDI]: "pozioni.luogo.vendi", [CONTESTO_SCELTA]: "pozioni.scelta.titolo" },
   contestiPadre: { [CONTESTO_VENDI]: CONTESTO_SPEZIALE },
   pannelli(stato: StatoGioco, ctx: Contesto): readonly PannelloVista[] {
     const effetto = righeEffetto(stato);
+    const sospeso = statoPozioni.leggi(stato).sospeso;
     return [
+      ...(sospeso === null ? [] : [{ contesti: [CONTESTO_SCELTA], righe: [{ chiave: "pozioni.scelta.testo", parametri: { nomeChiave: `pozioni.nome.${sospeso}`, descrizioneChiave: `pozioni.descrizione.${sospeso}` }, tono: "speciale" as const }] }]),
       pannelloSpeziale(stato, ctx),
       { titoloChiave: "pozioni.vendi.titolo", contesti: [CONTESTO_VENDI], righe: leggiSlot(stato).some((x) => x !== null) ? [{ chiave: "pozioni.vendi.nota", parametri: { quota: Math.round(PARAMETRI_POZIONI.quotaRiacquisto * 100) } }] : [{ chiave: "pozioni.vendi.vuoto" }] },
       ...(effetto.length > 0

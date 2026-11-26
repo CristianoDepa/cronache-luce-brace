@@ -2,7 +2,7 @@ import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from quadro import *
-import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n, scene_o, scene_p, scene_k
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n, scene_o, scene_p, scene_k, scene_q, scene_r, scene_s
 
 SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
 INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
@@ -48,8 +48,9 @@ modulo("lavori", "ILLUSTRAZIONI_LAVORI", [scene_h.capitano().esporta("sprite.npc
 modulo("banca", "ILLUSTRAZIONI_BANCA", [scene_c.banca().esporta("scena.banca")])
 modulo("locanda", "ILLUSTRAZIONI_LOCANDA", [scene_c.locanda().esporta("scena.locanda")])
 npc = scene_c.npc()
+modulo("recuperi", "ILLUSTRAZIONI_RECUPERI", [scene_q.loggia().esporta("scena.loggia"), scene_q.piazza_mercanti(True).esporta("scena.piazza-mercanti.mercato")])
 modulo("mura", "ILLUSTRAZIONI_MURA", [mura.esporta("scena.mura")] + [npc[n].esporta(f"sprite.npc.{n}") for n in ["beatrice", "anselmo", "ginevra", "tobia", "lorenzo", "zita"]])
-modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_n.piazza_san_martino().esporta("scena.piazza-m"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")] + [scene_i.porta(n).esporta("scena.porta-" + s) for n, s in (("san-pietro", "s"), ("sant-anna", "so"), ("san-jacopo", "ne"), ("elisa", "e"), ("santa-maria", "n"), ("san-donato", "no"))])
+modulo("citta", "ILLUSTRAZIONI_CITTA", [scene_d.mappa().esporta("scena.mappa"), scene_h.fillungo().esporta("scena.fillungo"), scene_n.piazza_san_martino().esporta("scena.piazza-m"), scene_q.piazza_mercanti().esporta("scena.piazza-mercanti"), scene_d.marcatore().esporta("sprite.marcatore"), scene_d.porta_aperta().esporta("sprite.porta_aperta")] + [scene_i.porta(n).esporta("scena.porta-" + s) for n, s in (("san-pietro", "s"), ("sant-anna", "so"), ("san-jacopo", "ne"), ("elisa", "e"), ("santa-maria", "n"), ("san-donato", "no"))])
 cg = scene_e.capogilda()
 modulo("gilde", "ILLUSTRAZIONI_GILDE", [scene_e.gilda_cavaliere().esporta("scena.gilda.cavaliere"), scene_e.gilda_mistico().esporta("scena.gilda.mistico"), scene_e.gilda_ladro().esporta("scena.gilda.ladro")] + [cg[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere", "mistico", "ladro")] + [scene_l.capigilda8()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere8", "mistico8", "ladro8")] + [scene_o.capigilda12()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere12", "mistico12", "ladro12")] + [scene_p.capigilda16()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere16", "mistico16", "ladro16")] + [scene_k.capigilda20()[c].esporta(f"sprite.capogilda.{c}") for c in ("cavaliere20", "mistico20", "ladro20")])
 modulo("palude", "ILLUSTRAZIONI_PALUDE", [scene_f.palude().esporta("scena.palude"), scene_f.cimitero().esporta("scena.cimitero"), scene_o.palude_nebbia().esporta("scena.palude.nebbia"), scene_o.cimitero_nebbia().esporta("scena.cimitero.nebbia")] + [f().esporta(f"sprite.{n}") for n, f in scene_f.MOSTRI.items()])
@@ -59,3 +60,5 @@ modulo("cripta", "ILLUSTRAZIONI_CRIPTA", [scene_o.cripta(**k).esporta(i) for i, 
 righe = "\n".join('  "%s": { x: %d, y: %d },' % (k, x, y) for k, (x, y) in scene_d.coordinate().items())
 scrivi(f"{SRC}/citta/coordinate.ts", "// Coordinate (in pixel) dei luoghi sulla mappa 96 x 64: generate da strumenti/arte (scene_d.py), non modificare a mano.\nexport const COORDINATE: Readonly<Record<string, { readonly x: number; readonly y: number }>> = {\n" + righe + "\n};\n")
 print("esportato; sprite: ratto", rt.w, "x", rt.h, "| lupo", lp.w, "x", lp.h, "| npc", npc["beatrice"].w, "x", npc["beatrice"].h)
+modulo("riserva", "ILLUSTRAZIONI_RISERVA", [f().esporta(i) for i, f in scene_r.SPRITE.items()])
+modulo("scenari", "ILLUSTRAZIONI_SCENARI", [f().esporta(i) for i, f in scene_s.SCENARI.items()])

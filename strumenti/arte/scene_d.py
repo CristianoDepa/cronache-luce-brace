@@ -18,7 +18,8 @@ PORTE = {"porta-n": (0, False), "porta-ne": (50, False), "porta-e": (100, False)
 INTERNI = {"piazza-n": (67, 36), "piazza-c": (64, 48), "piazza-s": (61, 62), "fillungo": (65, 42), "stamperia": (73, 41), "torre": (84, 31), "sartoria": (46, 31), "armeria": (80, 44),
            "banca": (80, 54), "guaritore": (44, 64), "speziale": (53, 72), "registro": (91, 66), "locanda": (63, 78), "capanna": (50, 84),
            "piazza-m": (92, 58), "cattedrale": (98, 52), "palazzo-anziani": (66, 57),
-           "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65), "fabbro": (74, 31)}
+           "gilda-cavaliere": (51, 43), "gilda-mistico": (47, 53), "gilda-ladro": (78, 65), "fabbro": (74, 31),
+           "piazza-mercanti": (95, 45), "loggia": (95, 36)}
 
 def angoli_baluardi():
     """Angoli (gradi da nord) dei baluardi disegnati sulla cinta: 11 equidistanti, tranne quelli troppo vicini a una porta."""
@@ -114,6 +115,9 @@ def sim_cavalieri(q, x, y): q.rett(x - 1, y - 1, x + 1, y + 1, "rosso_l"); q.set
 def sim_mistici(q, x, y): q.rett(x - 1, y - 1, x + 1, y + 1, "viola_l"); q.set(x, y, "oro_l"); q.set(x - 1, y - 1, "oro_l"); q.set(x + 1, y + 1, "oro_l")
 def sim_ladri(q, x, y): q.rett(x - 1, y - 1, x + 1, y + 1, "ombra"); q.set(x, y - 1, "oro"); q.set(x, y, "oro_s")
 
+def sim_loggia(q, x, y):                                           # tre archetti d'oro: la Loggia dei Mercanti (0.30.0)
+    q.rett(x - 2, y - 1, x + 2, y + 1, "oro_s"); [q.set(x + a, y, "oro_l") for a in (-2, 0, 2)]
+
 def sim_cattedrale(q, x, y):                                       # una croce chiara sul tetto di marmo (0.19.0)
     q.rett(x - 1, y - 1, x + 1, y + 1, "bianco"); [q.set(x + a, y + b, "pietra_s") for a, b in ((0, -1), (-1, 0), (0, 0), (1, 0), (0, 1))]
 def sim_anziani(q, x, y):                                          # i colori rossi e bianchi della Repubblica (0.19.0)
@@ -121,7 +125,7 @@ def sim_anziani(q, x, y):                                          # i colori ro
 
 ICONE = {"fabbro": ("rosso_s", "arancio", sim_armeria), "cattedrale": ("pietra_s", "arancio", sim_cattedrale), "sartoria": ("blu", "blu_l", sim_sartoria), "armeria": ("acc_s", "acc", sim_armeria), "banca": ("oro_s", "oro", sim_banca),
          "guaritore": ("ver", "ver_l", sim_guaritore), "speziale": ("cian_s", "cian", sim_speziale), "locanda": ("marr", "marr_l", sim_locanda),
-         "gilda-cavaliere": ("rosso_s", "rosso", sim_cavalieri), "gilda-mistico": ("viola_s", "viola", sim_mistici), "gilda-ladro": ("grigio", "acc_s", sim_ladri), "palazzo-anziani": ("rosso_s", "rosso", sim_anziani)}
+         "gilda-cavaliere": ("rosso_s", "rosso", sim_cavalieri), "gilda-mistico": ("viola_s", "viola", sim_mistici), "gilda-ladro": ("grigio", "acc_s", sim_ladri), "palazzo-anziani": ("rosso_s", "rosso", sim_anziani), "loggia": ("marr_l", "oro", sim_loggia)}
 
 def mappa():
     q = Quadro(W, H, [(["acq_a", "acq_b"], 700), (["fin", "fin_c"], 1200)], None)
@@ -137,7 +141,7 @@ def mappa():
     for x in range(ex + 8, 118, 6): q.set(x, ey + 1 + (x - ex) * 3 // (124 - ex), "terra_s")
     # interno della città e case sparse (evitano strade, piazze e edifici)
     q.ell(CENTRO[0], CENTRO[1], RX - 3, RY - 3, "perg_l")
-    strade = [("porta-n", "piazza-n"), ("piazza-n", "piazza-c"), ("piazza-c", "piazza-s"), ("piazza-s", "piazza-m"), ("piazza-c", "piazza-m"), ("piazza-s", "porta-s"), ("porta-e", "piazza-c"), ("porta-no", "piazza-c"), ("porta-ne", "piazza-n"), ("porta-so", "piazza-s")]
+    strade = [("porta-n", "piazza-n"), ("piazza-n", "piazza-c"), ("piazza-c", "piazza-s"), ("piazza-s", "piazza-m"), ("piazza-c", "piazza-m"), ("piazza-s", "porta-s"), ("porta-e", "piazza-c"), ("porta-no", "piazza-c"), ("porta-ne", "piazza-n"), ("porta-so", "piazza-s"), ("fillungo", "piazza-mercanti"), ("piazza-mercanti", "loggia")]
     cr = random.Random(7)
     liberi = [(x, y, 9) for x, y in pos.values()]      # un po' di respiro attorno a ogni luogo (0.19.0)
     for gx in range(CENTRO[0] - RX + 4, CENTRO[0] + RX - 4, 5):
@@ -166,6 +170,7 @@ def mappa():
     q.rett(60, 44, 68, 52, "pietra_l"); q.rett(61, 45, 67, 51, "pietra_c")      # San Michele
     q.rett(54, 59, 68, 65, "pietra_l"); q.rett(55, 60, 67, 64, "pietra_c")      # Napoleone
     q.rett(86, 55, 98, 61, "pietra_l"); q.rett(87, 56, 97, 60, "pietra_c")      # San Martino (0.19.0)
+    q.rett(90, 42, 100, 48, "pietra_l"); q.rett(91, 43, 99, 47, "pietra_c")     # Piazza dei Mercanti (0.30.0)
     q.rett(82, 30, 86, 36, "mattone"); q.rett(82, 30, 82, 36, "mattone_l"); q.rett(86, 30, 86, 36, "mattone_s")  # Torre Guinigi
     q.disco(84, 27, 3, "pino_m"); q.disco(83, 26, 1.2, "pino_l"); q.rett(81, 29, 87, 29, "pino_s")
     for nome, (tetto, chiaro, simbolo) in ICONE.items():

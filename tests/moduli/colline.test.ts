@@ -135,3 +135,24 @@ describe("i capigilda del livello 20 e il tetto dei livelli", () => {
     for (let l = 17; l <= 20; l++) expect(PARAMETRI_LIVELLI.rette[l], `retta ${l}`).toBeGreaterThan(PARAMETRI_LIVELLI.rette[l - 1]!);
   });
 });
+
+describe("gli sprite stanno dentro la scena (l'ancora è il lato sinistro dello sprite)", () => {
+  const registro = registroDa(MODULI_ATTIVI);
+  const casi: ReadonlyArray<readonly [string, readonly string[]]> = [
+    ["scena.piana", ["contadino_posseduto", "spaventapasseri", "cane_nero", "lupo_mannaro", "strega_erbe", "strega_sabba"]],
+    ["scena.quercia", ["madre_quercia"]],
+    ["scena.colline", ["bandito_macchia", "mercenario_disertore", "lupo_collina", "arpia", "mezzogigante", "cavaliere_spettrale", "ombra_rovine"]],
+    ["scena.fortino", ["capitano_banditi"]],
+  ];
+  for (const [scenaId, creature] of casi) {
+    it(`${scenaId}: nessuna creatura esce dai bordi`, () => {
+      const scena = leggiContenuto(registro, tipoIllustrazione, scenaId)!;
+      const larghezzaScena = Math.max(...scena.pixel.map((r) => r.length));
+      for (const id of creature) {
+        const sprite = leggiContenuto(registro, tipoIllustrazione, `sprite.${id}`)!;
+        const larghezzaSprite = Math.max(...sprite.pixel.map((r) => r.length));
+        expect((scena.ancora?.x ?? 0) + larghezzaSprite, id).toBeLessThanOrEqual(larghezzaScena);
+      }
+    });
+  }
+});

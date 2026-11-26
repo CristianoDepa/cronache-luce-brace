@@ -11,7 +11,8 @@ import { LUGLIO, creaContestoDiProva, eseguiOk, registroDa, statoDiProva } from 
 const registro = registroDa(MODULI_ATTIVI);
 const ctx = creaContestoDiProva(registro, 4);
 const inSito = (stato: StatoGioco, sito: string): StatoGioco => statoCitta.scrivi(stato, { sito, movimenti: 0, visitati: [sito] });
-const partenza = (): StatoGioco => statoDiProva(registro);
+// Dalla 0.31.0 si parte all'Anfiteatro, dove c'è un NPC: i test di questo file partono dalla Porta San Pietro, dove non c'è nessuno.
+const partenza = (): StatoGioco => statoCitta.scrivi(statoDiProva(registro), { sito: "porta-s", movimenti: 0, visitati: ["porta-s"] });
 const parla = { tipo: "parlaConNpc" };
 const errore = (esito: ReturnType<typeof eseguiAzione>): string => (esito.ok ? "" : esito.errore.chiave);
 const sitiOspitanti = DEFINIZIONI_SITI.filter((s) => s.ospitaNpc === true).map((s) => s.id);

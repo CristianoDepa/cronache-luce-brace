@@ -1,5 +1,70 @@
 # Cronologia delle versioni
 
+## 0.33.1 - Correzioni dal collaudo dei mostri di riserva
+- **Sprite larghi o alti fuori dallo sfondo:** `posizioneSprite` (nucleo) ora sposta a sinistra uno sprite troppo largo, lasciando 2 pixel di margine dal bordo destro (nessun cambiamento per chi già ci stava).
+- **Troll del ponte, troll di montagna e orso delle caverne ridotti** (altezza massima 52): non toccano più il bordo alto della scena.
+- **Comandi di prova:** «Scegli il mostro» (anche i mostri di riserva) fa partire lo scontro con lo sfondo della zona della creatura (la foresta per i mostri senza zona), come negli incontri veri; prima partiva con l'icona generale delle spade incrociate. Il gioco vero non cambia.
+- **Nuovo test** che controlla tutte le creature su tutte le scene di zona (margine a destra; per la riserva anche in alto). **Restano alti per scelta** i boss vecchi: mezzogigante (68 px), Madre della Quercia (60), Capitano dei banditi (56).
+- Test: 913.
+
+## 0.33.0 - Venti scenari di riserva (solo grafica)
+- **Venti scene nuove, non collocate** (96 x 64, notte e giorno): bottega oscura, vicolo di notte, mercato all'alba, ponte sul fiume, cortile con pozzo; montagna con sentiero, passo innevato, colline con cipressi, deserto, oasi, lago sotto la luna, costa con faro; accampamento abbandonato, falò misterioso, rovine di un tempio, miniera, mulino, cripta-biblioteca; tempesta sulla piana, campo di battaglia nella nebbia.
+- Nessun luogo le usa: il gioco non cambia. Nuovo modulo `scenari` (solo immagini) e nuovo documento `docs/scenari-riserva.md` con l'elenco e l'uso.
+- Animazioni: stelle, fiamme (bottega, lanterne, faro, candelabro), fiamma verde acqua e lucciole (falò), fulmine (tempesta).
+- Strumenti d'arte: `scene_s.py`, ruoli di colore nuovi in `colori.py`, `esporta.py` genera anche questo modulo.
+- Test: 912 (nuovo `scenari.test.ts`: venti scene 96 x 64, senza pixel vuoti, con versione di giorno, al massimo 62 colori).
+
+## 0.32.0 - La riserva del bestiario (solo mostri)
+- **Ventuno creature nuove «in stand-by»**, senza zona: non compaiono negli incontri e non entrano nel bestiario finché non vengono messe in gioco. Il gioco non cambia (percentuali, oro medio, missioni di recupero, bilanciamento).
+- **Ragno gigante, cinghiale, bracconiere, pipistrello delle cripte** (fascia 1-3); **sanguisuga nera, ghoul, becchino folle, lucertolone di palude** (4-7); **troll del ponte, granchio corazzato, contrabbandiere, folletto dispettoso** (8-11); **cavaliere decaduto, toro infuriato, mantide cacciatrice, banshee** (12-15); **ippogrifo, troll di montagna, orso delle caverne, chimera, medusa** (16-20).
+- **Abilità:** il ragno gigante avvelena; ghoul, folletto dispettoso, banshee e medusa spaventano (stesse regole degli stati già esistenti).
+- **Ventuno sprite nuovi** (`strumenti/arte/scene_r.py`), testi in italiano e inglese, schede con natura (resistenze e debolezze). Tutti i valori sono **proposti e da tarare** quando un mostro entra in una zona.
+- **Prove (?dev=1 → Comandi di prova → [5] Scegli il mostro → [Z] Mostri di riserva):** avvia lo scontro con uno dei ventuno.
+- **Nuovo documento** `docs/bestiario-riserva.md`: schede, fasce e come si mette in gioco un mostro.
+- **Test:** 910 (nuovo `riserva.test.ts`; adattato il menu dei comandi di prova).
+
+## 0.31.0 - Correzioni dal collaudo della 0.30.0
+- **Registro dei mercanti:** gli oggetti mai consegnati compaiono come `[ ] ???` (il nome compare alla prima consegna, la zona non si mostra); nota: «Il registro si completerà man mano che troverai gli oggetti di cui ha bisogno il mercante». Tolta la doppia dicitura del titolo.
+- **Premio del registro ripetibile:** ogni serie completa dà **3.000 monete** (sempre uguali); poi le spunte ripartono da zero, i nomi già scoperti restano. Il registro mostra quanti registri sono stati completati.
+- **Dritta del mercante:** il testo dice i valori reali («da 4% a 6% per ogni vittoria»).
+- **Oggetti speciali nello zaino:** la schermata dello zaino ha una riga per ogni oggetto trovato e non ancora consegnato (solo da leggere, nessuno slot occupato).
+- **Si parte da Piazza dell'Anfiteatro** (Fabbro, Locanda, Gilda dei Cavalieri); si conosce anche la Porta San Pietro; San Michele (Banca, Gilda dei Mistici) si scopre andandoci.
+- **Oro iniziale 100 monete** (erano 50).
+- **Guaritore:** costo per HP uguale al livello fino all'8, poi +1 ogni 2 livelli (L12 = 10, L16 = 12, L20 = 14).
+- **Niente «+0»:** se un effetto non cambia nulla (HP già al massimo) il testo non scrive il valore (pellegrino, fonte, trappola, guado, Lucida Mansi); negli incontri delle mura i valori scritti sono quelli reali (la penitenza di Frate Anselmo non porta sotto 1 HP e lo dice), e se non cambia nulla si legge «Non cambia nulla».
+- **Test:** 905 (adattati partenza e oro iniziale; nuovi: registro ripetibile e `???`, zaino, dritta, curva del Guaritore, messaggio senza +0).
+
+## 0.30.0 - Le missioni di recupero e la Piazza dei Mercanti
+- **Nuova Piazza dei Mercanti** (settima piazza, tasto 7 nella mappa; collegata a Via Fillungo 2, Piazza San Michele 3 e alla Loggia 2) con la **Loggia dei Mercanti** (tasto L), sulla mappa a est del centro. Il **mercante del tempo perduto** cerca oggetti strani delle zone che hai già aperto e li paga.
+- **Missioni di recupero:** ogni giorno il mercante chiede **un oggetto** (scelto a caso dalla data, tra le zone aperte al tuo livello; non salvato: le offerte di oggi sono uguali per tutti i giorni uguali). Si accetta (tasto 1), **non c'è scadenza**, si può rinunciare (A). L'oggetto non occupa lo zaino: **a ogni vittoria nella zona** della missione si trova con il **4%** (più la Fortuna: +3% per punto); non vale per duelli e creature non letali. Si consegna (C) e il mercante paga il prezzo fissato all'accettazione. Un oggetto già consegnato non si riofferisce nello stesso giorno.
+- **Prezzo:** 4 volte l'oro medio di uno scontro nella zona, variazione ±25% (decisa dal giorno e dall'oggetto), arrotondato a 5, tra 40 e 2.000 monete.
+- **Dodici oggetti strani, due per zona:** ramo di palissandro, fungo d'argento (foresta); pipa stregata, perla di fango (palude); candela eterna, campanella d'osso (cimitero); seta raffinata, lisca d'oro (valle); spiga d'ottone, nastro del sabba (piana); cristallo perfetto, piuma d'arpia (colline).
+- **Giorno di mercato** (circa 1 giorno su 7, deciso dalla data): il mercante chiede **due oggetti di zone diverse**; se li consegni **insieme** ti paga il **25% in più**. Quel giorno la piazza ha una scena con le bancarelle.
+- **Arte nuova:** Piazza dei Mercanti (giorno normale e di mercato), interno della Loggia con il Mercante; la mappa ha la piazza e l'edificio nuovi (`scene_q.py`, `scene_d.py`).
+- **Modulo `recuperi`:** parametri in `recuperi/parametri.ts`, zone e oggetti in `recuperi/dati.ts` (`ZONE_RECUPERI`: livello di apertura e oro medio di ogni zona, da aggiornare se cambiano i mostri), offerte in `offerte.ts`, regola di ritrovamento in `regole.ts`.
+- **Offerta rara:** circa 1 giorno su 8 la prima offerta è rara: ritrovamento all'**1%** (invece del 4%) e compenso **triplo** (tetto 6.000). Si può abbandonare senza penalità.
+- **Fiducia del mercante:** **+5% di compenso ogni 5 oggetti consegnati, fino a +15%**; si somma al +25% del mercato (massimo +40%). Il pannello mostra il totale e il gradino.
+- **Registro dei mercanti** (tasto R nella Loggia): i dodici oggetti con il segno su quelli consegnati; a serie completa **3.000 monete** una sola volta.
+- **Chiacchiere** (tasto 3 nella Loggia): **1 azione, una volta al giorno**; racconta una delle **dodici storie** (senza ripetizioni finché non sono finite tutte) e per quel giorno la probabilità di ritrovamento sale del **50%** in valore relativo (4% → 6%, 1% → 1,5%).
+- **Pozione del mercato:** consegnando insieme i due oggetti del giorno di mercato arriva anche una **pozione a caso**; con lo zaino pieno vale il suo prezzo in monete (nessun premio si perde, come per i premi del cacciatore).
+- **La Stamperia** annuncia il giorno di mercato con una notizia in più.
+- **Il mercante si chiama «il mercante del tempo perduto»** (era «per ogni esigenza»).
+- **Prove (?dev=1 → Comandi di prova):** [M] accende/spegne il giorno di mercato, [R] trova gli oggetti delle missioni in corso.
+- **Test:** nuovo `recuperi.test.ts` (33); adattati città, mappa che impara, gateway, client (una piazza e due edifici in più, tasti di prova M e R).
+
+## 0.29.0 - I balsami dei boss e le correzioni delle colline
+- **Balsami dei boss:** la **Madre della Quercia** lascia sempre il **Balsamo di quercia** e il **Capitano dei Banditi** il **Balsamo del fortino**. Il balsamo dà **+2 a forza, difesa e velocità** per **1d8+8 turni di combattimento** (9-16). Non si compra né si vende allo Speziale e non cade dai mostri comuni. Prende il posto di una pozione di effetto in corso; una pozione di forza, destrezza o corazza non prende il posto di un balsamo attivo (resta nello zaino).
+- **Zaino a 8 slot** (da 6).
+- **Zaino pieno e premio del boss:** il balsamo non si perde: si apre la schermata «Zaino pieno» e si sceglie quale oggetto lasciare al suo posto (tasti 1-8) oppure si lascia il premio (tasto X). Si resta sulla schermata finché non si decide.
+- Costanti nuove in `pozioni/parametri.ts`: `bonusBalsamo` 2, `durataBalsamoBase` 8, `durataBalsamoDado` 8. Premi dei boss in `pozioni/dati.ts` (`BALSAMI_DEI_BOSS`).
+- Correzioni dal collaudo (già pronte):
+- **Disegno della Madre della Quercia** dentro i bordi: l'ancora delle scene indica il lato sinistro dello sprite (scena della Quercia e delle colline spostate); nuovo test che controlla che ogni creatura di piana e colline stia nella scena.
+- **Testi della Quercia e del fortino:** spiegano a cosa serve cercarli (nemico più forte dell'area, oro ed esperienza, una volta al giorno, debolezza e resistenze) e cosa sono i nastri (offerte delle streghe del sabba); menu «(boss, una volta al giorno)»; frase del giorno dopo «potrai cercarla/cercarlo nuovamente col nuovo dì».
+- **Armeria:** il tasto «Arma della tua classe» dice che ha la stessa potenza delle altre armi, con profilo su misura.
+- **Segnalazione dell'acciaio di brace:** le descrizioni di piana e colline avvisano che dal livello 12 serve l'acciaio di brace del Fabbro; la prova [Q] equipaggia l'acciaio di brace dal livello 12.
+- **Prova «Scegli il mostro» allineata:** elenca anche le creature di piana e colline (boss compresi); i tasti saltano F, I, O.
+- **Strega delle erbe ridisegnata** (vecchia curva con fazzoletto rosso, grembiule, cesto e falcetto).
+
 ## 0.28.0 - Le colline di Lucca e i livelli 17-20
 - **Nuova area: le colline di Lucca**, dietro **Porta Elisa** (porta-e), aperta dal **livello 16** (sotto, messaggio di porta chiusa). Nuovo modulo `colline`, sul modello della piana. Sette creature: bandito della macchia, mercenario disertore, lupo di collina, arpia e il **mezzogigante delle colline** (raro, lento, molti HP, premio alto); di notte anche **cavaliere spettrale** e **ombra delle rovine** (premi +25%). Due scene (`scena.colline`, `scena.fortino`) e otto sprite nuovi.
 - **Il fortino dei banditi:** boss **una volta al giorno** (voce [Q]), il **Capitano dei Banditi** (190 HP, debole a perforante e taglio; premio 2.800 monete e 7.500 PE). Non parte da sola; si azzera al nuovo giorno.

@@ -10,6 +10,12 @@ export const CREATURE_CHE_INFLIGGONO: Readonly<Record<Id, TipoStato>> = {
   spettro: "paura",
   annegato: "paura",
   dama_della_nebbia: "paura",
+  // Riserva del bestiario (0.32.0): non compaiono in nessuna zona finché non vengono messi in gioco.
+  ragno_gigante: "veleno",
+  ghoul: "paura",
+  folletto_dispettoso: "paura",
+  banshee: "paura",
+  medusa: "paura",
 };
 
 // I patti del Diavolo del Ponte (permanenti, uno solo per partita). Ogni patto dà qualcosa e ne toglie qualcos'altro.

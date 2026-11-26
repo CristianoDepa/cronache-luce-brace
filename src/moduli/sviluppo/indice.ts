@@ -1,10 +1,11 @@
 import type { DefinizioneModulo, InterfacciaModulo, Risultato, StatoGioco, VoceMenu } from "../../core/indice";
 import { VERSIONE_API, applicaGiorno, calcolaStatistiche, chiudi, elencaContenuti, leggiContenuto, comeOggetto, definisciAzione, esitoErrore, esitoOk, fallisci, stringa } from "../../core/indice";
 import { ID_AZIONI, ripristinaAzioni } from "../azioni/indice";
+import { tipoLuogo } from "../luoghi/tipi";
 
 import { DEFINIZIONI_SITI, ID_CITTA, chiaveNome, spostaIn, statoCitta, tipoSito } from "../citta/indice";
 import type { CategoriaSito } from "../citta/indice";
-import { ID_COMBATTIMENTO } from "../combattimento/indice";
+import { ID_COMBATTIMENTO, iniziaScontro } from "../combattimento/indice";
 import { ID_MANA, ripristinaMana } from "../mana/indice";
 import { ID_PALUDE } from "../palude/indice";
 import { ID_EVENTI } from "../eventi/indice";
@@ -17,6 +18,7 @@ import { ID_MURA, presenzeOggi, tipoNpc } from "../mura/indice";
 import { ID_OGGETTI_MAGICI } from "../oggettimagici/indice";
 import { ID_FORTUNA } from "../fortuna/indice";
 import { ID_FORZIERE } from "../forziere/indice";
+import { ID_MOSTRI_RISERVA, ID_RISERVA } from "../riserva/indice";
 import { AZIONI_PROVA, CONTESTI_PROVA, PADRI_PROVA, TESTI_PROVA, TITOLI_PROVA, regolaFortunaProva, statoSviluppo, vociMenuProva } from "./prove016";
 
 export const ID_SVILUPPO = "sviluppo";
@@ -26,13 +28,15 @@ export const ID_SVILUPPO = "sviluppo";
 const CONTESTO = "sviluppo";
 const CONTESTO_VAI = "sviluppo:vai";
 const CONTESTO_MOSTRI = "sviluppo:mostri";
+// I mostri della riserva del bestiario (0.32.0): non stanno in nessuna zona, si provano da qui (tasto Z nella scelta del mostro).
+const CONTESTO_MOSTRI_RISERVA = "sviluppo:mostri:riserva";
 const CATEGORIE: readonly { readonly id: string; readonly categoria: CategoriaSito }[] = [
   { id: "porte", categoria: "porta" },
   { id: "mura", categoria: "mura" },
   { id: "piazze", categoria: "piazza" },
   { id: "edifici", categoria: "edificio" },
 ];
-// I mostri tra cui scegliere nei comandi di prova (id e modulo che ne ha il testo); dopo il 9° il tasto è una lettera (A).
+// I mostri tra cui scegliere nei comandi di prova (id e modulo che ne ha il testo); dopo il 9° il tasto è una lettera.
 const MOSTRI: readonly { readonly id: string; readonly modulo: string }[] = [
   { id: "ratto", modulo: "combattimento" },
   { id: "lupo", modulo: "combattimento" },
@@ -44,8 +48,25 @@ const MOSTRI: readonly { readonly id: string; readonly modulo: string }[] = [
   { id: "scheletro", modulo: "palude" },
   { id: "zombi", modulo: "palude" },
   { id: "spettro", modulo: "palude" },
+  // Piana di Capannori e colline di Lucca (0.28.1), boss compresi.
+  { id: "contadino_posseduto", modulo: "piana" },
+  { id: "spaventapasseri", modulo: "piana" },
+  { id: "cane_nero", modulo: "piana" },
+  { id: "lupo_mannaro", modulo: "piana" },
+  { id: "strega_erbe", modulo: "piana" },
+  { id: "strega_sabba", modulo: "piana" },
+  { id: "madre_quercia", modulo: "piana" },
+  { id: "bandito_macchia", modulo: "colline" },
+  { id: "mercenario_disertore", modulo: "colline" },
+  { id: "lupo_collina", modulo: "colline" },
+  { id: "arpia", modulo: "colline" },
+  { id: "mezzogigante", modulo: "colline" },
+  { id: "cavaliere_spettrale", modulo: "colline" },
+  { id: "ombra_rovine", modulo: "colline" },
+  { id: "capitano_banditi", modulo: "colline" },
 ];
-const TASTI_MOSTRI = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A"];
+// Tasti 1-9 poi le lettere, senza la F (Fuggi), la I e la O (Informazioni e Opzioni).
+const TASTI_MOSTRI = [..."123456789ABCDEGHJKLMNPQRSTUVWXYZ"];
 
 function validaSito(dati: unknown): Risultato<{ readonly sito: string }> {
   const o = comeOggetto(dati);
@@ -77,6 +98,20 @@ const azioneRipristina = definisciAzione(
   },
   consentite,
 );
+
+// Mostro dei comandi di prova: lo scontro parte con lo sfondo del primo luogo che elenca la creatura (la foresta per le creature di riserva, che non hanno zona), come negli incontri veri.
+const validaCreaturaProva = (dati: unknown): Risultato<{ readonly creaturaId: string }> => {
+  const o = comeOggetto(dati);
+  if (!o) return fallisci("oggetto atteso");
+  const errori: string[] = [];
+  return chiudi(errori, { creaturaId: stringa(o, "creaturaId", errori) });
+};
+const SCENA_DI_RISERVA = "scena.foresta";
+function scenaDiProva(registro: Parameters<typeof elencaContenuti>[0], creaturaId: string): string {
+  const luogo = elencaContenuti(registro, tipoLuogo).find((l) => l.dati.creature.includes(creaturaId) && l.dati.scenaId !== undefined);
+  return luogo?.dati.scenaId ?? SCENA_DI_RISERVA;
+}
+const azioneMostroProva = definisciAzione("devMostro", validaCreaturaProva, (stato, dati, ctx) => iniziaScontro(stato, dati.creaturaId, ctx, scenaDiProva(ctx.registro, dati.creaturaId)), consentite);
 
 // Teletrasporto gratuito: nessun movimento né azione, e il resto dei movimenti si azzera.
 const azioneTeletrasporta = definisciAzione(
@@ -176,9 +211,12 @@ const azioneEquipaggiaAlLivello = definisciAzione(
     const classe = statoClassi.leggi(stato).classeId;
     const nomi = classe === null ? undefined : LINEE_DELLA_CLASSE[classe];
     if (nomi === undefined) return esitoErrore("sviluppo.errore.senzaClasse");
+    // Dal livello degno in poi si usa l'acciaio di brace (0.28.1): è quello per cui sono tarati piana e colline.
+    const brace = stato.personaggio.livello >= PARAMETRI_LIVELLI.livelloDegno;
+    const nome = (n: string): string => (brace ? `${n}-brace` : n);
     const livello = (id: string): number => Math.min(stato.personaggio.livello, livelloMassimo(LINEE.find((l) => l.id === id)!));
     const eq = statoEquipaggiamento.leggi(stato);
-    const nuovo = statoEquipaggiamento.scrivi(stato, { ...eq, arma: { linea: nomi[0], livello: livello(nomi[0]) }, armatura: { linea: nomi[1], livello: livello(nomi[1]) } });
+    const nuovo = statoEquipaggiamento.scrivi(stato, { ...eq, arma: { linea: nome(nomi[0]), livello: livello(nome(nomi[0])) }, armatura: { linea: nome(nomi[1]), livello: livello(nome(nomi[1])) } });
     return esitoOk(nuovo, [{ chiave: "sviluppo.equipaggiato", parametri: { livello: stato.personaggio.livello }, tono: "positivo" }]);
   },
   consentite,
@@ -199,6 +237,8 @@ function menu(): readonly VoceMenu[] {
     { id: "sviluppo.livello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.livello", tasto: "8", ordine: 8, comando: { tipo: "azione", azione: { tipo: "devLivello" } } },
     { id: "sviluppo.duello", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.duello", tasto: "D", ordine: 23, comando: { tipo: "azione", azione: { tipo: "devPreparaDuello" } } },
     { id: "sviluppo.equipaggia", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.equipaggia", tasto: "Q", ordine: 25, comando: { tipo: "azione", azione: { tipo: "devEquipaggia" } } },
+    { id: "sviluppo.mercato", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.mercato", tasto: "M", ordine: 26, comando: { tipo: "azione", azione: { tipo: "devMercato" } } },
+    { id: "sviluppo.oggetti", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.oggetti", tasto: "R", ordine: 27, comando: { tipo: "azione", azione: { tipo: "devTrovaOggetti" } } },
     { id: "sviluppo.mostro", contesto: CONTESTO, etichettaChiave: "sviluppo.menu.mostro", tasto: "5", ordine: 5, comando: { tipo: "naviga", verso: CONTESTO_MOSTRI } },
   ];
   CATEGORIE.forEach((c, i) => {
@@ -208,28 +248,34 @@ function menu(): readonly VoceMenu[] {
     });
   });
   MOSTRI.forEach(({ id, modulo }, i) => {
-    voci.push({ id: `sviluppo.mostro.${id}`, contesto: CONTESTO_MOSTRI, etichettaChiave: `${modulo}.creatura.${id}.breve`, tasto: TASTI_MOSTRI[i] ?? "A", ordine: i + 1, comando: { tipo: "azione", azione: { tipo: "iniziaCombattimento", dati: { creaturaId: id } } } });
+    voci.push({ id: `sviluppo.mostro.${id}`, contesto: CONTESTO_MOSTRI, etichettaChiave: `${modulo}.creatura.${id}.breve`, tasto: TASTI_MOSTRI[i] ?? "?", ordine: i + 1, comando: { tipo: "azione", azione: { tipo: "devMostro", dati: { creaturaId: id } } } });
+  });
+  voci.push({ id: "sviluppo.mostroRiserva", contesto: CONTESTO_MOSTRI, etichettaChiave: "sviluppo.menu.mostroRiserva", tasto: "Z", ordine: 90, comando: { tipo: "naviga", verso: CONTESTO_MOSTRI_RISERVA } });
+  ID_MOSTRI_RISERVA.forEach((id, i) => {
+    voci.push({ id: `sviluppo.mostroRiserva.${id}`, contesto: CONTESTO_MOSTRI_RISERVA, etichettaChiave: `${ID_RISERVA}.creatura.${id}.breve`, tasto: TASTI_MOSTRI[i] ?? "?", ordine: i + 1, comando: { tipo: "azione", azione: { tipo: "devMostro", dati: { creaturaId: id } } } });
   });
   return [...voci, ...vociMenuProva()];
 }
 
 const interfaccia: InterfacciaModulo = {
   // Da morti restano usabili i comandi di prova ("Passa al giorno dopo" serve proprio a rialzarsi).
-  contestiDaMorto: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
+  contestiDaMorto: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, CONTESTO_MOSTRI_RISERVA, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
   // I comandi di prova si aprono anche durante un combattimento (0.19.1), per curarsi o ripristinare a scontro in corso.
-  contestiLiberiDaForzato: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
+  contestiLiberiDaForzato: [CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, CONTESTO_MOSTRI_RISERVA, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA],
   menu: menu(),
   titoliContesto: {
     [CONTESTO]: "sviluppo.titolo",
     [CONTESTO_VAI]: "sviluppo.vai.titolo",
     [CONTESTO_MOSTRI]: "sviluppo.mostri.titolo",
+    [CONTESTO_MOSTRI_RISERVA]: "sviluppo.mostriRiserva.titolo",
     ...TITOLI_PROVA,
     ...Object.fromEntries(CATEGORIE.map((c) => [`${CONTESTO_VAI}:${c.id}`, `sviluppo.vai.titolo`])),
   },
-  illustrazioniContesto: Object.fromEntries([CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA].map((c) => [c, "scena.opzioni"])),
+  illustrazioniContesto: Object.fromEntries([CONTESTO, CONTESTO_VAI, CONTESTO_MOSTRI, CONTESTO_MOSTRI_RISERVA, ...CATEGORIE.map((c) => `${CONTESTO_VAI}:${c.id}`), ...CONTESTI_PROVA].map((c) => [c, "scena.opzioni"])),
   contestiPadre: {
     [CONTESTO_VAI]: CONTESTO,
     [CONTESTO_MOSTRI]: CONTESTO,
+    [CONTESTO_MOSTRI_RISERVA]: CONTESTO_MOSTRI,
     ...PADRI_PROVA,
     ...Object.fromEntries(CATEGORIE.map((c) => [`${CONTESTO_VAI}:${c.id}`, CONTESTO_VAI])),
   },
@@ -238,8 +284,8 @@ const interfaccia: InterfacciaModulo = {
 export const moduloSviluppo: DefinizioneModulo = {
   id: ID_SVILUPPO,
   versioneApi: VERSIONE_API,
-  dipende: [ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE, ID_EVENTI, ID_CRIPTA],
-  azioni: [azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneMostraLavori, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, azioneEquipaggiaAlLivello, ...AZIONI_PROVA],
+  dipende: [ID_RISERVA, ID_OGGETTI_MAGICI, ID_AZIONI, ID_CITTA, ID_FORTUNA, ID_FORZIERE, ID_MANA, ID_COMBATTIMENTO, ID_MURA, ID_LAVORI, ID_LIVELLI, ID_PALUDE, ID_EVENTI, ID_CRIPTA],
+  azioni: [azioneMostroProva, azioneGiornoDopo, azioneOro, azioneRipristina, azioneTeletrasporta, azioneMostraNpc, azioneMostraLavori, azioneDaiEsperienza, azioneSaliLivello, azionePreparaDuello, azioneEquipaggiaAlLivello, ...AZIONI_PROVA],
   regole: [regolaFortunaProva],
   stato: statoSviluppo,
   testi: {
@@ -248,7 +294,11 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.titolo": "Comandi di prova",
       "sviluppo.vai.titolo": "Vai a un luogo (gratis)",
       "sviluppo.mostri.titolo": "Scegli il mostro",
+      "sviluppo.mostriRiserva.titolo": "Scegli il mostro (riserva del bestiario)",
+      "sviluppo.menu.mostroRiserva": "Mostri di riserva (non in nessuna zona)",
       "sviluppo.menu.giorno": "Passa al giorno dopo",
+      "sviluppo.menu.mercato": "Accendi/spegni il giorno di mercato (missioni di recupero)",
+      "sviluppo.menu.oggetti": "Trova gli oggetti delle missioni di recupero in corso",
       "sviluppo.menu.oro": "Dai 100 monete",
       "sviluppo.menu.ripristina": "Ripristina azioni, HP e mana",
       "sviluppo.menu.vai": "Vai a un luogo",
@@ -259,8 +309,8 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.esperienza": "Dai l'esperienza per salire di livello",
       "sviluppo.menu.livello": "Sali di un livello (senza gilda)",
       "sviluppo.menu.duello": "Prepara il duello con il capogilda",
-      "sviluppo.menu.equipaggia": "Equipaggiati al tuo livello (arma e armatura di classe)",
-      "sviluppo.equipaggiato": "Arma e armatura della tua classe, al livello {livello} (o al massimo della linea).",
+      "sviluppo.menu.equipaggia": "Equipaggiati al tuo livello (arma e armatura di classe; dal 12 acciaio di brace)",
+      "sviluppo.equipaggiato": "Arma e armatura della tua classe, al livello {livello} (o al massimo della linea; dal 12 in acciaio di brace).",
       "sviluppo.errore.senzaClasse": "Prima scegli una classe.",
       "sviluppo.duelloPronto": "Sei pronto per il duello del livello {livello}: esperienza, monete e HP bastano; vai alla tua gilda e premi «Sfida il capogilda» (comando di prova).",
       "sviluppo.esperienza": "Ricevi {punti} punti esperienza (comando di prova).",
@@ -275,7 +325,11 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.titolo": "Test commands",
       "sviluppo.vai.titolo": "Go to a place (free)",
       "sviluppo.mostri.titolo": "Choose the monster",
+      "sviluppo.mostriRiserva.titolo": "Choose the monster (bestiary reserve)",
+      "sviluppo.menu.mostroRiserva": "Reserve monsters (in no zone)",
       "sviluppo.menu.giorno": "Go to the next day",
+      "sviluppo.menu.mercato": "Toggle market day (retrieval errands)",
+      "sviluppo.menu.oggetti": "Find the items of the errands in progress",
       "sviluppo.menu.oro": "Give 100 coins",
       "sviluppo.menu.ripristina": "Restore actions, HP and mana",
       "sviluppo.menu.vai": "Go to a place",
@@ -286,8 +340,8 @@ export const moduloSviluppo: DefinizioneModulo = {
       "sviluppo.menu.esperienza": "Give the experience to level up",
       "sviluppo.menu.livello": "Go up one level (no guild)",
       "sviluppo.menu.duello": "Get ready for the guildmaster duel",
-      "sviluppo.menu.equipaggia": "Equip yourself at your level (class weapon and armour)",
-      "sviluppo.equipaggiato": "Your class weapon and armour, at level {livello} (or the line maximum).",
+      "sviluppo.menu.equipaggia": "Equip yourself at your level (class weapon and armour; ember steel from 12)",
+      "sviluppo.equipaggiato": "Your class weapon and armour, at level {livello} (or the line maximum; ember steel from 12).",
       "sviluppo.errore.senzaClasse": "Choose a class first.",
       "sviluppo.duelloPronto": "You are ready for the level {livello} duel: experience, coins and HP are enough; go to your guild and press \"Challenge the guildmaster\" (test command).",
       "sviluppo.esperienza": "You receive {punti} experience points (test command).",

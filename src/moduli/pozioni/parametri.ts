@@ -6,6 +6,10 @@ export const PARAMETRI_POZIONI = {
   bonusFortuna: 5,
   durataBase: 5,
   durataDado: 6,
+  // Balsami dei boss (0.29.0): +bonusBalsamo a forza, difesa e velocità per durataBalsamoBase + d(durataBalsamoDado) turni (si trovano soltanto, non si comprano).
+  bonusBalsamo: 2,
+  durataBalsamoBase: 8,
+  durataBalsamoDado: 8,
   // Scorta dello Speziale: ogni giorno ha da tipiMin a tipiMax pozioni DIVERSE (a caso tra le sei), ciascuna in quantità tra scortaMin e scortaMax.
   tipiMin: 1,
   tipiMax: 3,

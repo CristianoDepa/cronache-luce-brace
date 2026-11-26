@@ -34,6 +34,8 @@ export interface Avvio {
 }
 
 const fine = (stato: StatoGioco, eventi: readonly EventoGioco[] = []): Risoluzione => ({ esito: esitoOk(stato, eventi) });
+// Un testo con «{hp} HP» non si scrive quando il valore reale è 0 (HP già al massimo o al minimo): si usa la variante «Nulla» senza numero.
+const conHp = (chiave: string, hp: number, tono: "positivo" | "negativo"): EventoGioco => (hp > 0 ? evento(chiave, { hp }, tono) : evento(`${chiave}Nulla`, undefined, tono));
 const errore = (chiave: string): Risoluzione => ({ esito: esitoErrore(chiave) });
 const oro = (stato: StatoGioco): number => stato.personaggio.oro;
 const tesoroBase = (stato: StatoGioco, ctx: Contesto): number => livelloDi(stato) * traMinEMax(ctx, P.tesoro.min, P.tesoro.max);
@@ -47,7 +49,7 @@ const AVVIO: Readonly<Record<string, (stato: StatoGioco, ctx: Contesto) => Avvio
   trappola: (stato, ctx) => {
     const r = danno(stato, ctx, P.trappola.quotaMin + ctx.rng.prossimo() * (P.trappola.quotaMax - P.trappola.quotaMin));
     const avvelenata = ctx.rng.prossimo() < P.trappola.probabilitaVeleno; // le punte possono essere avvelenate
-    const eventi = [evento("eventi.log.trappola", { hp: r.persi }, "negativo"), ...(avvelenata ? [evento("stati.log.avvelenato", { azioni: PARAMETRI_STATI.veleno.azioni }, "negativo")] : [])];
+    const eventi = [conHp("eventi.log.trappola", r.persi, "negativo"), ...(avvelenata ? [evento("stati.log.avvelenato", { azioni: PARAMETRI_STATI.veleno.azioni }, "negativo")] : [])];
     return { stato: avvelenata ? infliggiStato(r.stato, "veleno") : r.stato, eventi };
   },
   // Il mercante offre una pozione a caso (la pozione di mana solo a chi ha mana); il valore dell'evento è la sua posizione nell'elenco, da 1.
@@ -88,7 +90,7 @@ const pellegrino = (a: Argomenti): Risoluzione => {
   if (a.scelta !== "offri") return fine(a.stato, [evento("eventi.log.rifiuta")]);
   if (oro(a.stato) < P.pellegrino.offerta) return errore("eventi.errore.poco_oro");
   const r = cura(conOro(a.stato, -P.pellegrino.offerta), a.ctx, P.pellegrino.cura);
-  return fine(curaMana(r.stato, a.ctx, P.pellegrino.cura), [evento("eventi.log.pellegrino", { hp: r.curati }, "positivo")]);
+  return fine(curaMana(r.stato, a.ctx, P.pellegrino.cura), [conHp("eventi.log.pellegrino", r.curati, "positivo")]);
 };
 
 // La pozione del mercante (dal valore dell'evento) e il suo prezzo scontato.
@@ -124,10 +126,10 @@ const fonte = (a: Argomenti): Risoluzione => {
   if (a.scelta !== "bevi") return fine(a.stato, [evento("eventi.log.prosegui")]);
   if (a.ctx.rng.prossimo() < P.fonte.probabilitaBuona) {
     const r = cura(a.stato, a.ctx, P.fonte.cura);
-    return fine(r.stato, [evento("eventi.log.fonteBuona", { hp: r.curati }, "positivo")]);
+    return fine(r.stato, [conHp("eventi.log.fonteBuona", r.curati, "positivo")]);
   }
   const r = danno(a.stato, a.ctx, P.fonte.danno);
-  return fine(r.stato, [evento("eventi.log.fonteCattiva", { hp: r.persi }, "negativo")]);
+  return fine(r.stato, [conHp("eventi.log.fonteCattiva", r.persi, "negativo")]);
 };
 
 const cacciatore = (a: Argomenti): Risoluzione => {
@@ -145,7 +147,7 @@ const lucidaMansi = (a: Argomenti): Risoluzione => {
   if (a.scelta !== "specchio") return fine(a.stato, [evento("eventi.log.rifiuta")]);
   const r = danno(a.stato, a.ctx, P.lucidaMansi.quotaHp);
   const quanto = r.persi * P.lucidaMansi.oroPerHp;
-  return fine(conOro(r.stato, quanto), [evento("eventi.log.lucidaMansi", { hp: r.persi, oro: quanto }, "speciale")]);
+  return fine(conOro(r.stato, quanto), [r.persi > 0 ? evento("eventi.log.lucidaMansi", { hp: r.persi, oro: quanto }, "speciale") : evento("eventi.log.lucidaMansiNulla", { oro: quanto }, "speciale")]);
 };
 
 const pozzo = (a: Argomenti): Risoluzione => {
@@ -182,7 +184,7 @@ const bivioGuado = (a: Argomenti): Risoluzione => {
   if (a.scelta === "giro") return fine(conAzioni(a.stato, P.guado.azioniGiro), [evento("eventi.log.giro")]);
   if (a.ctx.rng.prossimo() >= P.guado.probabilitaScivolata) return fine(a.stato, [evento("eventi.log.guadoOk")]);
   const r = danno(a.stato, a.ctx, P.guado.dannoHp);
-  return fine(r.stato, [evento("eventi.log.guado", { hp: r.persi }, "negativo")]);
+  return fine(r.stato, [conHp("eventi.log.guado", r.persi, "negativo")]);
 };
 
 // Il patto (una volta per partita): si sceglie uno dei tre doni e se ne paga il prezzo per sempre.

@@ -23,10 +23,11 @@ const lista = (stato: StatoGioco, categoria: string, lingua: "it" | "en" = "it")
 };
 
 describe("la mappa impara cosa c'è nei luoghi visitati", () => {
-  it("0.26.1: all'inizio si conoscono la piazza di partenza, la porta della foresta e la piazza della Locanda", () => {
-    expect(statoCitta.leggi(partenzaVera()).visitati).toEqual(["piazza-c", "porta-s", "piazza-n"]);
-    expect(lista(partenzaVera(), "porte")).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla - 10 movimenti, 1 azione");
-    expect(lista(partenzaVera(), "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Fabbro, Locanda, Gilda dei Cavalieri - 4 movimenti, 0 azioni");
+  it("0.31.0: all'inizio si conoscono la piazza di partenza (Anfiteatro) e la porta della foresta", () => {
+    expect(statoCitta.leggi(partenzaVera()).visitati).toEqual(["piazza-n", "porta-s"]);
+    expect(lista(partenzaVera(), "porte")).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla - 14 movimenti, 1 azione");
+    expect(lista(partenzaVera(), "piazze")[0]).toBe("[1] Piazza dell'Anfiteatro: Fabbro, Locanda, Gilda dei Cavalieri - sei qui");
+    expect(lista(partenzaVera(), "piazze")[1]).toBe("[2] Piazza San Michele - 4 movimenti, 0 azioni"); // San Michele si scopre andandoci: ancora solo il nome
   });
 
   it("dalla porta (partenza dei test di viaggio) le piazze non visitate mostrano solo il nome", () => {
@@ -39,6 +40,7 @@ describe("la mappa impara cosa c'è nei luoghi visitati", () => {
       "[4] Piazza San Martino - 9 movimenti, 1 azione",
       "[5] Via Fillungo - 12 movimenti, 1 azione",
       "[6] Torre Guinigi - 14 movimenti, 1 azione",
+      "[7] Piazza dei Mercanti - 13 movimenti, 1 azione",
     ]);
   });
 

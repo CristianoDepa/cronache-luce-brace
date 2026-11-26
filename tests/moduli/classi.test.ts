@@ -33,8 +33,8 @@ describe("classi", () => {
     const { ctx, stato } = conClasse("ladro");
     const inizio = eseguiOk(stato, { tipo: "iniziaCombattimento", dati: { creaturaId: "ratto" } }, ctx);
     const fine = combattiFinoAllaFine(inizio.stato, ctx);
-    // 50 monete iniziali, più 5 monete x 1,25 = 6,25 arrotondato a 6
-    expect(fine.stato.personaggio.oro).toBe(50 + 6);
+    // 100 monete iniziali, più 5 monete x 1,25 = 6,25 arrotondato a 6
+    expect(fine.stato.personaggio.oro).toBe(100 + 6);
   });
 
   it("la classe si sceglie una sola volta", () => {

@@ -11,6 +11,8 @@ aggiungerne di nuovi. Non servono per giocare.
 | `quadro.py` | Una tela che si disegna con i nomi dei ruoli; elementi comuni (cielo, stelle, luna, pini, fiamme); esportazione con palette e cicli |
 | `scene_a.py`, `scene_b.py`, `scene_c.py` | Le 12 scene (96 x 64 pixel), le creature (ratto, lupo, orco) e i 6 NPC |
 | `scene_d.py` | La **mappa della città** (96 x 64), il marcatore "sei qui" lampeggiante e le coordinate di ogni luogo (`coordinate()`) |
+| `scene_r.py` | I 21 sprite della **riserva del bestiario** (0.32.0); `QR` è un Quadro la cui macchia si posa solo sui pixel già disegnati |
+| `scene_s.py` | I 20 **scenari di riserva** (0.33.0), non collocati: `SCENARI` associa ogni id (`scenario.<nome>`) alla funzione che lo disegna |
 | `anteprima.py` | `python3 anteprima.py` crea PNG di anteprima (notte, giorno, creature) nella cartella `anteprime` |
 | `esporta.py` | Riscrive i file `grafica.ts` dei moduli dai disegni e `citta/coordinate.ts` con le posizioni sulla mappa. Rilanciarlo senza modifiche rigenera gli stessi file |
 

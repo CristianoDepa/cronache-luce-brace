@@ -197,11 +197,11 @@ describe("mana", () => {
     expect(pieno.ok ? "" : pieno.errore.chiave).toBe("locanda.errore.in_salute");
   });
 
-  it("scegliendo la classe si ricevono 50 monete iniziali", () => {
+  it("scegliendo la classe si ricevono 100 monete iniziali", () => {
     const s = eseguiOk(statoDiProva(registroReale), { tipo: "scegliClasse", dati: { classeId: "cavaliere" } }, ctxR);
-    expect(s.stato.personaggio.oro).toBe(50);
+    expect(s.stato.personaggio.oro).toBe(100);
     expect(chiavi(s.eventi)).toContain("classi.oroIniziale");
-    expect(traduciEvento(registroReale, "it", s.eventi.find((x) => x.chiave === "classi.oroIniziale")!)).toBe("Ricevi 50 monete per iniziare l'avventura.");
+    expect(traduciEvento(registroReale, "it", s.eventi.find((x) => x.chiave === "classi.oroIniziale")!)).toBe("Ricevi 100 monete per iniziare l'avventura.");
   });
 });
 

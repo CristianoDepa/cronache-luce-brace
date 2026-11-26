@@ -105,15 +105,18 @@ describe("mura: NPC e incontri", () => {
 
   it("tutti i 18 incontri possono verificarsi e hanno testo in italiano e inglese", () => {
     const visti = new Set<string>();
-    for (const n of elencaContenuti(registro, tipoNpc)) {
-      for (let seme = 1; seme <= 120; seme++) {
-        const base = conNpc(statoDiProva(registro), n.id);
-        const r = eseguiOk(alNpc(base), { tipo: "parlaConNpc" }, creaContestoDiProva(registro, seme));
-        const evento = r.eventi[1]; // la prima riga è "Parli con ..."
-        expect(evento).toBeDefined();
-        if (!evento) continue;
-        visti.add(evento.chiave);
-        for (const lingua of ["it", "en"] as const) expect(traduci(registro, lingua, evento.chiave), evento.chiave).not.toMatch(/^\[/);
+    // Due partenze: HP e oro normali, e HP bassi (gli incontri che curano non sono nulli).
+    for (const hp of [undefined, 2]) {
+      for (const n of elencaContenuti(registro, tipoNpc)) {
+        for (let seme = 1; seme <= 120; seme++) {
+          const base = conNpc(hp === undefined ? statoDiProva(registro) : con({ hp, oro: 3 }), n.id);
+          const r = eseguiOk(alNpc(base), { tipo: "parlaConNpc" }, creaContestoDiProva(registro, seme));
+          const evento = r.eventi[1]; // la prima riga è "Parli con ..."
+          expect(evento).toBeDefined();
+          if (!evento) continue;
+          if (evento.chiave !== "mura.effettoNullo") visti.add(evento.chiave);
+          for (const lingua of ["it", "en"] as const) expect(traduci(registro, lingua, evento.chiave), evento.chiave).not.toMatch(/^\[/);
+        }
       }
     }
     expect(visti.size).toBe(18);

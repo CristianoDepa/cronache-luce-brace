@@ -69,21 +69,26 @@ def lupo_mannaro():
     return contorno(q, "outline")
 
 def strega_erbe():
-    # La strega delle erbe: incappucciata e curva, naso adunco, abito verde con grembiule, fascio di erbe appeso, falcetto in mano e cesto di foglie.
-    q = Quadro(32, 42, [], None)
-    q.poli([(9, 14), (22, 14), (27, 37), (4, 37)], "ver_s"); q.poli([(9, 14), (16, 14), (14, 37), (4, 37)], "ver"); q.macchia(4, 14, 27, 37, "ombra", 0.05)   # l'abito
-    q.poli([(10, 22), (21, 22), (23, 37), (8, 37)], "perg_s"); q.rett(10, 22, 21, 23, "marr")                                                  # il grembiule
-    q.rett(10, 37, 13, 40, "marr_s"); q.rett(18, 37, 21, 40, "marr_s")
-    q.poli([(8, 12), (15, 1), (24, 12), (22, 17), (10, 17)], "ver_s"); q.poli([(15, 1), (24, 12), (16, 12)], "ver")                              # il cappuccio
-    q.ell(16, 11, 4.2, 4.6, "pelle_s"); q.poli([(18, 10), (24, 14), (19, 14)], "pelle_s"); q.set(15, 9, "ver_l"); q.set(19, 9, "ver_l")        # il volto e il naso adunco
-    q.rett(14, 14, 18, 14, "marr_s"); q.set(16, 13, "nero")
-    q.rett(2, 15, 8, 18, "ver_s"); q.rett(1, 18, 5, 27, "ver"); q.rett(0, 27, 4, 29, "pelle_s")                                               # il braccio con il fascio di erbe
-    q.poli([(1, 23), (7, 23), (5, 34), (3, 34)], "ver_l"); q.rett(2, 23, 6, 24, "legno"); q.rett(3, 26, 3, 33, "ver"); q.rett(5, 28, 5, 33, "ver")
-    q.rett(23, 15, 27, 20, "ver_s"); q.rett(26, 19, 29, 24, "pelle_s")                                                                         # il braccio con il falcetto
-    q.linea(29, 24, 30, 36, "legno_l", 1); q.poli([(27, 21), (31, 20), (31, 25), (29, 24)], "acc_l"); q.rett(28, 21, 30, 21, "acc")
-    q.rett(11, 29, 17, 33, "legno"); q.rett(10, 28, 18, 28, "legno_l"); q.rect = None                                                          # il cesto
-    for x, y in ((12, 27), (14, 26), (16, 27)): q.set(x, y, "ver_l")
+    # La strega delle erbe (ridisegnata 0.28.1): vecchia curva con la gobba, fazzoletto rosso sui capelli grigi, volto rugoso con naso adunco e verruca,
+    # abito verde e grembiule chiaro con tasca, cesto di erbe al braccio e falcetto in mano.
+    q = Quadro(34, 44, [], None)
+    q.poli([(9, 21), (23, 21), (28, 40), (5, 40)], "ver_s"); q.poli([(9, 21), (16, 21), (14, 40), (5, 40)], "ver"); q.macchia(5, 21, 28, 40, "ombra", 0.06)   # la gonna
+    q.rett(7, 40, 12, 42, "marr_s"); q.rett(20, 40, 25, 42, "marr_s")                                                                                          # i piedi
+    q.poli([(11, 24), (21, 24), (23, 40), (9, 40)], "perg_l"); q.rett(11, 24, 21, 25, "marr"); q.rett(13, 31, 19, 35, "perg_s"); q.rett(13, 31, 19, 31, "marr_s")   # il grembiule e la tasca
+    q.poli([(8, 14), (23, 14), (25, 24), (7, 24)], "ver_s"); q.poli([(8, 14), (14, 14), (12, 24), (7, 24)], "ver"); q.ell(8, 16, 5, 5.5, "ver_s")                # il busto e la gobba
+    q.ell(17, 10, 5.2, 5.6, "pelle"); q.macchia(12, 5, 22, 15, "pelle_s", 0.25)                                                                                 # il volto rugoso
+    q.poli([(21, 9), (27, 14), (21, 14)], "pelle_s"); q.set(27, 14, "pelle")                                                                                    # il naso adunco
+    q.rett(14, 8, 15, 9, "nero"); q.rett(19, 8, 20, 9, "nero"); q.rett(13, 7, 16, 7, "pelo_l"); q.rett(18, 7, 21, 7, "pelo_l")                                  # occhi e sopracciglia grigie
+    q.rett(15, 14, 20, 14, "marr_s"); q.set(16, 13, "nero"); q.set(22, 11, "ver_l")                                                                             # la bocca senza denti e la verruca
+    q.poli([(10, 9), (13, 2), (22, 2), (24, 9), (22, 7), (12, 7)], "rosso"); q.rett(12, 2, 22, 3, "rosso_s"); q.rett(9, 8, 12, 12, "pelo_l"); q.rett(22, 8, 25, 11, "pelo_l")   # il fazzoletto e i capelli grigi
+    q.poli([(8, 6), (10, 4), (12, 8)], "rosso")                                                                                                                 # il nodo del fazzoletto
+    q.rett(1, 17, 7, 21, "ver_s"); q.rett(0, 21, 4, 25, "ver"); q.rett(2, 25, 5, 27, "pelle_s")                                                                # il braccio col cesto
+    q.poli([(0, 27), (9, 27), (8, 36), (1, 36)], "legno"); q.rett(0, 27, 9, 28, "legno_l"); q.rett(3, 31, 6, 32, "legno_s")                                    # il cesto
+    for x, y in ((1, 24), (3, 25), (5, 24), (7, 25)): q.rett(x, y, x + 1, y + 2, "ver_l")                                                                       # le erbe che escono
+    q.rett(23, 16, 28, 21, "ver_s"); q.rett(27, 20, 30, 25, "pelle_s")                                                                                          # il braccio col falcetto
+    q.linea(30, 25, 31, 41, "legno_l", 1); q.poli([(27, 19), (33, 18), (33, 24), (30, 23)], "acc_l"); q.rett(28, 19, 32, 19, "acc")                            # il falcetto
     return contorno(q, "outline")
+
 
 def strega_sabba():
     # La strega del sabba: alta, tutta nera e viola, cappello a punta con fibbia d'oro, capelli lunghissimi, mantello, bastone nodoso con un'orbita che brilla.
@@ -152,8 +157,9 @@ def piana():
     return q
 
 def quercia():
+    # Ancora a 36: la Madre è larga 56 e l'ancora indica il lato sinistro dello sprite (36 + 56 = 92, dentro i 96 della scena).
     # La Quercia delle streghe (96 x 64): una radura di notte con un cerchio di pietre, due fuochi del sabba, rami carichi di nastri che pendono dall'alto e ossa sul terreno; al centro il boss (ancora).
-    q = Quadro(96, 64, CICLI_STELLE + [CICLO_FUOCO], ancora=(48, 60))
+    q = Quadro(96, 64, CICLI_STELLE + [CICLO_FUOCO], ancora=(36, 60))
     cielo(q, 0, 40); stelle(q, 22, 0, 18, 91); luna(q, 20, 10, 5)
     for x in range(0, 96, 3): q.rett(x, 34 + int(2 * math.sin(x / 8.0)), x + 2, 42, "monte2")                          # i colli lontani
     q.rett(0, 41, 95, 63, "g0"); q.macchia(0, 41, 95, 63, "g1", 0.2)

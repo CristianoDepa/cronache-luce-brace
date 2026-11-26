@@ -179,13 +179,13 @@ describe("una giornata in città e nella foresta", () => {
     return app;
   }
 
-  it("0.26.1: si parte a Piazza San Michele, non alla porta; la locanda è all'Anfiteatro", async () => {
+  it("0.31.0: si parte a Piazza dell'Anfiteatro, non alla porta; la locanda è lì", async () => {
     const amb = creaAmbiente("it");
     const app = amb.nuovaApp();
     await iniziaPartita(app, "Aldo");
     await app.premiTasto("1");
-    expect(app.schermata().chiave).toBe("gioco:citta:piazza-c");
-    expect(testo(app.schermata())).toContain("Luogo: Piazza San Michele");
+    expect(app.schermata().chiave).toBe("gioco:citta:piazza-n");
+    expect(testo(app.schermata())).toContain("Luogo: Piazza dell'Anfiteatro");
     expect(testo(app.schermata())).toContain("Azioni 50/50");
     expect(tasti(app.schermata())).not.toContain("F"); // la foresta si raggiunge dalla porta
   });
@@ -428,8 +428,9 @@ describe("separatore GIOCO / SETTAGGI e grafica", () => {
     expect(testo(s)).toContain("63 monete");
     expect(testo(s)).toContain("[5] Spadone liv. 1");
     expect(testo(s)).toContain("differenza rispetto a ciò che indossi");
-    await app.premiTasto("1");
-    expect(testo(app.schermata())).toContain("non hai abbastanza monete".replace("non", "Non"));
+    await app.premiTasto("1"); // con 100 monete iniziali la spada (63) si compra
+    await app.premiTasto("2"); // l'ascia (80) no: restano poche monete
+    expect(testo(app.schermata())).toContain("Non hai abbastanza monete");
   });
 
   it("dalle opzioni si cambiano le azioni al giorno con effetto immediato", async () => {
@@ -661,7 +662,7 @@ describe("messaggi ripetuti, effetti grafici e CRT", () => {
     expect(app.stato().log.at(-1)?.conteggio).toBe(3);
     await entraIn(app, "banca");
     await app.premiTasto("1"); // deposito delle monete iniziali (messaggio diverso)
-    expect(app.stato().log.at(-1)?.testo).toContain("Depositi 50 monete");
+    expect(app.stato().log.at(-1)?.testo).toContain("Depositi 100 monete");
     expect(app.stato().log.at(-1)?.conteggio ?? 1).toBe(1);
   });
 
@@ -758,7 +759,7 @@ describe("colonna di destra, versione e scelta della classe", () => {
     await app.premiTasto("D");
     await app.premiTasto("2");
     await app.premiTasto("1"); // sceglie il Mistico dalla sua pagina
-    expect(app.schermata().chiave).toBe("gioco:citta:piazza-c");
+    expect(app.schermata().chiave).toBe("gioco:citta:piazza-n");
     expect(sx(app.schermata())).not.toContain("Scegli questa classe");
     expect(dx(app.schermata())).toContain("Mana");
   });
@@ -817,7 +818,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(sx(app.schermata())).toContain("Sei qui: Porta San Pietro");
     expect(tasti(app.schermata())).toEqual(["1", "2", "3", "0", "I", "O"]);
     await app.premiTasto("1");
-    expect(sx(app.schermata())).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 2 azioni"); // con la direzione
+    expect(sx(app.schermata())).toContain("[1] Porta Santa Maria (nord) - 20 movimenti, 3 azioni"); // con la direzione
     expect(sx(app.schermata())).toContain("[4] Porta San Pietro (sud): Capanna di Sibilla - sei qui"); // già visitata: mostra cosa contiene
     expect(haDisegno(app.schermata())).toBe(true);
     await app.premiTasto("0"); // dalla lista torna alla mappa
@@ -896,7 +897,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     expect(sx(app.schermata())).toContain("[V] Comandi di prova");
     await app.premiTasto("V");
     expect(sx(app.schermata())).toContain("Comandi di prova");
-    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "Q", "E", "S", "0", "I", "O"]); // L: incarichi di oggi (0.20.0); il 9 è "Avvia il torneo"; A, B, C: amuleto, forziere, Fortuna 20; D: prepara il duello (0.18.1); Q: equipaggiati al livello (0.25.0)
+    expect(tasti(app.schermata())).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "L", "Q", "E", "M", "S", "R", "0", "I", "O"]); // L: incarichi di oggi (0.20.0); il 9 è "Avvia il torneo"; A, B, C: amuleto, forziere, Fortuna 20; D: prepara il duello (0.18.1); Q: equipaggiati al livello (0.25.0)
     // vai a un luogo: gratis, senza consumare azioni
     await app.premiTasto("4");
     await app.premiTasto("3"); // piazze e torre
@@ -908,7 +909,7 @@ describe("mappa, viaggi e comandi di prova", () => {
     await app.premiTasto("O");
     await app.premiTasto("V");
     await app.premiTasto("2");
-    expect(dx(app.schermata())).toContain("Oro 150");
+    expect(dx(app.schermata())).toContain("Oro 200");
     // dove sono gli NPC di oggi: tre righe nel registro
     await app.premiTasto("O");
     await app.premiTasto("V");

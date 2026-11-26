@@ -88,13 +88,16 @@ function applicaEffetto(base: RisultatoEffetti, effetto: EffettoIncontro, hpMax:
   const { stato, valori } = base;
   const p = stato.personaggio;
   const m = statoMura.leggi(stato);
-  const somma = (campo: string): Record<string, number> => ({ ...valori, [campo]: (valori[campo] ?? 0) + effetto.valore });
+  // Si somma il valore NOMINALE; per oro e HP invece il cambiamento REALE (limiti: oro >= 0, HP tra 1 e il massimo).
+  const somma = (campo: string, quanto: number = effetto.valore): Record<string, number> => ({ ...valori, [campo]: (valori[campo] ?? 0) + quanto });
   switch (effetto.tipo) {
-    case "oro":
-      return { stato: { ...stato, personaggio: { ...p, oro: Math.max(0, p.oro + effetto.valore) } }, valori: somma("oro") };
-    case "hp":
+    case "oro": {
+      const oro = Math.max(0, p.oro + effetto.valore); return { stato: { ...stato, personaggio: { ...p, oro } }, valori: somma("oro", oro - p.oro) };
+    }
+    case "hp": {
       // Un incontro sfortunato non può uccidere: gli HP non scendono sotto 1.
-      return { stato: { ...stato, personaggio: { ...p, hp: Math.min(hpMax, Math.max(1, p.hp + effetto.valore)) } }, valori: somma("hp") };
+      const hp = Math.min(hpMax, Math.max(1, p.hp + effetto.valore)); return { stato: { ...stato, personaggio: { ...p, hp } }, valori: somma("hp", hp - p.hp) };
+    }
     case "esperienza":
       return { stato: { ...stato, personaggio: { ...p, esperienza: p.esperienza + effetto.valore } }, valori: somma("esperienza") };
     case "forzaTemp":
@@ -126,7 +129,9 @@ const azioneParla = definisciAzione("parlaConNpc", nessunDato, (stato0, _dati, c
   const finale = statoMura.scrivi(dopo, { ...statoMura.leggi(dopo), presenze });
   const parametri: Record<string, number> = {};
   for (const campo of ["oro", "hp", "esperienza", "forza", "difesa"]) parametri[campo] = Math.abs(valori[campo] ?? 0);
-  const evento: EventoGioco = { chiave: incontro.testoChiave, parametri, ...(incontro.tono ? { tono: incontro.tono } : {}) };
+  // Se l'unico effetto era su oro/HP e non è cambiato nulla (es. già al massimo), il testo con il valore non va scritto.
+  const nullo = incontro.effetti.length > 0 && incontro.effetti.every((e) => (e.tipo === "hp" || e.tipo === "oro") && (valori[e.tipo] ?? 0) === 0);
+  const evento: EventoGioco = { chiave: nullo ? "mura.effettoNullo" : incontro.testoChiave, parametri, ...(incontro.tono ? { tono: incontro.tono } : {}) };
   // Prima riga con il nome, poi l'esito: l'informazione sta tutta nel registro (dopo l'incontro il pannello sparisce).
   return esitoOk(finale, [{ chiave: "mura.parli", parametri: { npcChiave: incontrato.npc.nomeChiave } }, evento]);
 });
@@ -163,6 +168,7 @@ const testiBase: DizionarioTesti = {
     "mura.scheda.titolo": "Effetti di oggi",
     "mura.pannello.presente": "Oggi qui c'è {npcChiave}. {descrizioneChiave}",
     "mura.parli": "Parli con {npcChiave}.",
+    "mura.effettoNullo": "Non cambia nulla.",
     "mura.pannello.bonus": "Effetti attivi fino al nuovo giorno: forza {forza}, difesa {difesa}.",
     "mura.errore.gia_incontrato": "Hai già parlato con questa persona oggi.",
     "mura.errore.nessun_npc": "Non c'è nessuno.",
@@ -185,6 +191,7 @@ const testiBase: DizionarioTesti = {
     "mura.scheda.titolo": "Today's effects",
     "mura.pannello.presente": "Today {npcChiave} is here. {descrizioneChiave}",
     "mura.parli": "You talk to {npcChiave}.",
+    "mura.effettoNullo": "Nothing changes.",
     "mura.pannello.bonus": "Effects active until the new day: strength {forza}, defense {difesa}.",
     "mura.errore.gia_incontrato": "You have already talked to this person today.",
     "mura.errore.nessun_npc": "There is no one.",

@@ -106,7 +106,7 @@ describe("Oggetti magici: fonti", () => {
     }
   });
   it("con lo zaino pieno non si perde: si riceve il compenso in monete", () => {
-    const pieno = con(pg(), ...Array(6).fill("pozione.curaLeggera"));
+    const pieno = con(pg(), ...Array(8).fill("pozione.curaLeggera"));
     const r = consegnaOggettoMagico(pieno, ctx, "argento");
     expect(r.stato.personaggio.oro).toBe(pieno.personaggio.oro + PARAMETRI_MAGICI.compensoZainoPieno.argento);
     expect(r.eventi.map((e) => e.chiave)).toEqual(["oggettiMagici.ricevutoOro"]);

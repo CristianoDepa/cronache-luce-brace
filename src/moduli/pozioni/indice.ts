@@ -5,11 +5,11 @@ import { ID_COMBATTIMENTO } from "../combattimento/indice";
 import { ID_FORTUNA } from "../fortuna/indice";
 import { ID_INVENTARIO } from "../inventario/indice";
 import { ID_MANA } from "../mana/indice";
-import { azioneCompraPozione, azioneUsaOggetto, azioneVendiPozione } from "./azioni";
+import { azioneCompraPozione, azioneScartaPremio, azioneSostituisciConPremio, azioneUsaOggetto, azioneVendiPozione } from "./azioni";
 import { OGGETTI_POZIONI } from "./dati";
 import { ILLUSTRAZIONI_POZIONI } from "./grafica";
 import { interfacciaPozioni } from "./interfaccia";
-import { regolaBottinoPozioni, regolaFortunaPozioni, regolaGiornoPozioni, regolaStatistichePozioni, regolaTurnoPozioni, regolaVelocitaPozioni } from "./regole";
+import { regolaBalsamoBoss, regolaBottinoPozioni, regolaFortunaPozioni, regolaGiornoPozioni, regolaStatistichePozioni, regolaTurnoPozioni, regolaVelocitaPozioni } from "./regole";
 import { TESTI_POZIONI } from "./testi";
 import { ID_POZIONI, statoPozioni } from "./tipi";
 
@@ -19,6 +19,7 @@ export type { TipoPozione } from "./dati";
 export { prezzoRiacquisto } from "./azioni";
 export { pozioneCasuale } from "./regole";
 export { idPozione } from "./dati";
+export { BALSAMI_DEI_BOSS } from "./dati";
 export { consegnaPozioneTipo, consegnaPozioni } from "./consegna";
 export { scortaDelGiorno, scortaRimasta, tipiDelGiorno } from "./scorta";
 export { PARAMETRI_POZIONI } from "./parametri";
@@ -30,8 +31,8 @@ export const moduloPozioni: DefinizioneModulo = {
   versioneApi: VERSIONE_API,
   dipende: [ID_COMBATTIMENTO, ID_FORTUNA, ID_INVENTARIO, ID_MANA, ID_STATI],
   contenuti: [...OGGETTI_POZIONI, ...ILLUSTRAZIONI_POZIONI],
-  azioni: [azioneCompraPozione, azioneUsaOggetto, azioneVendiPozione],
-  regole: [regolaStatistichePozioni, regolaVelocitaPozioni, regolaTurnoPozioni, regolaGiornoPozioni, regolaBottinoPozioni, regolaFortunaPozioni],
+  azioni: [azioneCompraPozione, azioneUsaOggetto, azioneVendiPozione, azioneSostituisciConPremio, azioneScartaPremio],
+  regole: [regolaStatistichePozioni, regolaVelocitaPozioni, regolaTurnoPozioni, regolaGiornoPozioni, regolaBottinoPozioni, regolaFortunaPozioni, regolaBalsamoBoss],
   testi: TESTI_POZIONI,
   stato: statoPozioni,
   interfaccia: interfacciaPozioni,

@@ -65,6 +65,11 @@ nord → nord-est 7 mov → est 7 → sud 9 → sud-ovest 6 → nord-ovest 5 →
     └── il giornale di oggi: Cronache della città (3 notizie al giorno) e l'annuncio del torneo
     collegata a: San Michele 2, Anfiteatro 2, Torre Guinigi 2
 
+[Piazza dei Mercanti] (0.30.0)
+└── [L] Loggia dei Mercanti (2 mov)
+    └── [1-2] Accetta l'incarico di oggi [3] Ascolta il mercante (1 az, storia + dritta) [R] Registro [C] Consegna gli oggetti [A] Rinuncia
+    collegata a: Via Fillungo 2, San Michele 3 (nel giorno di mercato la piazza ha le bancarelle)
+
 [Torre Guinigi]
 ├── [1] Sali in cima (1 az solo se c'è un segreto da scoprire)
 │   └── segreti: +3 HP; lo Spettro nel bestiario (di notte); +1 mana (solo Mistico)
@@ -126,3 +131,5 @@ Le zone di caccia (foresta, palude, cimitero, valle) hanno ora gli **eventi** al
 
 ## Novità 0.23.0
 Nessun luogo nuovo. Speziale: quarto tasto (Antidoto). Guaritore, cattedrale e locanda: cura di veleno e paura. Valle del Serchio di notte: il Diavolo del Ponte propone anche il patto. Foresta e palude: evento «Erbe medicinali».
+
+**Dalla 0.31.0 si parte da Piazza dell'Anfiteatro** (si conosce anche la Porta San Pietro); San Michele si scopre andandoci.

@@ -37,12 +37,12 @@ const conPozione = (st: StatoGioco, tipo: string, n = 1): StatoGioco => {
 const testi = (eventi: readonly { chiave: string }[]) => eventi.map((e) => traduciEvento(registro, "it", e as never));
 
 describe("inventario", () => {
-  it("ha 6 slot vuoti; si riempie dal primo libero; pieno non accetta; si svuota uno slot alla volta", () => {
+  it("ha 8 slot vuoti; si riempie dal primo libero; pieno non accetta; si svuota uno slot alla volta", () => {
     const st = pg();
     expect(leggiSlot(st)).toHaveLength(PARAMETRI_INVENTARIO.slot);
-    expect(slotLiberi(st)).toBe(6);
+    expect(slotLiberi(st)).toBe(8);
     let s: StatoGioco | undefined = st;
-    for (let i = 0; i < 6; i++) s = aggiungiOggetto(s!, "pozione.mana");
+    for (let i = 0; i < PARAMETRI_INVENTARIO.slot; i++) s = aggiungiOggetto(s!, "pozione.mana");
     expect(slotLiberi(s!)).toBe(0);
     expect(aggiungiOggetto(s!, "pozione.mana")).toBeUndefined();
     const meno = rimuoviOggetto(s!, 2);
@@ -53,7 +53,7 @@ describe("inventario", () => {
   it("un salvataggio senza lo stato dell'inventario riparte con lo zaino vuoto", () => {
     const { inventario: _scartato, ...altri } = pg().moduli as Record<string, unknown>;
     const vecchio = { ...pg(), moduli: altri } as StatoGioco;
-    expect(slotLiberi(vecchio)).toBe(6);
+    expect(slotLiberi(vecchio)).toBe(8);
     expect(statoInventario.leggi(vecchio).slot.length).toBeGreaterThan(0);
   });
 
@@ -141,7 +141,7 @@ describe("acquisto dallo Speziale", () => {
 
   it("senza posto nello zaino o senza monete non si compra", () => {
     const s = giornoConScorta("forza");
-    const pieno = conPozione(s, "forza", 6);
+    const pieno = conPozione(s, "forza", 8);
     expect(eseguiAzione(pieno, { tipo: "compraPozione", dati: { tipo: "forza" } }, ctx).ok).toBe(false);
     const povero = { ...s, personaggio: { ...s.personaggio, oro: 59 } };
     expect(eseguiAzione(povero, { tipo: "compraPozione", dati: { tipo: "forza" } }, ctx).ok).toBe(false);
@@ -287,7 +287,7 @@ describe("bottino di pozioni", () => {
     let trovate = 0;
     let lasciate = 0;
     const PROVE = 1500;
-    const pieno = conPozione(forte, "mana", 6);
+    const pieno = conPozione(forte, "mana", 8);
     for (let seme = 1; seme <= PROVE; seme++) {
       const c = creaContestoDiProva(registro, seme);
       let cur = eseguiOk(forte, { tipo: "iniziaCombattimento", dati: { creaturaId: "ratto" } }, c);
@@ -402,7 +402,8 @@ describe("lo Speziale ricompra le pozioni sigillate al 30% del valore", () => {
     expect(prezzoRiacquisto("curaLeggera", 4)).toBe(15); // 50 x 0,3
     expect(prezzoRiacquisto("curaRobusta", 4)).toBe(24); // 80 x 0,3
     expect(prezzoRiacquisto("curaLeggera", 1)).toBe(3); // 10 x 0,3
-    for (const livello of [1, 2, 4, 7, 12]) for (const t of TIPI) {
+    // I balsami dei boss non si comprano né si vendono: restano fuori dal confronto.
+    for (const livello of [1, 2, 4, 7, 12]) for (const t of TIPI.filter((x) => !x.startsWith("balsamo"))) {
       expect(prezzoRiacquisto(t, livello), `${t} ${livello}`).toBeGreaterThanOrEqual(1);
       expect(prezzoRiacquisto(t, livello), `${t} ${livello}`).toBeLessThan(prezzoPozione(t, livello));
     }
@@ -417,7 +418,7 @@ describe("lo Speziale ricompra le pozioni sigillate al 30% del valore", () => {
     expect(traduciEvento(registro, "it", r.eventi[0]!)).toBe("Vendi Pozione di mana allo Speziale per 9 monete.");
     const dopo = eseguiOk(r.stato, { tipo: "vendiPozione", dati: { posizione: 2 } }, ctx);
     expect(dopo.stato.personaggio.oro).toBe(st.personaggio.oro + 9 + 18);
-    expect(slotLiberi(dopo.stato)).toBe(6);
+    expect(slotLiberi(dopo.stato)).toBe(8);
   });
 
   it("uno slot vuoto non si vende; da morti non si vende", () => {
