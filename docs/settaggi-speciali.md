@@ -194,3 +194,17 @@ Nessun settaggio nuovo: gli scenari non sono raggiungibili dal gioco (né da `?d
 ## 0.33.1: comandi di prova dei mostri
 **Prove (?dev=1 → Opzioni [V] → [5] Scegli il mostro, e [Z] per la riserva):** lo scontro parte ora con lo sfondo della zona della creatura (foresta se non ha zona). Nessuna opzione `?` nuova. **Il delta sovrascrive** `src/core/grafica.ts` (nucleo: posizione degli sprite), `src/moduli/sviluppo/indice.ts` e `src/moduli/riserva/grafica.ts`.
 
+## 0.34.0: «Cerca guai», abilità del 20, simulatore
+**Comandi di gioco nuovi:** **[G] Cerca guai** alla Porta San Pietro (dal livello 2; con `?dev=1` si può portare il personaggio al livello 2 con i comandi di prova) e **[J]** in combattimento (quinta abilità di classe, dal livello 20). Pagina del manuale: INFO [6] → [6] Cerca guai.
+**Nessuna opzione `?` nuova.** `?dev=1` e `?ora=N` come prima.
+**Costanti di taratura nuove o cambiate:** `livelli/dati.ts` (Ladro: `bonus` difesa +1 ai livelli 4, 8, 12, 16, 20; Mistico: `mana: [3]`), `gilde/dati.ts` (capigilda del Ladro 12 e 20), `riserva/dati.ts` (premi di bracconiere e cinghiale), `foresta/dati.ts` (luogo `foresta-guai`), `abilita/dati.ts` (le tre abilità del 20).
+**Simulatore (variabili d'ambiente, solo sviluppo):** `CLB_SIMULATORE=1 npx vitest run strumenti/simulatore` (scrive `docs/simulatore.md` con tre modi: senza abilità, con abilità, con abilità e «Cerca guai»); `CLB_RUN` (partite, 8), `CLB_GIORNI` (giorni, 450), `CLB_RISERVA_MANA` (mana che il Mistico simulato non spende, 0), `CLB_CURA=1`, `CLB_RIPOSO_PIANA`, `CLB_RIPOSO_COLLINE` come prima.
+**Il delta sovrascrive** file di dati che puoi aver modificato a mano: `src/moduli/foresta/dati.ts` (nuovo luogo), `src/moduli/riserva/dati.ts` (premi), `src/moduli/livelli/dati.ts`, `src/moduli/gilde/dati.ts`, `src/moduli/abilita/dati.ts`.
+
+## 0.35.0: San Donato, reliquie, Cerca guai alto
+**Comandi di gioco nuovi:** Porta San Donato (dal livello 20): **[1]-[7]** i sette luoghi (la Tana [7] dopo gli altri sei), **[P]** Esplora i dintorni; **[G] Cerca guai** anche alle porte San Jacopo (piana) ed Elisa (colline); manuale INFO [6] → **[7] San Donato**. Con `?dev=1` si può portare il personaggio al livello 20 con i comandi di prova (nessun comando nuovo per i mostri di San Donato).
+**Nessuna opzione `?` nuova.** `?dev=1` e `?ora=N` come prima (di notte compaiono i dispetti: `?ora=22`).
+**Costanti di taratura nuove o cambiate:** `sandonato/dati.ts` (statistiche e monete dei sette mostri; `PARAMETRI_SAN_DONATO`: pozione 8%, argento 4%, reliquia 25%, Linchetto 6% con minimo 30 e massimo 300, Buffardello −1 azione, Sanguetta 12% HP), `classi/dati.ts` (Cavaliere `moltiplicatoreOro: 1.15`), `riserva/dati.ts` (oro ed esperienza dei mostri di Cerca guai), `piana/dati.ts` e `colline/dati.ts` (luoghi `*-guai`, soglie di potenza), `stati/dati.ts` (chi fa paura o avvelena).
+**Simulatore (solo sviluppo):** `CLB_SANDONATO=1 npx vitest run strumenti/simulatore` (scrive `docs/simulatore-sandonato.md`; `CLB_RUN`, `CLB_GIORNI_SD`); `CLB_SIMULATORE=1 ...` come prima.
+**Il delta sovrascrive** file di dati che puoi aver modificato a mano: `classi/dati.ts`, `riserva/dati.ts`, `piana/dati.ts`, `colline/dati.ts`, `stati/dati.ts`, `eventi/dati.ts`, `citta/dati.ts`, `livelli/dati.ts`, `gilde/dati.ts`, `foresta/dati.ts` (questi ultimi dalla 0.34.0).
+

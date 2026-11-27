@@ -80,10 +80,10 @@ describe("la città: dati", () => {
     const porte = elencaSiti(registro).filter((s) => s.dati.categoria === "porta");
     expect(porte).toHaveLength(6);
     const aperte = porte.filter((p) => p.dati.areaId !== undefined);
-    expect(aperte.map((p) => p.id)).toEqual(["porta-n", "porta-ne", "porta-e", "porta-s", "porta-so"]); // dalla 0.18.0 anche Porta Santa Maria (valle del Serchio, livello 8); dalla 0.27.0 Porta San Jacopo (piana di Capannori, livello 12)
+    expect(aperte.map((p) => p.id)).toEqual(["porta-n", "porta-ne", "porta-e", "porta-s", "porta-so", "porta-no"]); // dalla 0.35.0 anche Porta San Donato (livello 20); dalla 0.18.0 anche Porta Santa Maria (valle del Serchio, livello 8); dalla 0.27.0 Porta San Jacopo (piana di Capannori, livello 12)
     expect(aperte[3]?.dati.areaId).toBe("foresta");
     expect(aperte[4]?.dati).toMatchObject({ areaId: "paludi", livelloMin: 4 });
-    expect(aperte[2]?.dati).toMatchObject({ areaId: "colline", livelloMin: 16 }); // 0.28.0: Porta Elisa (colline di Lucca, livello 16)
+    expect(aperte[5]?.dati).toMatchObject({ areaId: "sandonato", livelloMin: 20 }); expect(aperte[2]?.dati).toMatchObject({ areaId: "colline", livelloMin: 16 }); // 0.28.0: Porta Elisa (colline di Lucca, livello 16)
     expect(aperte[0]?.dati).toMatchObject({ areaId: "valle", livelloMin: 8 });
     expect(aperte[1]?.dati).toMatchObject({ areaId: "piana", livelloMin: 12 });
     expect(traduci(registro, "it", aperte[4]?.dati.chiusaChiave ?? "")).toContain("livello 4"); // il messaggio di porta chiusa dice cosa serve
@@ -118,7 +118,7 @@ describe("la città: dati", () => {
       expect(distanze.has(id), id).toBe(true);
       expect(distanzeCitta(registro, id).get("porta-s"), id).toBe(distanze.get(id));
     }
-    expect(elencaSiti(registro)).toHaveLength(40); // 0.30.0: la Piazza dei Mercanti e la Loggia; 0.28.0: le colline; 0.27.0: la piana di Capannori; 0.25.0: il Fabbro; // 32 luoghi della città (0.19.0: Piazza San Martino, la cattedrale, il Palazzo degli Anziani), 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla), la foresta, le paludi e (0.18.0) la valle del Serchio (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
+    expect(elencaSiti(registro)).toHaveLength(41); // 0.35.0: San Donato; // 0.30.0: la Piazza dei Mercanti e la Loggia; 0.28.0: le colline; 0.27.0: la piana di Capannori; 0.25.0: il Fabbro; // 32 luoghi della città (0.19.0: Piazza San Martino, la cattedrale, il Palazzo degli Anziani), 29 luoghi della città (0.16.1: il registro dei caduti; 0.17.0: la capanna di Sibilla), la foresta, le paludi e (0.18.0) la valle del Serchio (con le tre gilde, lo Speziale, Via Fillungo e la Stamperia), la foresta e le paludi
   });
 
   it("distanze di riferimento dalla Porta San Pietro, dove si inizia", () => {
@@ -311,8 +311,8 @@ describe("i contesti e le schermate della città", () => {
     (pannelloDi(stato, titolo, contesto)?.righe ?? []).map((r) => traduciEvento(registro, "it", r));
 
   it("ogni luogo ha la mappa; le porte anche l'uscita; i luoghi con NPC il comando per parlare; gli ospiti gli ingressi", () => {
-    expect(menu("citta:porta-s")).toEqual(["C", "E", "F", "M", "N", "T"]); // capanna di Sibilla, esci (nascosta se la porta è aperta), addentrati nella foresta, mappa, parla, forziere (nascosta finché non ce n'è uno) (elenco in ordine alfabetico)
-    for (const id of ["porta-n", "porta-ne", "porta-e", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(id === "porta-n" ? ["E", "M", "N", "T", "V"] : id === "porta-ne" || id === "porta-e" ? ["E", "M", "N", "P", "Q"] : ["E", "M", "N"]); // P e Q = la piana e la Quercia (0.27.0); // V = la valle del Serchio (0.18.0), T = il forziere (nascosta finché non ce n'è uno)
+    expect(menu("citta:porta-s")).toEqual(["C", "E", "F", "G", "M", "N", "T"]); // capanna di Sibilla, esci (nascosta se la porta è aperta), addentrati nella foresta, mappa, parla, forziere (nascosta finché non ce n'è uno) (elenco in ordine alfabetico)
+    for (const id of ["porta-n", "porta-ne", "porta-e", "porta-no"]) expect(menu(`citta:${id}`), id).toEqual(id === "porta-n" ? ["E", "M", "N", "T", "V"] : id === "porta-ne" || id === "porta-e" ? ["E", "G", "M", "N", "P", "Q"] : ["1", "2", "3", "4", "5", "6", "7", "E", "M", "N", "P"]); // P e Q = la piana e la Quercia (0.27.0); // V = la valle del Serchio (0.18.0), T = il forziere (nascosta finché non ce n'è uno)
     expect(menu("citta:porta-so")).toEqual(["C", "E", "M", "N", "P", "S", "T"]); // palude e cimitero (dal livello 4; sotto, l'uscita racconta la porta chiusa), scalinata della cripta e forziere (nascoste finché non ci sono)
     expect(menu("citta:piazza-n")).toEqual(["A", "G", "L", "M", "N", "T"]); // A = il Fabbro (0.25.0, dal livello 12); // Gilda dei Cavalieri e il Torneo (T): l'Armeria e la Sartoria sono in Via Fillungo
     expect(menu("citta:piazza-c")).toEqual(["B", "G", "M", "N"]); // Banca, Gilda dei Mistici

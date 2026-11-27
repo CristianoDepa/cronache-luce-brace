@@ -60,8 +60,9 @@ describe("il manuale in gioco", () => {
 
   it("l'acciaio di brace è nascosto sotto il livello 12 e compare al 12", () => {
     const nascosti = (l: number) => interfacciaManuale.menuNascosto?.(conLivello(l), ctx) ?? [];
-    expect(nascosti(11)).toEqual(["manuale.brace.arma", "manuale.brace.armatura"]);
-    expect(nascosti(12)).toEqual([]);
+    expect(nascosti(11)).toEqual(["manuale.brace.arma", "manuale.brace.armatura", "manuale.voce.sandonato"]); // la pagina di San Donato (0.35.0) si vede dal 20
+    expect(nascosti(12)).toEqual(["manuale.voce.sandonato"]);
+    expect(nascosti(20)).toEqual([]);
     const t = testo(paginaBrace(ctx, "armatura"));
     expect(t).toContain("5500");
   });

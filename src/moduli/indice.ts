@@ -22,6 +22,7 @@ import { moduloRegistro } from "./registro/indice";
 import { moduloScoperta } from "./scoperta/indice";
 import { moduloValle } from "./valle/indice";
 import { moduloColline } from "./colline/indice";
+import { moduloSanDonato } from "./sandonato/indice";
 import { moduloRiserva } from "./riserva/indice";
 import { moduloScenari } from "./scenari/indice";
 import { moduloRecuperi } from "./recuperi/indice";
@@ -71,6 +72,7 @@ export const MODULI_ATTIVI: readonly DefinizioneModulo[] = [
   moduloValle,
   moduloPiana,
   moduloColline,
+  moduloSanDonato,
   moduloRiserva,
   moduloScenari,
   moduloCattedrale,

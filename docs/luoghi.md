@@ -6,7 +6,7 @@ Da ogni luogo: `[M]` mappa e viaggi, `[I]` informazioni, `[O]` opzioni; `[N]` pa
 ## Le porte (6) e cosa c'è fuori
 
 ```
-[Porta San Pietro] (sud) - APERTA
+[Porta San Pietro] (sud) - APERTA (dalla 0.34.0, dal livello 2, anche [G] «Cerca guai»: vedi `game-design.md` §81)
 ├── [F] Addentrati nella foresta (1 az per esplorazione)      -> ratti, lupi, goblin, orco
 ├── [L] Locanda (2 mov)
 │   ├── [1] Dormi (cura tutto, 1 az ogni 5 HP, ripristina il mana)
@@ -21,9 +21,9 @@ Da ogni luogo: `[M]` mappa e viaggi, `[I]` informazioni, `[O]` opzioni; `[N]` pa
 └── collegata a Piazza Napoleone (7 mov)
 
 [Porta Santa Maria] (nord) ............ CHIUSA - collegata a Piazza dell'Anfiteatro (6 mov)
-[Porta San Jacopo alla Tomba] (nord-est) CHIUSA - collegata a Piazza dell'Anfiteatro (7 mov)
-[Porta Elisa] (est) ................... CHIUSA - collegata a Piazza San Michele (8 mov)
-[Porta San Donato] (nord-ovest) ....... CHIUSA - collegata a Piazza San Michele (8 mov)
+[Porta San Jacopo alla Tomba] (nord-est) APERTA dal livello 12 (dalla 0.35.0 anche [G] «Cerca guai») - collegata a Piazza dell'Anfiteatro (7 mov)
+[Porta Elisa] (est) ................... APERTA dal livello 16 (dalla 0.35.0 anche [G] «Cerca guai») - collegata a Piazza San Michele (8 mov)
+[Porta San Donato] (nord-ovest) ....... APERTA dal livello 20 (0.35.0): sette luoghi leggendari [1]-[7] e [P] Esplora i dintorni, vedi `game-design.md` §83 - collegata a Piazza San Michele (8 mov)
 ```
 
 ## Le mura (6 tratti ad anello)
@@ -94,7 +94,7 @@ Il forziere trovato dopo una vittoria si apre con `[T]` dalla porta della zona: 
 Morendo in una zona (foresta, palude, cimitero) l'oro perso resta in **una sola lapide** (quella dell'ultima morte). La si **trova esplorando** la zona (25%, Fortuna, al posto dell'incontro). Il **registro dei caduti** sta a **Piazza Napoleone** (`[R]`, 2 movimenti): dice se c'è una lapide a tuo nome, dove e da quanti giorni, mai l'importo. Si sposterà in una nuova zona di Lucca.
 
 ## Le scene delle porte (0.16.2)
-Ogni porta ha la sua scena: **San Pietro** (foresta, vessilli verdi), **Sant'Anna** (paludi, viola), **San Jacopo alla Tomba** (valle del Serchio, blu), **Elisa** (colline, rosso), **Santa Maria** (campi, oro), **San Donato** (bosco scuro, grigio). Le ultime quattro sono proposte provvisorie finché le porte restano chiuse.
+Ogni porta ha la sua scena: **San Pietro** (foresta, vessilli verdi), **Sant'Anna** (paludi, viola), **Santa Maria** (valle del Serchio, blu), **San Jacopo alla Tomba** (piana di Capannori, campi, oro), **Elisa** (colline, rosso), **San Donato** (bosco scuro, grigio; ancora chiusa, scena provvisoria). Dopo lo scambio della 0.17.2 le porte aperte dal livello 8, 12 e 16 sono Santa Maria, San Jacopo ed Elisa.
 
 ## Le porte e la schermata di scoperta (0.16.3)
 Ogni porta ha una sua architettura: **San Pietro** (arco tondo, mattone rosso), **Sant'Anna** (sesto acuto, pietra scura), **San Jacopo alla Tomba** (doppia cornice, pietra chiara), **Elisa** (architrave con colonne, frontone), **Santa Maria** (arco ribassato, mattone chiaro), **San Donato** (doppio arco, pietra grigia). Le architetture sono proposte, non storiche. Trovare la lapide o un forziere in una zona mostra la schermata di scoperta con `[C]` Continua.

@@ -27,6 +27,18 @@ export const MOSTRI_PIANA: readonly VoceContenuto[] = [
 // (premi di notte +25%, come la valle).
 export const LUOGHI_PIANA: readonly VoceContenuto[] = [
   {
+    // «Cerca guai» (0.35.0): esplorazione a rischio (1 azione) con mostri della RISERVA (fascia 12-15) più duri della media della piana e premi più alti.
+    tipo: "luogo",
+    id: "piana-guai",
+    dati: {
+      nomeChiave: "piana.luogo.guai",
+      scenaId: "scena.piana",
+      azioni: ["esploraForesta"],
+      creature: ["cavaliere_decaduto", "toro_infuriato", "mantide_cacciatrice"],
+      pesi: { cavaliere_decaduto: { peso: 40, potenzaMin: 75, potenzaPiena: 90 }, toro_infuriato: { peso: 40, potenzaMin: 75, potenzaPiena: 92 }, mantide_cacciatrice: { peso: 30, potenzaMin: 65, potenzaPiena: 80 } },
+    },
+  },
+  {
     tipo: "luogo",
     id: "piana",
     dati: {

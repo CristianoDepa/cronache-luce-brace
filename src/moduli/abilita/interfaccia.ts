@@ -8,8 +8,9 @@ import type { AbilitaDellaClasse } from "./uso";
 import { abilitaDellaClasse } from "./uso";
 
 const CONTESTO_INFO_PERSONAGGIO = "info:personaggio";
-// La prima abilità di classe si usa con S, la seconda (sbloccata al 4° livello) con D, la terza (8° livello) con G, la quarta (12° livello) con H.
-const TASTI_ABILITA: readonly string[] = ["S", "D", "G", "H"];
+// La prima abilità di classe si usa con S, la seconda (sbloccata al 4° livello) con D, la terza (8° livello) con G, la quarta (12° livello) con H, la quinta (20° livello) con J.
+const TASTI_ABILITA: readonly string[] = ["S", "D", "G", "H", "J"];
+const IDS_VOCI_ABILITA: readonly string[] = ["abilita.usa", "abilita.usa2", "abilita.usa3", "abilita.usa4", "abilita.usa5"];
 
 const sbloccata = (stato: StatoGioco, a: AbilitaDellaClasse): boolean => stato.personaggio.livello >= a.abilita.livelloMin;
 
@@ -98,12 +99,20 @@ export const interfacciaAbilita: InterfacciaModulo = {
       ordine: 18,
       comando: { tipo: "azione", azione: { tipo: "usaAbilita", dati: { posizione: 4 } } },
     },
+    {
+      id: "abilita.usa5",
+      contesto: CONTESTO_COMBATTIMENTO,
+      etichettaChiave: "abilita.menu.usa5",
+      tasto: "J",
+      ordine: 19,
+      comando: { tipo: "azione", azione: { tipo: "usaAbilita", dati: { posizione: 5 } } },
+    },
   ],
-  // Le voci [S], [D] e [G] portano il NOME dell'abilità («[S] Carica»), che dipende da classe e livello (0.18.1).
+  // Le voci [S], [D], [G], [H] e [J] portano il NOME dell'abilità («[S] Carica»), che dipende da classe e livello (0.18.1).
   etichette(stato, ctx) {
     const abilita = abilitaDellaClasse(stato, ctx);
     return Object.fromEntries(
-      ["abilita.usa", "abilita.usa2", "abilita.usa3", "abilita.usa4"].flatMap((id, i) => {
+      IDS_VOCI_ABILITA.flatMap((id, i) => {
         const a = abilita[i];
         return a ? [[id, { chiave: "abilita.menu.voce", parametri: { abilitaChiave: a.abilita.nomeChiave } }]] : [];
       }),
@@ -112,7 +121,7 @@ export const interfacciaAbilita: InterfacciaModulo = {
   // Le abilità non ancora sbloccate non si mostrano: né nel pannello né nel menu (il tasto non fa nulla).
   menuNascosto(stato, ctx) {
     const abilita = abilitaDellaClasse(stato, ctx);
-    return ["abilita.usa", "abilita.usa2", "abilita.usa3", "abilita.usa4"].filter((_, i) => !(abilita[i] && sbloccata(stato, abilita[i])));
+    return IDS_VOCI_ABILITA.filter((_, i) => !(abilita[i] && sbloccata(stato, abilita[i])));
   },
   pannelli(stato, ctx): readonly PannelloVista[] {
     return [...pannelloCombattimento(stato, ctx), ...pannelloScheda(stato, ctx), ...pannelliClassi(ctx)];

@@ -29,6 +29,18 @@ export const MOSTRI_COLLINE: readonly VoceContenuto[] = [
 // (premi di notte +25%, come la piana).
 export const LUOGHI_COLLINE: readonly VoceContenuto[] = [
   {
+    // «Cerca guai» (0.35.0): esplorazione a rischio (1 azione) con mostri della RISERVA (fascia 16-20) più duri della media delle colline e premi più alti.
+    tipo: "luogo",
+    id: "colline-guai",
+    dati: {
+      nomeChiave: "colline.luogo.guai",
+      scenaId: "scena.colline",
+      azioni: ["esploraForesta"],
+      creature: ["ippogrifo", "orso_caverne", "chimera"],
+      pesi: { ippogrifo: { peso: 40, potenzaMin: 80, potenzaPiena: 95 }, orso_caverne: { peso: 40, potenzaMin: 88, potenzaPiena: 105 }, chimera: { peso: 30, potenzaMin: 92, potenzaPiena: 110 } },
+    },
+  },
+  {
     tipo: "luogo",
     id: "colline",
     dati: {

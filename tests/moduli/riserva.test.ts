@@ -49,9 +49,10 @@ describe("Riserva del bestiario", () => {
     }
   });
 
-  it("nessuna zona le elenca: non compaiono mai negli incontri", () => {
-    const inZona = new Set(elencaContenuti(registro, tipoLuogo).flatMap((l) => l.dati.creature ?? []));
+  it("nessuna zona le elenca, tranne «Cerca guai» della foresta (0.34.0: bracconiere e cinghiale): le altre non compaiono mai negli incontri", () => {
+    const inZona = new Set(elencaContenuti(registro, tipoLuogo).filter((l) => !["foresta-guai", "piana-guai", "colline-guai"].includes(l.id)).flatMap((l) => l.dati.creature ?? []));
     for (const id of ID_MOSTRI_RISERVA) expect(inZona.has(id), id).toBe(false);
+    expect(leggiContenuto(registro, tipoLuogo, "foresta-guai")?.creature).toEqual(["bracconiere", "cinghiale"]);
   });
 
   it("il bestiario non le mostra finché nessuno le incontra", () => {
@@ -66,7 +67,8 @@ describe("Riserva del bestiario", () => {
     for (const id of ID_MOSTRI_RISERVA) {
       const r = eseguiOk(statoDiProva(registro), { tipo: "devMostro", dati: { creaturaId: id } }, ctx);
       expect(statoCombattimento.leggi(r.stato).scontro?.creaturaId).toBe(id);
-      expect(statoCombattimento.leggi(r.stato).scontro?.scenaId).toBe("scena.foresta"); // sfondo della foresta: lo sprite si vede
+      const scena = ["cavaliere_decaduto", "toro_infuriato", "mantide_cacciatrice"].includes(id) ? "scena.piana" : ["ippogrifo", "orso_caverne", "chimera"].includes(id) ? "scena.colline" : "scena.foresta"; // 0.35.0: le creature di «Cerca guai» in piana e colline usano il loro sfondo
+      expect(statoCombattimento.leggi(r.stato).scontro?.scenaId).toBe(scena);
     }
   });
 

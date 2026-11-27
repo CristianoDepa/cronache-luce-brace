@@ -991,7 +991,7 @@ describe("[C] Le classi", () => {
     await app.premiTasto("3");
     await app.premiTasto("2");
     const t = testo(app);
-    expect(t).toContain("Ogni livello: mana +2");
+    expect(t).toContain("Ogni livello: mana +3");
     expect(t).toContain("Velo (dal livello 4)");
     expect(t).toContain("Al livello 4: velocità +1");
   });

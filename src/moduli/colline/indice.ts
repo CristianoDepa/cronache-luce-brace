@@ -37,12 +37,13 @@ const interfaccia: InterfacciaModulo = {
   titoliContesto: { "luogo:colline": "colline.luogo.colline" },
   illustrazioniContesto: { "luogo:colline": "scena.colline" },
   menuNascosto: (stato, ctx) => {
-    if (!portaAperta(stato, ctx)) return ["colline.esplora", ID_VOCE_CAPITANO];
+    if (!portaAperta(stato, ctx)) return ["colline.esplora", "colline.cercaGuai", ID_VOCE_CAPITANO];
     return statoColline.leggi(stato).capitanoSfidato ? [ID_VOCE_CAPITANO] : [];
   },
   menu: [
     { id: "colline.esplora", contesto: CONTESTO_PORTA, etichettaChiave: "colline.menu.colline", tasto: "P", ordine: 1, comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "colline" } } } },
     { id: ID_VOCE_CAPITANO, contesto: CONTESTO_PORTA, etichettaChiave: "colline.menu.capitano", tasto: "Q", ordine: 2, comando: { tipo: "azione", azione: { tipo: "sfidaCapitano" } } },
+    { id: "colline.cercaGuai", contesto: CONTESTO_PORTA, etichettaChiave: "colline.menu.cercaGuai", tasto: "G", ordine: 3, comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "colline-guai" } } } },
   ],
   pannelli(stato, ctx): readonly PannelloVista[] {
     if (!portaAperta(stato, ctx)) return [];

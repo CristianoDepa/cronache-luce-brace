@@ -127,8 +127,9 @@ describe("Il patto del Diavolo", () => {
     const d = calcolaStatistiche(stringiPatto(pg(), "difesa"), ctx0);
     expect(d).toMatchObject({ difesa: base.difesa + 3, forza: base.forza - 3 });
     const oro = (s: StatoGioco): number => applicaRegole(ctx0, puntoOro, { stato: s, oro: 40 }).oro;
-    expect(oro(stringiPatto(pg(), "fortuna"))).toBe(30);
-    expect(oro(pg())).toBe(40);
+    // Il Cavaliere guadagna il 10% in più (0.35.0): 40 monete diventano 44; con il patto della fortuna (−25%) 33.
+    expect(oro(stringiPatto(pg(), "fortuna"))).toBeCloseTo(33);
+    expect(oro(pg())).toBeCloseTo(44);
     expect(pattoStretto(stringiPatto(pg(), "fortuna"))).toBe("fortuna");
   });
 });

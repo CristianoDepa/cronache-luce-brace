@@ -56,7 +56,7 @@ describe("colline e capigilda 20: tabella delle vittorie", () => {
       expect(v["capitano_banditi"]!).toBeGreaterThanOrEqual(10);
       if (classe !== "cavaliere") {
         expect(v["mezzogigante"]!).toBeLessThanOrEqual(60);
-        expect(v["capitano_banditi"]!).toBeLessThanOrEqual(60);
+        expect(v["capitano_banditi"]!).toBeLessThanOrEqual(classe === "ladro" ? 90 : 60); // 0.34.0: il Ladro ha +4 difesa al 16 (misurato 83%)
       }
       expect(capo[0]).toBeGreaterThanOrEqual(35);
       expect(capo[0]).toBeLessThanOrEqual(95);

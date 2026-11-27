@@ -20,7 +20,7 @@ import { ID_EVENTI, eventoInCorso, statoEventi } from "./tipi";
 import { PARAMETRI_EVENTI } from "./parametri";
 
 export { ID_EVENTI, eventoInCorso, statoEventi } from "./tipi";
-export { avviaEvento } from "./avvio";
+export { avviaEvento, scegliEvento } from "./avvio";
 export { impostaEventiCasuali } from "./parametri";
 export { EVENTI } from "./dati";
 

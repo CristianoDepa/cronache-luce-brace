@@ -137,9 +137,13 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
     "porta-no",
     { it: "Porta San Donato", en: "San Donato Gate" },
     { it: "La porta a nord-ovest, con la sua piazza.", en: "The north-west gate, with its square." },
-    [{ verso: "piazza-c", distanza: 8 }, { verso: "mura-no", distanza: 2 }],
+    [{ verso: "piazza-c", distanza: 8 }, { verso: "mura-no", distanza: 2 }, { verso: "sandonato", distanza: 0 }],
     { it: "Esci dalla Porta San Donato", en: "Leave through San Donato Gate" },
-    { chiusa: { it: "Oltre la porta, verso il mare, si estendono campi e pinete. Strada ancora da esplorare.", en: "Beyond the gate, towards the sea, stretch fields and pine woods. Road still to be explored." } },
+    {
+      areaId: "sandonato",
+      livelloMin: 20,
+      chiusa: { it: "Oltre la porta la strada sale verso i boschi del Monte Pisano, dove vivono le leggende lucchesi. È la strada per chi ha già battuto il quinto capogilda (livello 20): per ora è chiusa.", en: "Beyond the gate the road climbs toward the Monte Pisano woods, where the legends of Lucca live. It is the road for those who have already beaten the fifth guildmaster (level 20): for now it is closed." },
+    },
   ),
   // Le mura sono un anello: da ogni tratto si va solo verso il tratto vicino (7-7-9-6-5-8 movimenti da nord in senso orario).
   mura("mura-n", { it: "Santa Maria", en: "Santa Maria" }, [{ verso: "mura-ne", distanza: 7 }]),
@@ -241,6 +245,8 @@ export const DEFINIZIONI_SITI: readonly DefinizioneSito[] = [
   { id: "piana", categoria: "area", contesto: "luogo:piana", nome: { it: "La Piana di Capannori", en: "The Capannori Plain" }, dove: { it: "nella piana di Capannori", en: "in the Capannori plain" }, descrizione: { it: "Campi, fossi e querce antiche: di notte nessuno esce dalle cascine.", en: "Fields, ditches and ancient oaks: by night nobody leaves the farmhouses." }, collegamenti: [] },
   // L'area fuori da Porta Elisa (dal livello 16): le colline di Lucca (la sua esplorazione sta nel modulo colline).
   { id: "colline", categoria: "area", contesto: "luogo:colline", nome: { it: "Le Colline di Lucca", en: "The Hills of Lucca" }, dove: { it: "sulle colline di Lucca", en: "on the hills of Lucca" }, descrizione: { it: "Macchia, uliveti e torri in rovina lungo la strada per Firenze: la battono i banditi.", en: "Scrub, olive groves and ruined towers along the road to Florence: bandits roam it." }, collegamenti: [] },
+  // L'area fuori da Porta San Donato (dal livello 20): i luoghi leggendari (la loro esplorazione sta nel modulo sandonato).
+  { id: "sandonato", categoria: "area", contesto: "luogo:sandonato", nome: { it: "San Donato", en: "San Donato" }, dove: { it: "a San Donato", en: "at San Donato" }, descrizione: { it: "Boschi, grotte e rovine del Monte Pisano: qui vivono le leggende lucchesi.", en: "Woods, caves and ruins of Monte Pisano: the legends of Lucca live here." }, collegamenti: [] },
   { id: "foresta", categoria: "area", contesto: "luogo:foresta", nome: { it: "La Foresta", en: "The Forest" }, descrizione: { it: "Una foresta fitta fuori dalle mura.", en: "A dense forest outside the walls." }, collegamenti: [] },
 ];
 

@@ -44,9 +44,9 @@ describe("livelli: calcoli puri", () => {
 
   it("crescita per classe fino al 4° livello (tre salite)", () => {
     expect(guadagniTotali(CRESCITA["cavaliere"], 4)).toEqual({ hp: 15, forza: 3, difesa: 1, velocita: 0, mana: 0, fortuna: 2, scasso: 0 }); // Cavaliere +5 HP a livello
-    expect(guadagniTotali(CRESCITA["mistico"], 4)).toEqual({ hp: 9, forza: 0, difesa: 3, velocita: 1, mana: 6, fortuna: 2, scasso: 0 }); // mana +2 a ogni livello
-    expect(guadagniTotali(CRESCITA["ladro"], 4)).toEqual({ hp: 12, forza: 1, difesa: 0, velocita: 3, mana: 0, fortuna: 2, scasso: 3 });
-    expect([2, 3, 4, 5].map((l) => guadagnoAlLivello(CRESCITA["mistico"], l).mana)).toEqual([2, 2, 2, 2]); // +2 fisso a ogni livello
+    expect(guadagniTotali(CRESCITA["mistico"], 4)).toEqual({ hp: 9, forza: 0, difesa: 3, velocita: 1, mana: 9, fortuna: 2, scasso: 0 }); // mana +3 a ogni livello (0.34.0)
+    expect(guadagniTotali(CRESCITA["ladro"], 4)).toEqual({ hp: 12, forza: 1, difesa: 1, velocita: 3, mana: 0, fortuna: 2, scasso: 3 }); // 0.34.0: +1 difesa al 4° livello
+    expect([2, 3, 4, 5].map((l) => guadagnoAlLivello(CRESCITA["mistico"], l).mana)).toEqual([3, 3, 3, 3]); // +3 fisso a ogni livello (0.34.0)
     expect(guadagnoAlLivello(undefined, 3)).toEqual(NESSUN_GUADAGNO);
     expect(guadagnoAlLivello(CRESCITA["cavaliere"], 1)).toEqual(NESSUN_GUADAGNO);
   });
@@ -58,12 +58,12 @@ describe("livelli: statistiche, velocità e mana seguono il livello e la classe"
     expect([s.hpMax, s.forza, s.difesa]).toEqual([45, 8, 5]); // 20 + 10 + 15, 5 + 3, 2 + 2 + 1
   });
 
-  it("Mistico livello 4: HP 27, difesa 5, velocità 11, mana 16", () => {
+  it("Mistico livello 4: HP 27, difesa 5, velocità 11, mana 19", () => {
     const st = pg("mistico", 4, 0, "porta-s");
     const s = calcolaStatistiche(st, ctx);
     expect([s.hpMax, s.forza, s.difesa]).toEqual([27, 8, 5]);
     expect(velocitaGiocatore(st, ctx)).toBe(11);
-    expect(manaMassimo(st, ctx)).toBe(16); // 10 + 2 + 2 + 2
+    expect(manaMassimo(st, ctx)).toBe(19); // 10 + 3 + 3 + 3 (0.34.0)
   });
 
   it("Ladro livello 4: HP 36, forza 6, velocità 18", () => {
@@ -111,7 +111,7 @@ describe("la salita di livello in gilda (livelli senza duello)", () => {
     expect(leggiAzioniResidue(r.stato)).toBe(49);
     expect(r.stato.personaggio.oro).toBe(40); // retta di 60
     expect(r.stato.personaggio.hp).toBe(prima.personaggio.hp + 3);
-    expect(manaMassimo(r.stato, ctx)).toBe(12);
+    expect(manaMassimo(r.stato, ctx)).toBe(13);
     expect(chiavi(r.eventi)).toEqual(["gilde.retta", "livelli.salito", "livelli.guadagno.hp", "livelli.guadagno.difesa", "livelli.guadagno.mana", "livelli.guadagno.fortuna"]);
     expect(traduciEvento(registro, "it", r.eventi[0]!)).toBe("Paghi la retta: 60 monete.");
     expect(eseguiOk(pg("ladro", 2, 300, gildaDi("ladro"), 150), sali, ctx).stato.personaggio.oro).toBe(0); // retta di 150 al livello 3

@@ -4,6 +4,8 @@ export const TESTI_COLLINE: DizionarioTesti = {
   it: {
     "colline.luogo.colline": "Le colline di Lucca",
     "colline.menu.colline": "Sali sulle colline",
+    "colline.menu.cercaGuai": "Cerca guai (più rischio, più bottino)",
+    "colline.luogo.guai": "Le colline (cerca guai)",
     "colline.menu.capitano": "Sfida il Capitano dei Banditi (boss, una volta al giorno)",
     "colline.descrizione": "Oltre Porta Elisa la strada per Firenze sale tra macchia, uliveti e rovine di torri. I mercanti non la percorrono più senza scorta. Senza l'acciaio di brace del Fabbro non andare lontano.",
     "colline.fase.giorno": "È giorno: banditi e mercenari disertori battono la macchia, i lupi seguono i greggi, le arpie volteggiano sulle creste e, raro, un mezzogigante scende dalle cime.",
@@ -38,6 +40,8 @@ export const TESTI_COLLINE: DizionarioTesti = {
   en: {
     "colline.luogo.colline": "The hills of Lucca",
     "colline.menu.colline": "Climb the hills",
+    "colline.menu.cercaGuai": "Look for trouble (more risk, more loot)",
+    "colline.luogo.guai": "The hills (looking for trouble)",
     "colline.menu.capitano": "Challenge the Bandit Captain (boss, once a day)",
     "colline.descrizione": "Beyond Elisa Gate the road to Florence climbs between scrub, olive groves and ruined towers. Merchants no longer travel it without an escort. Do not go far without the Blacksmith's ember steel.",
     "colline.fase.giorno": "It is day: bandits and deserter mercenaries comb the scrub, wolves follow the flocks, harpies wheel over the ridges and, rarely, a half-giant comes down from the peaks.",

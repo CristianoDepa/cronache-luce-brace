@@ -2,7 +2,7 @@ import sys, os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from quadro import *
-import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n, scene_o, scene_p, scene_k, scene_q, scene_r, scene_s
+import scene_a, scene_b, scene_c, scene_d, scene_e, scene_f, scene_h, scene_i, scene_l, scene_m, scene_n, scene_o, scene_p, scene_k, scene_q, scene_r, scene_s, scene_sd
 
 SRC = os.environ.get("CLB_SRC") or os.path.join(AQUI, "..", "..", "src", "moduli")
 INTESTAZIONE = '''import type { VoceContenuto } from "../../core/indice";
@@ -33,6 +33,7 @@ modulo("cattedrale", "ILLUSTRAZIONI_CATTEDRALE", [scene_n.cattedrale().esporta("
 modulo("bandi", "ILLUSTRAZIONI_BANDI", [scene_n.palazzo_anziani().esporta("scena.palazzo")])
 modulo("valle", "ILLUSTRAZIONI_VALLE", [f().esporta(i) for i, f in scene_l.SPRITE.items()] + [scene_l.valle().esporta("scena.valle")])
 modulo("colline", "ILLUSTRAZIONI_COLLINE", [f().esporta(i) for i, f in scene_k.SPRITE.items()] + [scene_k.colline().esporta("scena.colline"), scene_k.fortino().esporta("scena.fortino")])
+modulo("sandonato", "ILLUSTRAZIONI_SAN_DONATO", [f().esporta(i) for i, f in scene_sd.SPRITE.items()] + [f().esporta(i) for i, f in scene_sd.SCENE.items()])
 modulo("piana", "ILLUSTRAZIONI_PIANA", [f().esporta(i) for i, f in scene_p.SPRITE.items()] + [scene_p.piana().esporta("scena.piana"), scene_p.quercia().esporta("scena.quercia")])
 modulo("eventi", "ILLUSTRAZIONI_EVENTI", [scene_m.grotta().esporta("scena.grotta"), scene_m.guado().esporta("scena.guado")] + [f().esporta(i) for i, f in scene_m.SPRITE.items()])
 modulo("incantatrice", "ILLUSTRAZIONI_INCANTATRICE", [scene_i.capanna().esporta("scena.capanna")])

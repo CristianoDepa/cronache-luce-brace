@@ -12,6 +12,8 @@ const CLASSI_M = "info:manuale:classi";
 const ARMI = "info:manuale:armi";
 const ARMATURE = "info:manuale:armature";
 const MAGICI = "info:manuale:magici";
+const GUAI = "info:manuale:guai";
+const SAN_DONATO = "info:manuale:sandonato";
 const contestoClasse = (id: string): string => `info:manuale:classe:${id}`;
 const contestoLinea = (id: string): string => `info:manuale:linea:${id}`;
 const contestoBrace = (tipo: "arma" | "armatura"): string => `info:manuale:brace:${tipo}`;
@@ -38,6 +40,8 @@ const titoli: Record<string, string> = {
   [ARMI]: "manuale.armi.titolo",
   [ARMATURE]: "manuale.armature.titolo",
   [MAGICI]: "manuale.magici.titolo",
+  [GUAI]: "manuale.guai.titolo",
+  [SAN_DONATO]: "manuale.sandonato.titolo",
   [contestoBrace("arma")]: "manuale.brace.titolo",
   [contestoBrace("armatura")]: "manuale.brace.titolo",
 };
@@ -51,6 +55,8 @@ function costruisciPannelli(ctx: Contesto): readonly PannelloVista[] {
     { contesti: [ARMI, ARMATURE], righe: [{ chiave: "manuale.linee.indice" }] },
     { contesti: [STAT], righe: pagineStatistiche(ctx) },
     { contesti: [MAGICI], righe: paginaMagici() },
+    { contesti: [GUAI], righe: [{ chiave: "manuale.guai.1" }, { chiave: "manuale.guai.2" }, { chiave: "manuale.guai.3" }] },
+    { contesti: [SAN_DONATO], righe: [{ chiave: "manuale.sandonato.1" }, { chiave: "manuale.sandonato.2" }, { chiave: "manuale.sandonato.3" }, { chiave: "manuale.sandonato.4" }] },
     { contesti: [contestoBrace("arma")], righe: paginaBrace(ctx, "arma") },
     { contesti: [contestoBrace("armatura")], righe: paginaBrace(ctx, "armatura") },
     ...CLASSI.map((c): PannelloVista => ({ contesti: [contestoClasse(c.id)], righe: paginaClasse(ctx, c.id) })),
@@ -66,7 +72,7 @@ export const interfacciaManuale: InterfacciaModulo = {
   },
   contestiPadre: {
     [CONTESTO_MANUALE]: CONTESTO_INFO_INDICE,
-    [STAT]: CONTESTO_MANUALE, [CLASSI_M]: CONTESTO_MANUALE, [ARMI]: CONTESTO_MANUALE, [ARMATURE]: CONTESTO_MANUALE, [MAGICI]: CONTESTO_MANUALE,
+    [STAT]: CONTESTO_MANUALE, [CLASSI_M]: CONTESTO_MANUALE, [ARMI]: CONTESTO_MANUALE, [ARMATURE]: CONTESTO_MANUALE, [MAGICI]: CONTESTO_MANUALE, [GUAI]: CONTESTO_MANUALE, [SAN_DONATO]: CONTESTO_MANUALE,
     [contestoBrace("arma")]: ARMI,
     [contestoBrace("armatura")]: ARMATURE,
     ...Object.fromEntries(CLASSI.map((c) => [contestoClasse(c.id), CLASSI_M])),
@@ -74,7 +80,7 @@ export const interfacciaManuale: InterfacciaModulo = {
   },
   // Le pagine sull'acciaio di brace si vedono solo dal livello in cui si apre il Fabbro (12): prima sarebbe uno spoiler.
   menuNascosto(stato) {
-    return stato.personaggio.livello >= PARAMETRI_LIVELLI.livelloDegno ? [] : IDS_BRACE;
+    return [...(stato.personaggio.livello >= PARAMETRI_LIVELLI.livelloDegno ? [] : IDS_BRACE), ...(stato.personaggio.livello >= 2 ? [] : ["manuale.voce.guai"]), ...(stato.personaggio.livello >= 20 ? [] : ["manuale.voce.sandonato"])];
   },
   menu: [
     { ...voce("manuale.info", CONTESTO_INFO_INDICE, "manuale.menu", "6", CONTESTO_MANUALE), ordine: 60 },
@@ -83,6 +89,8 @@ export const interfacciaManuale: InterfacciaModulo = {
     voce("manuale.voce.armi", CONTESTO_MANUALE, "manuale.voce.armi", "3", ARMI),
     voce("manuale.voce.armature", CONTESTO_MANUALE, "manuale.voce.armature", "4", ARMATURE),
     voce("manuale.voce.magici", CONTESTO_MANUALE, "manuale.voce.magici", "5", MAGICI),
+    voce("manuale.voce.guai", CONTESTO_MANUALE, "manuale.voce.guai", "6", GUAI),
+    voce("manuale.voce.sandonato", CONTESTO_MANUALE, "manuale.voce.sandonato", "7", SAN_DONATO),
     ...CLASSI.map((c, k) => voce(`manuale.classe.${c.id}`, CLASSI_M, `classi.classe.${c.id}`, String(k + 1), contestoClasse(c.id))),
     ...vociLinee,
     voceBrace("arma"),

@@ -320,10 +320,10 @@ describe("abilità di classe", () => {
     const registro = registroDa([...MODULI_ATTIVI, moduloProva, benedizione, moduloColpiSicuri]);
     const ctx = creaContestoDiProva(registro, 1);
     const stato = eseguiOk(con(registro, "ladro"), inizia("sacco"), ctx).stato;
-    // la prima abilità del Ladro è la Pugnalata, la seconda la Schivata (dal 4° livello), la terza il Furto (dall'8°); la quarta (dal 12°) è il Lama avvelenata; la benedizione è la quinta
-    const uso = eseguiOk(stato, abilita(5), ctx);
+    // la prima abilità del Ladro è la Pugnalata, la seconda la Schivata (dal 4° livello), la terza il Furto (dall'8°); la quarta (dal 12°) è il Lama avvelenata, la quinta (dal 20°) il Colpo mortale; la benedizione è la sesta
+    const uso = eseguiOk(stato, abilita(6), ctx);
     expect(statoCombattimento.leggi(uso.stato).scontro?.effetti[0]?.colpi).toBe(3);
-    const ancora = eseguiAzione(uso.stato, abilita(5), ctx);
+    const ancora = eseguiAzione(uso.stato, abilita(6), ctx);
     expect(ancora.ok ? "" : ancora.errore.chiave).toBe("abilita.errore.gia_attiva");
     // dopo due attacchi l'effetto dura ancora (3 colpi), dopo il terzo scade
     let corrente = uso.stato;
@@ -349,7 +349,7 @@ describe("abilità di classe", () => {
     expect(seconda.ok ? "" : seconda.errore.chiave).toBe("abilita.errore.livello");
     const terza = eseguiAzione(stato, abilita(3), ctxR); // il Furto esiste (dal livello 8)
     expect(terza.ok ? "" : terza.errore.chiave).toBe("abilita.errore.livello");
-    const quarta = eseguiAzione(stato, abilita(5), ctxR);
+    const quarta = eseguiAzione(stato, abilita(6), ctxR);
     expect(quarta.ok ? "" : quarta.errore.chiave).toBe("abilita.errore.nessuna_abilita");
     const senzaClasse = eseguiOk(con(registroSicuro, null), inizia("sacco"), ctxR).stato;
     const nessuna = eseguiAzione(senzaClasse, abilita(), ctxR);
@@ -359,7 +359,7 @@ describe("abilità di classe", () => {
   it("un'abilità aggiunta solo con dati compare nelle abilità della classe e funziona (Sfida: danno x3)", () => {
     const { stato, registro } = prova("cavaliere");
     const normale = eseguiOk(stato, { tipo: "attacca" }, creaContestoDiProva(registro, 4));
-    const sfida = eseguiOk(stato, abilita(5), creaContestoDiProva(registro, 4));
+    const sfida = eseguiOk(stato, abilita(6), creaContestoDiProva(registro, 4));
     expect(chiavi(sfida.eventi)[0]).toBe("abilita.usata");
     expect(dannoInflitto(sfida.eventi)).toBe(dannoInflitto(normale.eventi) * 3);
   });

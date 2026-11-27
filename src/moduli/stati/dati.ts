@@ -16,6 +16,11 @@ export const CREATURE_CHE_INFLIGGONO: Readonly<Record<Id, TipoStato>> = {
   folletto_dispettoso: "paura",
   banshee: "paura",
   medusa: "paura",
+  // San Donato (0.35.0): lo sguardo del Serpe Motro e del Gatto Malefico fa paura, i serpenti dell'Orrido e il Serpe Volastro avvelenano.
+  serpe_motro: "paura",
+  gatto_malefico: "paura",
+  serpente_orrido: "veleno",
+  serpe_volastro: "veleno",
 };
 
 // I patti del Diavolo del Ponte (permanenti, uno solo per partita). Ogni patto dà qualcosa e ne toglie qualcos'altro.

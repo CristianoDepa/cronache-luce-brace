@@ -172,4 +172,54 @@ export const ABILITA: readonly VoceContenuto[] = [
       dopo: [{ bersaglio: "nemico", moltiplicatoreDanno: 0.65, colpi: 3 }],
     },
   },
+  // --- Abilità del 20° livello (0.34.0): una per classe, la quinta, una volta per scontro. VALORI PROPOSTI, da tarare con i mostri di San Donato e il Drago. ---
+  {
+    // Salta il turno; i prossimi 4 colpi del nemico fanno metà danno. Una volta per scontro.
+    tipo: "abilita",
+    id: "murodiscudi",
+    dati: {
+      nomeChiave: "abilita.murodiscudi",
+      descrizioneChiave: "abilita.murodiscudi.descrizione",
+      attivoChiave: "abilita.murodiscudi.attivo",
+      classi: ["cavaliere"],
+      costoMana: 0,
+      livelloMin: 20,
+      usiPerScontro: 1,
+      azione: "attesa",
+      dopo: [{ bersaglio: "nemico", moltiplicatoreDanno: 0.5, colpi: 4 }],
+    },
+  },
+  {
+    // Un attacco con danno triplo; poi il prossimo attacco del nemico ha probabilità doppia di colpirti. Una volta per scontro.
+    tipo: "abilita",
+    id: "colpomortale",
+    dati: {
+      nomeChiave: "abilita.colpomortale",
+      descrizioneChiave: "abilita.colpomortale.descrizione",
+      attivoChiave: "abilita.colpomortale.attivo",
+      classi: ["ladro"],
+      costoMana: 0,
+      livelloMin: 20,
+      usiPerScontro: 1,
+      azione: "attacco",
+      prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 3, colpi: 1 }],
+      dopo: [{ bersaglio: "nemico", moltiplicatorePrecisione: 2, colpi: 1 }],
+    },
+  },
+  {
+    // Un colpo magico che non manca mai, con danno ×2,5. Costa mana. Una volta per scontro.
+    tipo: "abilita",
+    id: "tempestaarcana",
+    dati: {
+      nomeChiave: "abilita.tempestaarcana",
+      descrizioneChiave: "abilita.tempestaarcana.descrizione",
+      attivoChiave: "abilita.tempestaarcana.attivo",
+      classi: ["mistico"],
+      costoMana: 8,
+      livelloMin: 20,
+      usiPerScontro: 1,
+      azione: "attacco",
+      prima: [{ bersaglio: "giocatore", moltiplicatoreDanno: 2.5, moltiplicatorePrecisione: 2, colpi: 1, tipoDanno: "magico" }],
+    },
+  },
 ];

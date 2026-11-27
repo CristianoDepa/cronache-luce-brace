@@ -37,7 +37,7 @@ export const CAPIGILDA: readonly VoceContenuto[] = [
   // Livello 12 (0.25.0): valori di partenza, da tarare con la simulazione (tests/moduli/bilanciamentoLivelli12.test.ts) sull'equipaggiamento naturale a ~20 punti per pezzo.
   capogilda("capogilda-cavaliere-12", "cavaliere12", "sprite.capogilda.cavaliere12", 140, 34, 16, 7),
   capogilda("capogilda-mistico-12", "mistico12", "sprite.capogilda.mistico12", 85, 34, 7, 11),
-  capogilda("capogilda-ladro-12", "ladro12", "sprite.capogilda.ladro12", 98, 32, 7, 17),
+  capogilda("capogilda-ladro-12", "ladro12", "sprite.capogilda.ladro12", 102, 33, 7, 17),
   // Livello 16 (0.27.0): valori di partenza, da tarare con il simulatore (equipaggiamento e brace al livello 16).
   capogilda("capogilda-cavaliere-16", "cavaliere16", "sprite.capogilda.cavaliere16", 180, 43, 21, 7),
   capogilda("capogilda-mistico-16", "mistico16", "sprite.capogilda.mistico16", 120, 44, 10, 12),
@@ -45,5 +45,5 @@ export const CAPIGILDA: readonly VoceContenuto[] = [
   // Livello 20 (0.28.0): valori di partenza, da tarare con il simulatore (equipaggiamento di brace al livello 19).
   capogilda("capogilda-cavaliere-20", "cavaliere20", "sprite.capogilda.cavaliere20", 198, 46, 22, 7),
   capogilda("capogilda-mistico-20", "mistico20", "sprite.capogilda.mistico20", 125, 46, 11, 12),
-  capogilda("capogilda-ladro-20", "ladro20", "sprite.capogilda.ladro20", 127, 42, 10, 18),
+  capogilda("capogilda-ladro-20", "ladro20", "sprite.capogilda.ladro20", 133, 44, 11, 18),
 ];

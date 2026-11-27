@@ -37,12 +37,13 @@ const interfaccia: InterfacciaModulo = {
   titoliContesto: { "luogo:piana": "piana.luogo.piana" },
   illustrazioniContesto: { "luogo:piana": "scena.piana" },
   menuNascosto: (stato, ctx) => {
-    if (!portaAperta(stato, ctx)) return ["piana.esplora", ID_VOCE_QUERCIA];
+    if (!portaAperta(stato, ctx)) return ["piana.esplora", "piana.cercaGuai", ID_VOCE_QUERCIA];
     return statoPiana.leggi(stato).querciaSfidata ? [ID_VOCE_QUERCIA] : [];
   },
   menu: [
     { id: "piana.esplora", contesto: CONTESTO_PORTA, etichettaChiave: "piana.menu.piana", tasto: "P", ordine: 1, comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "piana" } } } },
     { id: ID_VOCE_QUERCIA, contesto: CONTESTO_PORTA, etichettaChiave: "piana.menu.quercia", tasto: "Q", ordine: 2, comando: { tipo: "azione", azione: { tipo: "sfidaQuercia" } } },
+    { id: "piana.cercaGuai", contesto: CONTESTO_PORTA, etichettaChiave: "piana.menu.cercaGuai", tasto: "G", ordine: 3, comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "piana-guai" } } } },
   ],
   pannelli(stato, ctx): readonly PannelloVista[] {
     if (!portaAperta(stato, ctx)) return [];

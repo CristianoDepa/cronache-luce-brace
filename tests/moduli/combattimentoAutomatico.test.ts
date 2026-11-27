@@ -137,7 +137,7 @@ describe("giorno e notte", () => {
     const notte = incontri(22);
     expect(giorno["spettro"] ?? 0).toBe(0);
     expect(notte["spettro"] ?? 0).toBeGreaterThan(20);
-    // il premio: zombi 60 monete e 26 punti di giorno, +25% di notte (75 e 33)
+    // il premio: zombi 60 monete (66 con il +10% del Cavaliere, 0.35.0) e 26 punti di giorno, +25% di notte (83 e 33)
     const premio = (h: number) => {
       const st = eseguiOk(cim, { tipo: "esploraForesta", dati: { luogoId: "cimitero" } }, { ...creaContestoDiProva(registro, 1), oraForzata: h }).stato;
       const c = statoCombattimento.leggi(st).scontro!;
@@ -149,8 +149,8 @@ describe("giorno e notte", () => {
       }
       return undefined;
     };
-    expect(premio(12)).toEqual({ oro: 60, esperienza: 26 });
-    expect(premio(22)).toEqual({ oro: 75, esperienza: 33 });
+    expect(premio(12)).toEqual({ oro: 66, esperienza: 26 });
+    expect(premio(22)).toEqual({ oro: 83, esperienza: 33 });
   });
 
   it("nella foresta di notte i lupi sono più numerosi e i ratti più rari; nella palude di notte più fuochi fatui e scheletri", () => {

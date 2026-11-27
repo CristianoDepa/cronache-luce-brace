@@ -14,8 +14,8 @@ const mostro = (id: string, famiglia: string, hp: number, forza: number, difesa:
 
 export const MOSTRI_RISERVA: readonly VoceContenuto[] = [
   mostro("ragno_gigante", "animali", 16, 6, 1, 10, 14, 11, { contundente: 1.5 }), // fascia 1-3
-  mostro("cinghiale", "animali", 24, 7, 1, 6, 16, 13, { perforante: 1.5 }), // fascia 1-3
-  mostro("bracconiere", "umanoidi", 15, 7, 0, 11, 24, 12, {}), // fascia 1-3
+  mostro("cinghiale", "animali", 24, 7, 1, 6, 22, 20, { perforante: 1.5 }), // fascia 1-3; premi alzati nella 0.34.0 («Cerca guai»)
+  mostro("bracconiere", "umanoidi", 15, 7, 0, 11, 20, 18, {}), // fascia 1-3; premi ritoccati nella 0.34.0 («Cerca guai»)
   mostro("pipistrello_cripte", "animali", 9, 5, 0, 14, 8, 7, { contundente: 1.5 }), // fascia 1-3
   mostro("sanguisuga_nera", "animali", 70, 11, 4, 4, 40, 18, { taglio: 0.5, contundente: 1.25 }), // fascia 4-7
   mostro("ghoul", "nonmorti", 80, 15, 3, 8, 55, 24, { magico: 1.5, perforante: 0.75 }), // fascia 4-7
@@ -25,14 +25,14 @@ export const MOSTRI_RISERVA: readonly VoceContenuto[] = [
   mostro("granchio_corazzato", "animali", 80, 28, 14, 6, 70, 100, { taglio: 0.5, contundente: 1.5 }), // fascia 8-11
   mostro("contrabbandiere", "umanoidi", 70, 30, 6, 17, 150, 115, { perforante: 1.25 }), // fascia 8-11
   mostro("folletto_dispettoso", "spiriti", 55, 27, 2, 20, 90, 110, { taglio: 0.5, magico: 1.5 }), // fascia 8-11
-  mostro("cavaliere_decaduto", "umanoidi", 118, 41, 12, 7, 360, 1000, { taglio: 0.5, contundente: 1.5 }), // fascia 12-15
-  mostro("toro_infuriato", "animali", 125, 45, 6, 5, 200, 800, { perforante: 1.25 }), // fascia 12-15
-  mostro("mantide_cacciatrice", "animali", 92, 41, 5, 20, 260, 880, { perforante: 1.5 }), // fascia 12-15
+  mostro("cavaliere_decaduto", "umanoidi", 118, 41, 12, 7, 360, 1500, { taglio: 0.5, contundente: 1.5 }), // fascia 12-15
+  mostro("toro_infuriato", "animali", 125, 45, 6, 5, 300, 1300, { perforante: 1.25 }), // fascia 12-15
+  mostro("mantide_cacciatrice", "animali", 92, 41, 5, 20, 300, 1300, { perforante: 1.5 }), // fascia 12-15
   mostro("banshee", "spiriti", 85, 40, 3, 18, 340, 980, { taglio: 0.3, contundente: 0.3, perforante: 0.3, magico: 1.5 }), // fascia 12-15
-  mostro("ippogrifo", "animali", 118, 45, 7, 19, 420, 1600, { perforante: 1.25 }), // fascia 16-20
+  mostro("ippogrifo", "animali", 118, 45, 7, 19, 560, 2300, { perforante: 1.25 }), // fascia 16-20
   mostro("troll_montagna", "umanoidi", 165, 47, 10, 3, 700, 2300, { magico: 1.5 }), // fascia 16-20
-  mostro("orso_caverne", "animali", 140, 47, 8, 9, 480, 1800, { contundente: 0.75, perforante: 1.25 }), // fascia 16-20
-  mostro("chimera", "animali", 150, 48, 9, 14, 650, 2300, { magico: 0.5, perforante: 1.25 }), // fascia 16-20
+  mostro("orso_caverne", "animali", 140, 47, 8, 9, 600, 2600, { contundente: 0.75, perforante: 1.25 }), // fascia 16-20
+  mostro("chimera", "animali", 150, 48, 9, 14, 650, 3200, { magico: 0.5, perforante: 1.25 }), // fascia 16-20
   mostro("medusa", "umanoidi", 120, 45, 6, 15, 600, 2100, { taglio: 1.5, magico: 0.5 }), // fascia 16-20
 ];
 

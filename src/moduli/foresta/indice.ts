@@ -17,6 +17,8 @@ export { creatureIncontrabili, pesiIncontro } from "./azioni";
 // L'esplorazione parte direttamente dalla Porta San Pietro (dalla 0.13.0 non c'è più una schermata "La Foresta" intermedia).
 const CONTESTO_LUOGO = "luogo:foresta";
 const CONTESTO_PORTA = "citta:porta-s";
+// Livello da cui compare «Cerca guai» (0.34.0).
+export const LIVELLO_CERCA_GUAI = 2;
 
 // Una riga rossa sotto la metà degli HP: entrare in una zona da feriti è la causa più comune delle morti.
 export function avvisoFerito(stato: StatoGioco, ctx: Contesto): readonly RigaVista[] {
@@ -31,7 +33,17 @@ const interfaccia: InterfacciaModulo = {
   pannelli: (stato, ctx) => [{ contesti: [CONTESTO_PORTA], righe: [{ chiave: `foresta.fase.${faseDelGiorno(ctx)}`, tono: "speciale" as const }, ...avvisoFerito(stato, ctx)] }],
   titoliContesto: { [CONTESTO_LUOGO]: "foresta.luogo.foresta" },
   illustrazioniContesto: { [CONTESTO_LUOGO]: "scena.foresta" },
+  // «Cerca guai» si apre dal livello 2 (al primo livello la foresta basta e avanza).
+  menuNascosto: (stato) => (stato.personaggio.livello >= LIVELLO_CERCA_GUAI ? [] : ["foresta.cercaGuai"]),
   menu: [
+    {
+      id: "foresta.cercaGuai",
+      contesto: CONTESTO_PORTA,
+      etichettaChiave: "foresta.menu.cercaGuai",
+      tasto: "G",
+      ordine: 6,
+      comando: { tipo: "azione", azione: { tipo: "esploraForesta", dati: { luogoId: "foresta-guai" } } },
+    },
     {
       id: "foresta.esplora",
       contesto: CONTESTO_PORTA,

@@ -4,6 +4,8 @@ export const TESTI_PIANA: DizionarioTesti = {
   it: {
     "piana.luogo.piana": "La piana di Capannori",
     "piana.menu.piana": "Addentrati nella piana",
+    "piana.menu.cercaGuai": "Cerca guai (più rischio, più bottino)",
+    "piana.luogo.guai": "La piana (cerca guai)",
     "piana.menu.quercia": "Sfida la Madre della Quercia (boss, una volta al giorno)",
     "piana.descrizione": "Oltre la Porta San Jacopo alla Tomba la piana di Capannori si stende tra campi, fossi e querce antiche. Di giorno i contadini guardano il cielo; di notte nessuno esce dalle cascine. Qui l'equipaggiamento normale non basta più: dal livello 12 serve l'acciaio di brace del Fabbro.",
     "piana.fase.giorno": "È giorno: tra i campi si aggirano contadini che non sono più loro, spaventapasseri che sembrano muoversi e cani neri; le streghe raccolgono erbe lungo i fossi.",
@@ -36,6 +38,8 @@ export const TESTI_PIANA: DizionarioTesti = {
   en: {
     "piana.luogo.piana": "The Capannori plain",
     "piana.menu.piana": "Venture into the plain",
+    "piana.menu.cercaGuai": "Look for trouble (more risk, more loot)",
+    "piana.luogo.guai": "The plain (looking for trouble)",
     "piana.menu.quercia": "Challenge the Mother of the Oak (boss, once a day)",
     "piana.descrizione": "Beyond San Jacopo alla Tomba Gate the Capannori plain spreads between fields, ditches and ancient oaks. By day the farmers watch the sky; by night nobody leaves the farmhouses. Ordinary gear is no longer enough here: from level 12 you need the Blacksmith's ember steel.",
     "piana.fase.giorno": "It is day: possessed farmers wander the fields, scarecrows seem to move and black dogs prowl; herb witches gather plants along the ditches.",

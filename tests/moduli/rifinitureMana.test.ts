@@ -45,8 +45,8 @@ describe("il mana si recupera con le vittorie", () => {
     expect(manaAttuale(cur, ctx)).toBe(4);
   });
 
-  it("il mana massimo del Mistico cresce di 2 per livello: 10, 12, 14, 16", () => {
-    expect([1, 2, 3, 4].map((l) => manaMassimo(pg("mistico", l), ctx))).toEqual([10, 12, 14, 16]);
+  it("il mana massimo del Mistico cresce di 3 per livello (0.34.0): 10, 13, 16, 19", () => {
+    expect([1, 2, 3, 4].map((l) => manaMassimo(pg("mistico", l), ctx))).toEqual([10, 13, 16, 19]);
   });
 });
 

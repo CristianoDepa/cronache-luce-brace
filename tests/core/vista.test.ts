@@ -37,7 +37,7 @@ describe("vista e menu", () => {
     const vista = creaVistaPartita(scelta.stato, ctx);
     expect(vista.contestoForzato).toBeUndefined();
     expect(vista.contestoBase).toBe("citta:piazza-n");
-    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "T", "E", "C", "M"]); // parla, addentrati nella foresta, apri il forziere (nascosta finché non ce n'è uno), esci, capanna di Sibilla (nascosta: la porta è aperta), Locanda, mappa
+    expect(vociMenu(registro, "citta:porta-s").map((v) => v.tasto)).toEqual(["N", "F", "G", "T", "E", "C", "M"]); // parla, addentrati nella foresta, cerca guai (nascosta al livello 1, 0.34.0), apri il forziere (nascosta finché non ce n'è uno), esci, capanna di Sibilla (nascosta: la porta è aperta), Locanda, mappa
     expect(vista.pannelli.some((p) => p.contesti?.includes("citta:piazza-n") && p.righe[0]?.chiave === "citta.pannello.descrizione")).toBe(true);
     expect(vista.pannelli.some((p) => p.titoloChiave === "classi.pannello.titolo")).toBe(false);
   });
@@ -47,7 +47,7 @@ describe("vista e menu", () => {
     const scontro = eseguiOk(scelta.stato, { tipo: "esploraForesta", dati: { luogoId: "foresta" } }, ctx);
     const vista = creaVistaPartita(scontro.stato, ctx);
     expect(vista.contestoForzato).toBe("combattimento");
-    expect(vociMenu(registro, "combattimento").map((v) => v.tasto)).toEqual(["C", "A", "B", "T", "S", "D", "G", "H", "F"]); // C = cambia arma (con una riserva), T = combatti fino alla fine
+    expect(vociMenu(registro, "combattimento").map((v) => v.tasto)).toEqual(["C", "A", "B", "T", "S", "D", "G", "H", "J", "F"]); // C = cambia arma (con una riserva), T = combatti fino alla fine
     expect(vista.pannelli.some((p) => p.titoloChiave === "combattimento.pannello.titolo")).toBe(true);
   });
 

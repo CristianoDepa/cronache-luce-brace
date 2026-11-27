@@ -10,7 +10,7 @@ export const CLASSI: readonly VoceContenuto[] = [
     dati: {
       nomeChiave: "classi.classe.cavaliere",
       descrizioneChiave: "classi.classe.cavaliere.descrizione",
-      modificatori: { hpMax: 10, difesa: 2, velocita: -4, fortuna: 2, tettoForziere: 0.7 },
+      modificatori: { hpMax: 10, difesa: 2, velocita: -4, fortuna: 2, tettoForziere: 0.7, moltiplicatoreOro: 1.1 },
     },
   },
   {

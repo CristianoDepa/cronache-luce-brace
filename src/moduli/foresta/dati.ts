@@ -17,4 +17,17 @@ export const LUOGHI_FORESTA: readonly VoceContenuto[] = [
       pesiNotte: { ratto: 25, lupo: 60, goblin: { peso: 30, potenzaMin: 18, potenzaPiena: 22 }, orco: { peso: 15, potenzaMin: 18, potenzaPiena: 26, forzaMin: 7 } },
     },
   },
+  {
+    // «Cerca guai» (0.34.0): un'esplorazione a rischio (1 azione) con mostri più duri della media della foresta, dalla RISERVA del bestiario
+    // (ragno gigante e pipistrello restano fuori: sono facili come il lupo). Stesse soglie di potenza del goblin; premi più alti (vedi riserva/dati.ts).
+    tipo: "luogo",
+    id: "foresta-guai",
+    dati: {
+      nomeChiave: "foresta.luogo.guai",
+      scenaId: "scena.foresta",
+      azioni: ["esploraForesta"],
+      creature: ["bracconiere", "cinghiale"],
+      pesi: { bracconiere: { peso: 50, potenzaMin: 16, potenzaPiena: 20 }, cinghiale: { peso: 50, potenzaMin: 18, potenzaPiena: 22 } },
+    },
+  },
 ];
